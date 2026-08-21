@@ -1,0 +1,69 @@
+{
+  "n_replays": 90,
+  "n_timed_out_excluded": 0,
+  "exact_rate": 1.0,
+  "mean_abs_dr": 0.0,
+  "max_abs_dr": 0.0,
+  "p95_abs_dr": 0.0,
+  "noise_floor": 0.0,
+  "suffix_len_mismatches": 3,
+  "by_decision_point": {
+    "tool_call": {
+      "n": 18,
+      "exact": 1.0,
+      "mean_abs": 0.0
+    },
+    "context_policy": {
+      "n": 42,
+      "exact": 1.0,
+      "mean_abs": 0.0
+    },
+    "termination": {
+      "n": 30,
+      "exact": 1.0,
+      "mean_abs": 0.0
+    }
+  },
+  "by_task": {
+    "balanced_brackets": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "eval_plus_minus": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "group_anagrams": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "int_to_roman": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "longest_common_prefix": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "merge_intervals": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "rle_encode": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "spiral_order": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "sum_two_largest_primes": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "validate_ipv4": {
+      "n": 9,
+      "exact": 1.0
+    }
+  }
+}

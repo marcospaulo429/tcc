@@ -1,0 +1,33 @@
+{
+  "n_counterfactuals": 4,
+  "n_timed_out_excluded": 0,
+  "noise_floor": 0.0,
+  "frac_above_floor": 0.0,
+  "mean_C": 0.0,
+  "mean_abs_C": 0.0,
+  "by_direction": {
+    "keep_context->summarize_context": {
+      "n": 2,
+      "mean_C": 0.0,
+      "frac_nonzero": 0.0
+    },
+    "summarize_context->keep_context": {
+      "n": 2,
+      "mean_C": 0.0,
+      "frac_nonzero": 0.0
+    }
+  },
+  "by_task": {
+    "eval_plus_minus": {
+      "n": 2,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "longest_common_prefix": {
+      "n": 2,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    }
+  },
+  "points_above_floor": []
+}
