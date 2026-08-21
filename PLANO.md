@@ -147,10 +147,14 @@ Referências externas (usar como referência, **não forkar**): HarnessX (arquit
 
 ## 10. Compute
 
-- **DGX-1 (alvo de execução):** rollouts em escala, Testes 0/1 completos, treino do critic e joint RL (fases 7-8) com Qwen3 4B/8B.
+- **Ambiente de trabalho (verificado 2026-08-21):** servidor compartilhado tipo DGX-1 — 8× Tesla V100-SXM2 32GB, 503 GiB RAM, 80 cores. Infra, Testes 0/1, treino do critic e joint RL (fases 7-8) rodam aqui.
+- **GPUs sem reserva:** antes de qualquer job, checar `nvidia-smi`, escolher GPU livre e fixar `CUDA_VISIBLE_DEVICES=<idx>`. Preferir jobs de 1 GPU (Qwen3 4B/8B cabe em 32GB com LoRA/quantização).
 - **Modelos:** Qwen3 4B para desenvolvimento/experimentos iniciais; 8B quando justificado. Nunca começar com modelos grandes.
-- **Sandbox:** ambiente de coding isolado (containers na DGX), reward via pytest.
-- Máquina local (MacBook 8 GB) serve só para desenvolvimento da infra e smoke tests com ollama.
+- **Sandbox:** ambiente de coding isolado (containers), reward via pytest.
+
+### Frota de agentes (paralelização do trabalho)
+
+Definida em [.github/agents/](.github/agents/): `main` (orquestrador, Fable 5) delega para `impl` (implementação com spec fechada, Fable 5, paralelizável em módulos disjuntos), `revisor` (auditoria adversarial read-only, Fable 5), `research` (vigilância de literatura, Fable 5), `runner` (executar/monitorar jobs e GPU, modelo rápido) e `quick` (tarefas mecânicas, modelo rápido). Decisões de arquitetura, desenho experimental e commits ficam sempre no `main`.
 
 ## 11. Research Agent (vigilância de literatura)
 

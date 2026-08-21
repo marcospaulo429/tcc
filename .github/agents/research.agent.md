@@ -2,6 +2,7 @@
 name: research
 description: Research Agent do TCC "Cross-Layer Agentic RL" — faz literature surveillance (Discovery, Verification, Alert), extrai métodos de papers e tenta matar a novidade das nossas contribuições antes que um reviewer o faça.
 argument-hint: Uma research question, um paper para extrair, ou "verificar novidade de X".
+model: ['Claude Fable 5 (copilot)']
 tools: ['fetch', 'search', 'read', 'todo']
 ---
 
