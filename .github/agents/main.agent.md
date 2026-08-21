@@ -62,8 +62,8 @@ paper/
 
 ## Estado atual (atualizado 2026-08-21)
 
-- **Varredura de literatura feita.** Papers mais próximos: C3 (arXiv:2603.06859, counterfactual replay exato — nosso baseline metodológico), Co-Harness (2607.22688) e HASE (2607.03935, joint model+harness sem crédito causal), LEMON (2605.14483), CCI (2605.05716), survey 2604.09459 (leitura obrigatória: replay fidelity). **Lacuna aberta:** decomposição cross-layer C(model)/C(harness) + I(H,M) por decisão + critic validado por replay. Novelty risk: MÉDIO, janela curta. Detalhes em `.github/agents/research.agent.md`.
-- **Posicionamento:** a contribuição é a decomposição cross-layer com interação e validação contra ground truth — não "counterfactual credit" nem "joint training" isolados.
+- **2ª varredura de literatura feita (2026-08-21).** Lacuna 1+2+3 segue aberta, novelty risk **ALTO**. Papers mais próximos: CHILL-Harness (2607.25825, counterfactual só na camada do harness), CAR (2606.08275, maquinaria de replay+Shapley), 2608.19760 (**resultado negativo** sobre sinais de crédito vs replay ground truth — define o bar do nosso critic: dose-matched + pré-registro), C3 v2, Co-Harness/HarnessCompass, HASE. Tabela completa em `.github/agents/research.agent.md`.
+- **Posicionamento (reposicionado):** contribuição central é **I(H,M) por decisão como sinal de treino** (única peça sem paralelo) + decomposição C(model)/C(harness) na mesma trajetória + critic treinado contra ground truth de replay. Orçamento de counterfactuals rebaixado a componente de eficiência. **Alvo: ICLR 2027 (~set/2026).**
 - **Máquina:** servidor compartilhado com 8× Tesla V100 32GB, 503 GiB RAM, 80 cores. **Nenhuma GPU reservada** — antes de qualquer job com GPU, checar `nvidia-smi` e fixar `CUDA_VISIBLE_DEVICES` numa GPU livre. Detalhes em `/memories/repo/ambiente.md`.
 
 ## Primeiros testes (aprovados, nesta ordem)

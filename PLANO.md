@@ -18,28 +18,35 @@ Formalização:
 
 **Não assumimos que isso funciona.** A primeira pergunta científica é: *existe sinal causal mensurável nas duas camadas?*
 
-## 3. Posicionamento na literatura (varredura de 2026-08-21)
+## 3. Posicionamento na literatura (2ª varredura de 2026-08-21)
 
 Todos os blocos da ideia já existem **separadamente**. A interseção está aberta:
 
 | Paper | arXiv | O que cobre | Risco p/ novidade |
 |---|---|---|---|
-| C3 "Exact Is Easier" | 2603.06859 | Crédito counterfactual **exato** por restauração de estado + leave-one-out (multi-agent LLM). **Nosso baseline metodológico.** | ALTO |
+| C3 "Exact Is Easier" | 2603.06859 (v2 05/2026) | Crédito counterfactual **exato** por restauração de estado + leave-one-out (multi-agent LLM); v2 adiciona auditoria de credit fidelity. **Nosso baseline metodológico.** | ALTO |
+| Auditoria de crédito step-level | 2608.19760 (20/08!) | **Resultado negativo:** nenhum sinal de crédito (judge, logprob, confiança) bate o acaso contra replay ground truth; treino dose-matched não supera baseline. **Define o bar evidencial do nosso critic.** | ALTO |
+| CHILL-Harness | 2607.25825 | Counterfactual sobre decisões de harness + alocação adaptativa de counterfactuals. **Paper mais próximo da interseção hoje.** Sem crédito ao modelo, sem I(H,M), sem joint RL, LLM intocado. | ALTO |
+| CAR (Causal Agent Replay) | 2606.08275 | SCM + do-operation por passo + Shapley com orçamento p/ atribuição de falhas. Maquinaria das contribuições 1-2, sem distinção model/harness, sem treino. | ALTO |
 | Co-Harness | 2607.22688 | Joint harness+pesos (alternado, LLM-critic textual, sem crédito causal). **Baseline de joint optimization a bater.** | ALTO |
 | HASE | 2607.03935 | Co-evolve pesos+harness+soluções num único processo agentic RL | ALTO |
+| HarnessCompass | 2608.01918 | Follow-up de Co-Harness: interferência entre componentes do harness, otimização desacoplada. Interação só intra-harness, sem contrafactual. | MÉDIO |
+| Memory-R2 | 2605.21768 | LoGo-GRPO: re-rollouts locais p/ operações de memória (≈ decisões tipo-harness executadas pelo LLM) | MÉDIO |
 | LEMON | 2605.14483 | GRPO + sinal counterfactual localizado p/ orquestração (camada única) | MÉDIO |
 | Harness MDP offline RL | 2607.05458 | Harness como política aprendível (LLM frozen) | MÉDIO |
 | CCI "More Is Not Always Better" | 2605.05716 | Interação/Shapley entre componentes de scaffold (estático, não por decisão) | MÉDIO |
 | ClawGym II | 2608.16798 | Black-box RL através de harnesses, mix-harness training | BAIXO (infra) |
 | Survey credit assignment | 2604.09459 | Identificação por restored-state, **replay fidelity** | Leitura obrigatória |
 
-**Lacuna aberta (nossa contribuição):**
-1. Decomposição de crédito causal C(model) vs C(harness) **na mesma trajetória**.
-2. **I(H,M) cross-layer por decisão** como sinal de treino.
-3. Critic de crédito **validado contra ground truth de replay**, usado em joint RL.
-4. Orçamento ativo de counterfactuals (exhaustive → selective → active).
+Secundários: AgentSpec (2606.14674, interaction effects entre módulos — reforça motivação), BiPACE (2606.25556), CCPO (2603.21563), Phantom Guardrails (2607.13083, sinais não-causais p/ harness alucinam falhas — a nosso favor), Shepherd (2605.10913, traces reversíveis).
 
-**Novelty risk: MÉDIO. Janela curta (meses).** O pitch NÃO é "counterfactual credit" nem "joint training" — é a decomposição cross-layer com interação, validada contra ground truth.
+**Lacuna aberta (nossa contribuição, reposicionada):**
+1. **I(H,M) cross-layer por decisão como sinal de treino — contribuição central, única peça sem paralelo em toda a varredura.**
+2. Decomposição de crédito causal C(model) vs C(harness) **na mesma trajetória**.
+3. Critic de crédito **treinado contra** ground truth de replay (resposta construtiva ao resultado negativo de 2608.19760 — exige comparações dose-matched).
+4. Orçamento ativo de counterfactuals — rebaixado a componente de eficiência (CHILL-Harness e CAR cobrem parcialmente).
+
+**Novelty risk: ALTO. Cadência de ~1 paper relevante a cada 2 semanas (jul–ago/2026). Alvo: ICLR 2027 (~set/2026) — esperar ICML é arriscar a aresta que resta.**
 
 ## 4. Arquitetura do sistema
 
@@ -172,3 +179,9 @@ Parte permanente do projeto (definido em [.github/agents/research.agent.md](.git
 - Se o Teste 0 mostrar piso de ruído alto demais → investir em determinismo (seeds, temperatura, sandbox hermético) antes de prosseguir.
 - Se o Teste 1 mostrar C(harness) ≈ ruído → a hipótese principal cai; o resultado negativo ("decisões de harness não têm contribuição causal isolável") ainda é publicável e a infraestrutura sobrevive.
 - Se um paper fechar a lacuna 1+2+3 → pivotar para a parte ainda aberta (ex.: budget ativo de counterfactuals, generalização cross-harness).
+
+## 14. Alvo de publicação
+
+- **ICLR 2027** (abstract/paper deadline ~fim de set/2026). Pitch central: **I(H,M) por decisão como sinal de treino** + decomposição C(model)/C(harness) na mesma trajetória + critic treinado contra ground truth de replay.
+- **Confrontar 2608.19760 de frente** (resultado negativo sobre sinais de crédito): nosso critic é a resposta construtiva — treinado contra replay ground truth, avaliado com comparações dose-matched e validação pré-registrada, ou será desmontado pelo mesmo argumento.
+- CHILL-Harness e CAR citados como maquinaria de camada única; diferenciação por escopo (acoplamento *entre* camadas, treino de ambas).

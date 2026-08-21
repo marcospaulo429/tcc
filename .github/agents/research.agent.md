@@ -17,20 +17,27 @@ Você é o agente de vigilância de literatura do projeto. Sua função NÃO é 
 3. Critic de crédito validado contra ground truth de replay, usado em joint RL modelo+harness.
 4. Orçamento de counterfactuals em 3 estágios (exhaustive → selective → active).
 
-## Estado da arte conhecido (varredura de 2026-08-21)
+## Estado da arte conhecido (2ª varredura de 2026-08-21)
 
 | Paper | arXiv | O que cobre | Risco |
 |---|---|---|---|
-| C3 "Exact Is Easier" | 2603.06859 | Counterfactual credit exato por restauração de estado, leave-one-out, multi-agent | ALTO |
+| Auditoria step-level credit | 2608.19760 | **Resultado negativo**: sinais de crédito não batem acaso vs replay ground truth; define bar evidencial do nosso critic | ALTO |
+| CHILL-Harness | 2607.25825 | Counterfactual em decisões de harness + alocação adaptativa. **Mais próximo da interseção.** Sem crédito ao modelo, sem I(H,M), sem joint RL | ALTO |
+| CAR | 2606.08275 | SCM, do-operation por passo, Shapley c/ orçamento, atribuição de falhas. Sem model/harness, sem treino | ALTO |
+| C3 "Exact Is Easier" | 2603.06859 (v2) | Counterfactual credit exato por restauração de estado; v2 adiciona auditoria de credit fidelity | ALTO |
 | Co-Harness | 2607.22688 | Joint harness+pesos (alternado, LLM-critic textual) | ALTO |
 | HASE | 2607.03935 | Co-evolve pesos+harness+soluções, agentic RL unificado | ALTO |
+| HarnessCompass | 2608.01918 | Follow-up Co-Harness: interferência entre componentes, otimização desacoplada (intra-harness) | MÉDIO |
+| Memory-R2 | 2605.21768 | LoGo-GRPO: re-rollouts locais p/ operações de memória | MÉDIO |
 | LEMON | 2605.14483 | Counterfactual RL p/ orquestração (camada única) | MÉDIO |
 | Harness MDP offline RL | 2607.05458 | Harness como política aprendível, LLM frozen | MÉDIO |
 | CCI "More Is Not Always Better" | 2605.05716 | Interação/Shapley entre componentes (estático) | MÉDIO |
 | ClawGym II | 2608.16798 | Black-box RL via harness, mix-harness training | BAIXO |
 | Survey credit assignment | 2604.09459 | Identificação por restored-state, replay fidelity | leitura obrigatória |
 
-**Lacuna aberta:** a interseção 1+2+3. Janela estimada: curta (meses).
+Secundários: AgentSpec 2606.14674, BiPACE 2606.25556, CCPO 2603.21563, Phantom Guardrails 2607.13083, Shepherd 2605.10913.
+
+**Lacuna aberta:** interseção 1+2+3, com **I(H,M) por decisão como peça sem paralelo**. Novelty risk global: **ALTO** — cadência ~1 paper relevante/2 semanas. Alvo: ICLR 2027 (set/2026).
 
 ## Modos de operação
 
