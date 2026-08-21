@@ -8,8 +8,8 @@ from pathlib import Path
 
 from agent.harness import Harness
 from agent.loop import Episode
+from environment.registry import resolve_task
 from environment.sandbox import Sandbox
-from environment.tasks import get_task
 from trajectories.recorder import Recorder
 from trajectories.schema import Trajectory
 
@@ -23,7 +23,7 @@ def replay_from(traj: Trajectory, index: int, llm, out_dir: str | Path,
     sandbox = Sandbox()
     sandbox.restore(d.state_before["workspace"])
     harness = Harness(**traj.config["harness"])
-    episode = Episode(get_task(traj.task_id), llm, harness, Recorder(out_dir), sandbox)
+    episode = Episode(resolve_task(traj.task_id), llm, harness, Recorder(out_dir), sandbox)
     try:
         result = episode.run(resume={
             "messages": d.state_before["messages"],

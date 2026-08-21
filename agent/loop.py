@@ -88,7 +88,8 @@ class Episode:
         state = self._state_before(messages, turn)
         forced = self._consume_forced("context_policy")
         action = forced["action"] if forced else self.harness.decide_context_policy(messages)
-        new_messages = summarize_messages(messages, self.harness.keep_last) \
+        new_messages = summarize_messages(messages, self.harness.keep_last,
+                                          self.harness.task_chars) \
             if action == "summarize_context" else list(messages)
         self._record("harness", "context_policy", state,
                      [{"action": "keep_context"}, {"action": "summarize_context"}],

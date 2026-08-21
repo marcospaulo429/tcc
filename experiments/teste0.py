@@ -13,6 +13,7 @@ p95 é secundário (zero-inflado se o determinismo for bom). Convenção de sina
 dr = r_replay − r_orig (teste0); C = r_orig − r_cf (teste1).
 """
 import argparse
+import importlib
 import json
 import random
 from pathlib import Path
@@ -20,7 +21,6 @@ from pathlib import Path
 from agent.harness import Harness
 from agent.llm import LLMClient
 from agent.loop import Episode
-from environment.tasks import TASKS
 from trajectories.recorder import Recorder
 from trajectories.replay import replay_from
 
@@ -29,15 +29,15 @@ from .common import append_row, done_keys, load_rows, load_trajectories
 SEED = 20260821
 
 
-def run_baselines(out: Path, llm: LLMClient):
+def run_baselines(out: Path, llm: LLMClient, tasks: list[dict], harness_kw: dict):
     base_dir = out / "baseline"
     results = out / "baseline_results.jsonl"
     done = done_keys(load_rows(results), ("task_id",))
-    for task in TASKS:
+    for task in tasks:
         if (task["task_id"],) in done:
             continue
         print(f"[baseline] {task['task_id']} ...", flush=True)
-        ep = Episode(task, llm, Harness(), Recorder(base_dir))
+        ep = Episode(task, llm, Harness(**harness_kw), Recorder(base_dir))
         try:
             r = ep.run()
         finally:
@@ -111,9 +111,16 @@ if __name__ == "__main__":
     ap.add_argument("--out", default="runs/teste0")
     ap.add_argument("--points", type=int, default=3)
     ap.add_argument("--reps", type=int, default=3)
+    ap.add_argument("--tasks-module", default="environment.tasks")
+    ap.add_argument("--threshold", type=int, default=1200)
+    ap.add_argument("--max-turns", type=int, default=6)
+    ap.add_argument("--task-chars", type=int, default=240)
     args = ap.parse_args()
     out = Path(args.out)
+    tasks = importlib.import_module(args.tasks_module).TASKS
+    harness_kw = {"summarize_threshold_tokens": args.threshold,
+                  "max_turns": args.max_turns, "task_chars": args.task_chars}
     llm = LLMClient(max_tokens=1200)
-    run_baselines(out, llm)
+    run_baselines(out, llm, tasks, harness_kw)
     run_null_replays(out, llm, args.points, args.reps)
     print(json.dumps(summarize(out), indent=2, ensure_ascii=False))

@@ -33,10 +33,13 @@ FLIP = {"keep_context": "summarize_context", "summarize_context": "keep_context"
 
 
 def eligible_points(traj, max_per_traj: int):
-    """context_policy onde o flip NÃO é vácuo (summarize teria efeito real)."""
+    """context_policy onde o flip NÃO é vácuo (summarize teria efeito real),
+    avaliado com os parâmetros do harness DA trajetória."""
+    h = traj.config["harness"]
+    kw = {"keep_last": h.get("keep_last", 4), "task_chars": h.get("task_chars", 0)}
     points = [d for d in traj.decisions
               if d.decision_point == "context_policy"
-              and not summarize_is_vacuous(d.state_before["messages"])]
+              and not summarize_is_vacuous(d.state_before["messages"], **kw)]
     rng = random.Random(f"{SEED}:t1:{traj.trajectory_id}")
     if len(points) > max_per_traj:
         points = rng.sample(points, max_per_traj)
@@ -109,11 +112,12 @@ if __name__ == "__main__":
     ap.add_argument("--max-per-traj", type=int, default=2)
     ap.add_argument("--reps", type=int, default=1)
     ap.add_argument("--noise-floor", type=float, default=None,
-                    help="default: lê noise_floor (max|dR|) de runs/teste0/summary.json")
+                    help="default: lê noise_floor (max|dR|) de --floor-from")
+    ap.add_argument("--floor-from", default="runs/teste0/summary.json")
     args = ap.parse_args()
     floor = args.noise_floor
     if floor is None:
-        floor = json.loads(Path("runs/teste0/summary.json").read_text())["noise_floor"]
+        floor = json.loads(Path(args.floor_from).read_text())["noise_floor"]
     out = Path(args.out)
     llm = LLMClient(max_tokens=1200)
     run(Path(args.baseline), out, llm, args.max_per_traj, args.reps)
