@@ -216,3 +216,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# experimentos e venvs locais
+runs/
+.venv-vllm/
