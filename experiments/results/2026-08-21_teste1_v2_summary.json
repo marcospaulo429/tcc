@@ -1,0 +1,110 @@
+{
+  "n_counterfactuals": 23,
+  "n_timed_out_excluded": 0,
+  "noise_floor": 0.0,
+  "frac_above_floor": 0.2608695652173913,
+  "mean_C": 0.13431677018633542,
+  "mean_abs_C": 0.14673913043478262,
+  "by_direction": {
+    "keep_context->summarize_context": {
+      "n": 15,
+      "mean_C": 0.20595238095238097,
+      "frac_nonzero": 0.4
+    },
+    "summarize_context->keep_context": {
+      "n": 8,
+      "mean_C": 0.0,
+      "frac_nonzero": 0.0
+    }
+  },
+  "by_task": {
+    "api_router": {
+      "n": 3,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "config_renderer": {
+      "n": 1,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "csv_normalizer": {
+      "n": 3,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "grade_curve": {
+      "n": 2,
+      "mean_C": 0.3125,
+      "n_above_floor": 1
+    },
+    "inventory_restock": {
+      "n": 2,
+      "mean_C": 0.0,
+      "n_above_floor": 2
+    },
+    "invoice_pricing": {
+      "n": 3,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "log_formatter": {
+      "n": 3,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "loyalty_points": {
+      "n": 2,
+      "mean_C": 0.4285714285714286,
+      "n_above_floor": 1
+    },
+    "rate_limiter_bucket": {
+      "n": 2,
+      "mean_C": 0.4285714285714286,
+      "n_above_floor": 1
+    },
+    "shift_cipher": {
+      "n": 2,
+      "mean_C": 0.375,
+      "n_above_floor": 1
+    }
+  },
+  "points_above_floor": [
+    {
+      "task_id": "shift_cipher",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 0.75
+    },
+    {
+      "task_id": "loyalty_points",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 0.8571428571428572
+    },
+    {
+      "task_id": "inventory_restock",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 0.14285714285714285
+    },
+    {
+      "task_id": "inventory_restock",
+      "index": 4,
+      "dir": "keep_context->summarize_context",
+      "C": -0.14285714285714285
+    },
+    {
+      "task_id": "rate_limiter_bucket",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 0.8571428571428572
+    },
+    {
+      "task_id": "grade_curve",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 0.625
+    }
+  ]
+}
