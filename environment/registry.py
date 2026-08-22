@@ -1,7 +1,7 @@
 """Resolve task_id em qualquer conjunto de tasks registrado."""
 import importlib
 
-_MODULES = ("environment.tasks", "environment.tasks_v2")
+_MODULES = ("environment.tasks", "environment.tasks_v2", "environment.tasks_v3")
 
 
 def resolve_task(task_id: str) -> dict:
