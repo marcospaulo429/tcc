@@ -112,6 +112,27 @@
 - Baselines g600 por estrato: C = 1.00 (5/5), S = 0.98, L moderadas = 1.00, L difíceis =
   0.00–0.27, V2 = 0.61. Espectro bom: S/C resolvidas (pré-condição p/ sinergia e controle),
   L difíceis dão gradiente no extremo baixo.
+
+### ACHADO METODOLÓGICO — prefix caching quebra fidelidade de replay (2026-08-22)
+- 1ª execução do grid g600: piso de ruído = 0.417 (era 0.0 em v2/v2b!). 7/270 nulos quebrados,
+  todos em pontos com retry (geração divergente); l_vending_machine idx5 quebrou nas reps 0 e 2
+  mas NÃO na rep 1 → não-determinismo ENTRE requisições idênticas sequenciais.
+- Diagnóstico: 8 requisições idênticas seguidas eram determinísticas ENTRE SI, mas o vLLM V1
+  liga **prefix caching (APC) por default** — a numérica do prefill depende do estado do KV
+  cache (hit vs recompute), e em greedy quase-empatado um token flipa. Baseline e replay têm
+  históricos de cache diferentes → divergência reprodutível; reps do mesmo ponto podem ou não
+  compartilhar prefixo cacheado → divergência entre reps.
+- Por que v2/v2b não quebraram: 10 tasks, prompts menores — sorte (sem quase-empates); com 30
+  tasks e estados maiores a probabilidade de flip aparece. O piso 0.0 de v2/v2b era contingente.
+- CORREÇÃO: servidor reiniciado com `--no-enable-prefix-caching`; sanity de determinismo ok;
+  runs contaminados arquivados em runs/_apc_contaminado/ (não usar); grid REINICIADO do zero.
+- PARA O PAPER (setup + threats): premissa de identificação do piso é (config, servidor,
+  requisições sequenciais, **APC desligado**). Sequencialidade sozinha NÃO basta — achado
+  útil a quem for reproduzir replay-based credit com vLLM.
+- Preview NÃO-utilizável dos dados contaminados (só como hipótese): apareceram padrões além do
+  screening-off puro — l_log_parser I=+0.15 não-saturado, l_shipping_batch com C_HM≠C_M — sugere
+  que o regime de sinergia/interação parcial pode aparecer nos dados limpos. A confirmar no GATE 1.
+
 - Replays nulos g600: todos exatos até agora. [ATUALIZAR com summary por config]
 - Infra paralela pronta enquanto o grid roda: credit/dataset.py (agregador, features pre/post),
   credit/critic.py (zero-inflado, split/bootstrap por task, baselines dose-matched),
