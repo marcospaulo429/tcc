@@ -1,42 +1,44 @@
-# PROXIMOS-PASSOS.md — pós-validação (Teste 1 v2 ✅)
+# PROXIMOS-PASSOS.md — validação completa das 3 quantidades (C(H), C(M), I(H,M))
 
-> Atualizado em 2026-08-21 (RTX 4090). **Hipótese do sinal causal do harness VALIDADA.**
+> Atualizado em 2026-08-22 (noite autônoma, RTX 4090). **As três quantidades da hipótese central têm sinal causal mensurável, replicado em duas configs de harness.**
 
-## Resultado da validação (2026-08-21, 4090)
+## Resultados da validação (2026-08-21/22)
 
-| Item | Status |
-|---|---|
-| `environment/tasks_v2.py` (10 tasks multi-turno, constantes críticas além de task_chars=240) | ✅ commitado, 88 testes verdes |
-| **Teste 0 v2** — replay fidelity nas tasks v2 | ✅ **30/30 exato, piso 0.0** (`experiments/results/2026-08-21_teste0_v2_summary.json`) |
-| **Teste 1 v2** — sinal causal do harness | ✅ **VALIDADO**: 23 counterfactuals, 0 timeouts, 6/23 (26%) com \|C\| > piso; direção keep→summarize: n=15, 40% não-zero, C até ±0.86; direção summarize→keep: n=8, C=0 em todos (consistente com I1 — harness determinístico re-decide summarize no turno seguinte). (`experiments/results/2026-08-21_teste1_v2_summary.json`) |
+| Quantidade | v2 (threshold 600) | v2b (threshold 900, replicação) |
+|---|---|---|
+| Replay fidelity (piso) | 30/30 exato, piso 0.0 | 30/30 exato, piso 0.0 |
+| **C(harness)** — Teste 1 | 6/23 \|C\|>0; keep→summarize 40% não-zero, C até ±0.86 | 10/23 \|C\|>0; **sinal nas 2 direções** (keep→summarize 40%; summarize→keep 2/3, C negativo: resumir era prejudicial) |
+| **C(model)** — Teste 2 | 2/7 \|C\|>0 (write_file→write_file), max 0.86 | 2/7, max 0.29 |
+| **I(H,M)** — Teste 3 | 4 pontos, I=−0.75..−0.88, 1 não-saturado; nulos de fila 16/16 | 6 pontos, I=−0.75..−1.0, 1 não-saturado; nulos 16/16 |
 
-Leituras do resultado (reportar no artigo):
-- Os 6 pontos acima do piso estão nos turnos 0–1 (tokens 279–414): forçar summarize cedo trunca o enunciado e destrói constantes irrecuperáveis — exatamente o mecanismo desenhado nas tasks v2. I2 continua: a elegibilidade agora seleciona turnos **iniciais** (prompt > 240 chars torna o flip não-vácuo desde o turno 0).
-- 1 ponto com C negativo (−0.14, `inventory_restock`): summarize forçado *melhorou* o resultado — sinal de que o crédito tem os dois sinais, não é artefato de degradação monotônica.
-- summarize→keep com C=0 em n=8 NÃO é ausência de efeito da camada: é o desenho I1 (efeito medido = "summarize adiado 1 turno").
+**Achados p/ o artigo:**
+1. **Mecanismo de I(H,M) — screening-off:** em todos os pontos, a ação forçada do modelo (a′ carrega as constantes p/ solution.py) *blinda* a decisão de contexto do harness: C_HM = C_M, logo I = −C_H. Interação fortemente subaditiva — exatamente o sinal que crédito de camada única não captura e o argumento central contra treinar as camadas com créditos independentes.
+2. **Política quase-determinística em estados de reparo:** 13/20 pontos sem a′ em 8 seeds a T=0.8 (auditado: não é bug de seed; até T=1.2 é idêntico em estados de reparo, enquanto prompts abertos variam). A entropia da política concentra-se nos primeiros write_file. Implicação: C(model) só é amostrável onde a política tem entropia — reportar como limitação/achado.
+3. Saturação de reward (r_cf ∈ {0,1}) domina os pontos de I (3/4 e 5/6) — o critério pré-registrado de exigir ponto não-saturado segurou a inferência.
+4. Limitações I1/I2 do Teste 1 continuam valendo; em v2b a direção summarize→keep persistiu (contexto fica abaixo do threshold 900 após o flip) e mostrou C≠0.
 
-## Próximos passos (pipeline do artigo, PLANO.md §8)
+## Próximos passos
 
-1. **C(model)**: intervenção em `tool_call` — forçar ação alternativa amostrada (frozen policy sampling à la C3). Requer definir a distribuição de propostas (re-amostrar o LLM com temperatura > 0 no ponto, ou perturbação estruturada da ação).
-2. **I(H,M)**: intervenção conjunta harness+model no mesmo ponto — a contribuição central.
-3. Escalar coleta: mais trajetórias por task (seeds/temperaturas variadas) p/ dataset de counterfactuals.
-4. Critic supervisionado contra ground truth de replay (dose-matched, confrontar arXiv:2608.19760).
-5. Joint RL (GRPO).
+1. **Escala:** mais tasks (v3) e mais trajetórias por task p/ dataset de counterfactuals — as 3 quantidades agora têm pipeline validado (testes 1/2/3 são os geradores de dataset).
+2. **Critic:** treinar preditor de C(H), C(M), I contra ground truth de replay (dose-matched, confrontar arXiv:2608.19760).
+3. **Joint RL (GRPO)** com crédito cross-layer vs baselines (outcome-only, model-only, harness-only, independent).
+4. Diversidade de a′: proposta além de frozen-policy sampling p/ estados de baixa entropia (perturbação estruturada), como ablation.
 
 ## Setup na 4090 (estado atual, funcionando)
 
-- **vLLM 0.8.5.post1 + transformers 4.51.3** em `.venv-vllm` (Python 3.12). vLLM 0.27 NÃO funciona aqui (FlashInfer JIT exige nvcc; não há CUDA toolkit no host). Cache HF do host é root-owned → usar `HF_HOME=~/hf_cache`:
+- **vLLM 0.8.5.post1 + transformers 4.51.3** em `.venv-vllm` (Python 3.12). vLLM 0.27 NÃO funciona aqui (FlashInfer JIT exige nvcc). Cache HF do host é root-owned → `HF_HOME=~/hf_cache`:
   ```bash
   HF_HOME=~/hf_cache CUDA_VISIBLE_DEVICES=0 nohup .venv-vllm/bin/python -m vllm.entrypoints.openai.api_server \
     --model Qwen/Qwen3-4B --max-model-len 8192 --gpu-memory-utilization 0.85 \
     --port 8321 --disable-log-requests > vllm.log 2>&1 &
   ```
-- Comandos usados na validação (flags reais; o handoff antigo citava `--tasks`, o correto é `--tasks-module`):
+- Cadeia completa de validação (reproduzível; summaries em `experiments/results/`):
   ```bash
-  uv run python -m experiments.teste0 --tasks-module environment.tasks_v2 \
-    --out runs/teste0_v2 --points 3 --reps 1 --threshold 600 --max-turns 12
-  uv run python -m experiments.teste1 --baseline runs/teste0_v2/baseline \
-    --out runs/teste1_v2 --max-per-traj 3 --floor-from runs/teste0_v2/summary.json
+  uv run python -m experiments.teste0 --tasks-module environment.tasks_v2 --out runs/teste0_v2 --points 3 --reps 1 --threshold 600 --max-turns 12
+  uv run python -m experiments.teste1 --baseline runs/teste0_v2/baseline --out runs/teste1_v2 --max-per-traj 3 --floor-from runs/teste0_v2/summary.json
+  uv run python -m experiments.teste2 --baseline runs/teste0_v2/baseline --out runs/teste2_v2 --max-per-traj 3 --floor-from runs/teste0_v2/summary.json
+  uv run python -m experiments.teste3 --baseline runs/teste0_v2/baseline --out runs/teste3_v2 --max-per-traj 2 --samples-from runs/teste2_v2/samples.jsonl --floor-from runs/teste0_v2/summary.json
+  # replicação: mesmos comandos com --threshold 900 e sufixo _v2b
   ```
 
 ## Lembretes de rigor (do revisor — manter no artigo)
