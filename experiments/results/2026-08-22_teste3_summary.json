@@ -1,0 +1,45 @@
+{
+  "queue_floor_ok": true,
+  "n_null_replays": 16,
+  "n_null_inexact": 0,
+  "n_points_sampled": 16,
+  "n_no_alternative": 12,
+  "n_counterfactuals": 4,
+  "n_timed_out_excluded": 0,
+  "noise_floor": 0.0,
+  "confirmatory_direction": "keep_context->summarize_context",
+  "by_direction": {
+    "keep_context->summarize_context": {
+      "n": 4,
+      "n_saturated": 3,
+      "I_values": [
+        -0.75,
+        -0.8571428571428572,
+        -0.8571428571428572,
+        -0.875
+      ],
+      "n_above_floor_nonsaturated": 1
+    }
+  },
+  "by_task": {
+    "grade_curve": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "loyalty_points": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "rate_limiter_bucket": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "shift_cipher": {
+      "n": 1,
+      "n_above_floor": 1
+    }
+  },
+  "turn_distribution": {
+    "0": 4
+  }
+}
