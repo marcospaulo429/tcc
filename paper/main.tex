@@ -14,12 +14,17 @@ Measuring and Training with Harness--Model Interaction}
 \begin{abstract}
 LLM agents interleave decisions from two layers: the \emph{model} (tool calls)
 and the \emph{harness} (context management, retries, termination). We show, via
-deterministic counterfactual replay, that per-decision causal contributions
-$C(H)$, $C(M)$ and their interaction $I(H,M) = C(H,M) - C(H) - C(M)$ are
-measurable above a measured noise floor, identify two interaction regimes
-(screening-off and synergy), and demonstrate that single-layer credit
-over-credits shielded decisions --- a bias corrected by interaction-aware
-credit during harness training. \todo{números finais}
+deterministic counterfactual replay with a \emph{measured} noise floor (exact
+fidelity under explicit serving premises), that per-decision causal
+contributions $C(H)$, $C(M)$ and their interaction $I(H,M) = C(H,M) - C(H) -
+C(M)$ are identifiable on the same trajectory. Across all measured interaction
+points, the model action \emph{screens off} the harness decision
+($C_{HM}=C_M$), which we dissect into a structural property of the
+do-operator and an empirical downstream-harness effect. This implies that
+single-layer credit double-counts shielded decisions; we correct this bias
+with interaction-aware credit and evaluate it against outcome-only,
+single-layer, and a zero-credit masking control, dose-matched in total
+rollouts. \todo{números finais}
 \end{abstract}
 
 \section{Introduction}
@@ -29,21 +34,45 @@ credit during harness training. \todo{números finais}
 \todo{motivação: harness ignorado como fonte causal; RL trata trajetória como monolito}
 
 \paragraph{Contributions.}
-(1) Deterministic replay infrastructure with measured noise floor (exact-match
-fidelity); (2) per-decision counterfactual decomposition $C(H)$, $C(M)$,
-$I(H,M)$ on the same trajectory; (3) anatomy of interaction: screening-off
-(forced model action shields the harness decision, $C_{HM}=C_M \Rightarrow
-I=-C_H$) vs.\ synergy; (4) control tasks showing the method distinguishes
-harmless from harmful harness decisions by construction; (5) interaction-aware
-credit improves harness training vs.\ outcome-only and pure $C(H)$,
-dose-matched in total rollouts. \todo{ajustar pós-gates}
+(1) Deterministic replay infrastructure with measured noise floor \emph{under
+explicit identification premises} (fixed config, sequential execution, prefix
+caching off) --- including a cautionary finding: vLLM automatic prefix caching
+silently breaks greedy-decoding determinism across differing histories;
+(2) per-decision counterfactual decomposition $C(H)$, $C(M)$, $I(H,M)$ on the
+same trajectory; (3) anatomy of screening-off: a structural component (the
+sampled $a'$ re-injects destroyed information) proven as a property of the
+estimand, and an empirical component (the live downstream harness re-triggers
+the intervened decision); (4) control tasks showing the method distinguishes
+harmless from harmful harness decisions by construction --- including one
+audited exception where a harness decision had a \emph{behavioral} (not
+informational) effect; (5) interaction-aware credit for harness training
+evaluated against outcome-only, single-layer credit (a reproduction of the
+CHILL-Harness principle in our environment), and a zero-credit masking
+control, dose-matched in total rollouts. \todo{ajustar pós-gates}
 
 \section{Related Work}
-% CHILL-Harness (2607.25825): counterfactual só na camada harness.
+% CHILL-Harness (2607.25825): counterfactual só na camada harness — nosso braço 2 é
+%   explicitamente uma reprodução desse princípio no nosso ambiente (comparação vira resultado).
 % CAR (2606.08275): replay+Shapley, sem cross-layer.
 % 2608.19760: resultado negativo credit signals vs replay ground truth — nosso critic é dose-matched e pré-registrado.
-% C3 v2, Co-Harness/HarnessCompass, HASE, Agent Lightning.
-\todo{tabela de posicionamento}
+% C3 v2 (2603.06859): credit fidelity Spearman vs replay GT em MBPP+/Qwen3-4B — mesma métrica, decomposição agentes vs camadas.
+% Co-Harness/HarnessCompass, HASE, Agent Lightning.
+\begin{table}[t]
+\centering\small
+\begin{tabular}{lccccc}
+\toprule
+ & counterfactual & mede & mede & $I(H,M)$ na mesma & treina \\
+Método & por replay & $C(H)$ & $C(M)$ & trajetória & com $I$ \\
+\midrule
+CHILL-Harness & \checkmark & \checkmark & -- & -- & -- \\
+CAR & \checkmark & -- & \checkmark & -- & -- \\
+C3 v2 & \checkmark & \multicolumn{2}{c}{(por agente)} & -- & -- \\
+HASE & -- & \checkmark & -- & -- & -- \\
+\textbf{Ours} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+\bottomrule
+\end{tabular}
+\caption{T1 --- posicionamento. \todo{revisar células contra as fontes primárias antes da submissão}}
+\end{table}
 
 \section{Setup: A Two-Layer Agent with Deterministic Replay}
 \subsection{Decision schema and recorder}
@@ -55,11 +84,24 @@ dose-matched in total rollouts. \todo{ajustar pós-gates}
 
 \section{Measuring Cross-Layer Credit}
 \subsection{Noise floor (F1)}
-% Figura F1: |dR| de replays nulos por config; piso pré-registrado = max sem timeout
+% Figura F1: |dR| de replays nulos por config; piso pré-registrado = max sem timeout.
+% ENQUADRAMENTO (W7): piso é MEDIÇÃO sob premissas explícitas (config fixa, execução
+% sequencial, prefix caching OFF), não garantia. Parágrafo próprio para o achado APC:
+% vLLM V1 liga APC por default; numerics do prefill dependem do estado do KV cache →
+% greedy decoding diverge entre histórias distintas mesmo com requests sequenciais.
+% "Sequencialidade sozinha NÃO basta." Piso 0.417 contaminado vs 0.0 limpo.
 \subsection{$C(H)$ and $C(M)$ (F2)}
 % Figura F2: distribuição de C por camada, direção e estrato; NUNCA agregar direções
 \subsection{Interaction $I(H,M)$ and its anatomy (F3)}
-% Figura F3: screening-off vs sinergia; fração saturada por config
+% Figura F3: screening-off 21/21 (dois sinais); sub-mecanismo 1 (estrutural: a' re-injeta
+% informação — argumento formal) vs sub-mecanismo 2 (empírico: harness vivo re-dispara
+% summarize 1-2 turnos depois); fração de cada um quantificada nos replays; sign test
+% sobre C_HM=C_M exato (pré-registro 10). Fração saturada por config.
+\subsection{Control tasks and the \texttt{c\_temp\_label} exception}
+% NO CORPO (W8): 11/12 controles com C_H=0 validam o construto; a exceção (C=+0.22 em
+% turn 0) foi auditada — toda a informação estava nos primeiros 240 chars; o efeito é
+% comportamental (o resumo muda o comportamento subsequente do modelo), não informacional.
+% Isso é um resultado sobre o que C(H) mede, não uma falha do controle.
 
 \section{Predicting Credit: Critic vs.\ Dose-Matched Baselines (F4)}
 % classificador |C|>0 + regressor condicional; split por task; bootstrap por task;
@@ -67,9 +109,12 @@ dose-matched in total rollouts. \todo{ajustar pós-gates}
 \todo{GATE 2 decide: contribuição ou resultado negativo honesto}
 
 \section{Training with Cross-Layer Credit (F5)}
-% C1, 3 braços dose-matched POR ROLLOUT TOTAL (episódios + replays de crédito):
-% outcome-only vs C(H) puro vs corrigido por interação
-% predição pré-registrada: C(H) puro supercredita decisões blindadas
+% C1, 4 braços dose-matched POR ROLLOUT TOTAL (episódios + replays de crédito):
+% outcome-only | C(H) puro (reprodução do princípio CHILL) | corrigido por interação
+% (C_HM - C_M) | ZERO (controle de masking: crédito=0, 0 replays — pré-registro 9).
+% predição pré-registrada: C(H) puro supercredita decisões blindadas; braço 3 só conta
+% como contribuição se vencer o braço 2 E o braço 4. Reportar grad_norm por braço
+% (contra a explicação "variância menor, não crédito").
 \todo{GATE 3 decide o título}
 
 \section{Threats to Validity}
