@@ -1,0 +1,18 @@
+{
+  "date": "2026-08-22",
+  "fase": "0.3 — pré-registro de yield e regra de parada (PLANO-EXECUCAO GATE 0)",
+  "dados_base": "v2 (thr600) + v2b (thr900), 10 tasks v2 cada",
+  "yield_por_10_trajetorias": {
+    "C_H": {"pontos": 23.0, "nao_zero": 8.0},
+    "C_M": {"pontos": 7.0, "nao_zero": 2.0, "gargalo": "a' inamostravel em ~65% dos estados (8 seeds, T=0.8)"},
+    "I": {"pontos": 5.5, "nao_saturados": 1.0, "gargalo": "saturacao de reward ~80% (reward com poucos testes por task)"}
+  },
+  "decisao_gate0": "yield de I nao-saturado (0.1/traj) < 0.5/traj: ativar mitigacoes pre-registradas — tasks v3 com >=8 testes (reward menos saturavel), max-per-traj teste3 2->3, teste1/2 3->4",
+  "metas_revisadas_grid_3configs_x_30tasks": {
+    "C_H": {"pontos": 200, "nao_zero": 60},
+    "C_M": {"pontos": 60, "nao_zero": 15},
+    "I": {"pontos": 50, "nao_saturados": 15}
+  },
+  "regra_de_parada": "apos o grid completo (3 configs), se metas de C_H e I nao-saturado atingidas, parar; se I nao-saturado < 15, adicionar ate 10 tasks L extras (1 rodada) e parar independentemente do resultado, reportando a fracao de saturacao como limitacao endogena ao desenho do reward",
+  "custo_estimado_rollouts": "3 configs x 30 tasks: ~90 baselines + ~90 teste0 + ~360 teste1 + ~250 teste2 (amostragem 8 seeds inclusa) + ~600 teste3 (3 replays/ponto + nulos) ~= 1400 rollouts sequenciais"
+}

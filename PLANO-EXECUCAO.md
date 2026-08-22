@@ -11,12 +11,12 @@
 
 ## Fase 0 — Pré-requisitos (imediato)
 
-- 0.1 ✅→ Investigar anomalia `group_anagrams` (replays com nº de decisões ≠ sufixo, mesmo reward) — causa raiz antes de escalar. [P9]
+- 0.1 ✅ RESOLVIDO: anomalia de sufixo era contabilidade, não infidelidade — retries irmãos do tool_call (gravados antes dele) são reexecutados pelo replay e contam no sufixo. Replay reproduziu decisão a decisão. Corrigido em teste0.py. [P9]
 - 0.2 Tasks v3 (delegar impl), três estratos POR DESENHO:
   - **S (sinergia, 5 tasks):** a′ plausível do modelo só funciona SE o contexto preservado contiver a informação (dependência model→harness; predição: I > 0 mensurável).
   - **C (controle, 5 tasks):** constantes críticas RECUPERÁVEIS de arquivos do workspace (predição: C_H ≈ 0 — o método deve distinguir; mata circularidade de construto). [P6]
   - **L (longas, 10 tasks):** padrão v2 (constantes irrecuperáveis além do char 240), ≥8 turnos típicos, mais testes por task (≥8) p/ reduzir saturação de reward. [endógeno à saturação — reportar como escolha de desenho]
-- 0.3 Cálculo de yield a partir de v2/v2b (pontos elegíveis/não-saturados por trajetória) → dimensionar grid; regra de parada pré-registrada. [P5]
+- 0.3 ✅ Yield medido (v2+v2b, por 10 trajs): C_H 23 pts (8 nz), C_M 7 pts (2 nz), I 5.5 pts (**1 não-saturado**). Regra disparada: yield I não-saturado 0.1/traj < 0.5 → tasks v3 com ≥8 testes + max-per-traj t3 2→3, t1/t2 3→4. Metas revisadas: C_H≥200 (60 nz), C_M≥60 (15 nz), I≥50 (15 não-saturados). Regra de parada e custo (~1400 rollouts): experiments/results/2026-08-22_yield_fase0.json. [P5]
 
 **GATE 0:** tasks v3 verdes na suíte + yield estimado. Se yield de I não-saturado < 0.5/trajetória, aumentar max-per-traj e nº de testes por task antes do grid.
 
