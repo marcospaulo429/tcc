@@ -1,0 +1,68 @@
+{
+  "queue_floor_ok": true,
+  "n_null_replays": 16,
+  "n_null_inexact": 0,
+  "n_points_sampled": 16,
+  "n_no_alternative": 9,
+  "n_counterfactuals": 7,
+  "n_timed_out_excluded": 0,
+  "noise_floor": 0.0,
+  "confirmatory_direction": "keep_context->summarize_context",
+  "by_direction": {
+    "keep_context->summarize_context": {
+      "n": 6,
+      "n_saturated": 5,
+      "I_values": [
+        -1.0,
+        -0.8571428571428572,
+        -1.0,
+        -0.875,
+        -0.75,
+        -0.8571428571428572
+      ],
+      "n_above_floor_nonsaturated": 1
+    },
+    "summarize_context->keep_context": {
+      "n": 1,
+      "n_saturated": 1,
+      "I_values": [
+        0.0
+      ],
+      "n_above_floor_nonsaturated": 0
+    }
+  },
+  "by_task": {
+    "csv_normalizer": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "grade_curve": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "invoice_pricing": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "log_formatter": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "loyalty_points": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "rate_limiter_bucket": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "shift_cipher": {
+      "n": 1,
+      "n_above_floor": 1
+    }
+  },
+  "turn_distribution": {
+    "0": 6,
+    "8": 1
+  }
+}

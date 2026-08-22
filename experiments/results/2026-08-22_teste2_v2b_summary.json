@@ -1,0 +1,51 @@
+{
+  "n_points_sampled": 20,
+  "n_no_alternative": 13,
+  "n_excluded_retry": 3,
+  "n_counterfactuals": 7,
+  "n_timed_out_excluded": 0,
+  "noise_floor": 0.0,
+  "frac_above_floor": 0.2857142857142857,
+  "by_transition": {
+    "write_file->write_file": {
+      "n": 7,
+      "frac_above_floor": 0.2857142857142857,
+      "mean_abs_C": 0.061224489795918366,
+      "max_abs_C": 0.2857142857142857
+    }
+  },
+  "by_task": {
+    "csv_normalizer": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "grade_curve": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "invoice_pricing": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "log_formatter": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "loyalty_points": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "rate_limiter_bucket": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "shift_cipher": {
+      "n": 1,
+      "n_above_floor": 0
+    }
+  },
+  "turn_distribution": {
+    "0": 6,
+    "6": 1
+  }
+}
