@@ -1,0 +1,86 @@
+\documentclass{article}
+% ICLR 2027 — trocar pelo estilo oficial quando disponível
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,booktabs,graphicx,hyperref,xcolor}
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+
+\title{Cross-Layer Credit Assignment in LLM Agents:\\
+Measuring and Training with Harness--Model Interaction}
+\author{\todo{autores}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+LLM agents interleave decisions from two layers: the \emph{model} (tool calls)
+and the \emph{harness} (context management, retries, termination). We show, via
+deterministic counterfactual replay, that per-decision causal contributions
+$C(H)$, $C(M)$ and their interaction $I(H,M) = C(H,M) - C(H) - C(M)$ are
+measurable above a measured noise floor, identify two interaction regimes
+(screening-off and synergy), and demonstrate that single-layer credit
+over-credits shielded decisions --- a bias corrected by interaction-aware
+credit during harness training. \todo{números finais}
+\end{abstract}
+
+\section{Introduction}
+% Claim central (GATE 1 do PLANO-EXECUCAO decide a ênfase):
+% (a) se sinergia mensurável: "I como sinal de primeira classe, dois regimes"
+% (b) senão: "decomposição cross-layer + correção de dupla contagem"
+\todo{motivação: harness ignorado como fonte causal; RL trata trajetória como monolito}
+
+\paragraph{Contributions.}
+(1) Deterministic replay infrastructure with measured noise floor (exact-match
+fidelity); (2) per-decision counterfactual decomposition $C(H)$, $C(M)$,
+$I(H,M)$ on the same trajectory; (3) anatomy of interaction: screening-off
+(forced model action shields the harness decision, $C_{HM}=C_M \Rightarrow
+I=-C_H$) vs.\ synergy; (4) control tasks showing the method distinguishes
+harmless from harmful harness decisions by construction; (5) interaction-aware
+credit improves harness training vs.\ outcome-only and pure $C(H)$,
+dose-matched in total rollouts. \todo{ajustar pós-gates}
+
+\section{Related Work}
+% CHILL-Harness (2607.25825): counterfactual só na camada harness.
+% CAR (2606.08275): replay+Shapley, sem cross-layer.
+% 2608.19760: resultado negativo credit signals vs replay ground truth — nosso critic é dose-matched e pré-registrado.
+% C3 v2, Co-Harness/HarnessCompass, HASE, Agent Lightning.
+\todo{tabela de posicionamento}
+
+\section{Setup: A Two-Layer Agent with Deterministic Replay}
+\subsection{Decision schema and recorder}
+\subsection{Replay and interventions}
+% forced-action queue; peek-match; nulls exatos 16/16
+\subsection{Tasks}
+% estratos: V2/L (constantes pós-240), S (sinergia por desenho), C (controle)
+% saturação do reward é endógena ao nº de testes — reportar como escolha de desenho
+
+\section{Measuring Cross-Layer Credit}
+\subsection{Noise floor (F1)}
+% Figura F1: |dR| de replays nulos por config; piso pré-registrado = max sem timeout
+\subsection{$C(H)$ and $C(M)$ (F2)}
+% Figura F2: distribuição de C por camada, direção e estrato; NUNCA agregar direções
+\subsection{Interaction $I(H,M)$ and its anatomy (F3)}
+% Figura F3: screening-off vs sinergia; fração saturada por config
+
+\section{Predicting Credit: Critic vs.\ Dose-Matched Baselines (F4)}
+% classificador |C|>0 + regressor condicional; split por task; bootstrap por task;
+% precision@10 fixado a priori; baselines: logprob, posição, LLM-judge
+\todo{GATE 2 decide: contribuição ou resultado negativo honesto}
+
+\section{Training with Cross-Layer Credit (F5)}
+% C1, 3 braços dose-matched POR ROLLOUT TOTAL (episódios + replays de crédito):
+% outcome-only vs C(H) puro vs corrigido por interação
+% predição pré-registrada: C(H) puro supercredita decisões blindadas
+\todo{GATE 3 decide o título}
+
+\section{Threats to Validity}
+% I1/I2; saturação endógena; entropia da política (a' inamostrável em estados de
+% reparo); tasks sintéticas; 1 modelo, 1 ambiente; acoplamento a' entre C(M) e I
+% (não são evidências independentes); sequencialidade do vLLM como premissa do piso;
+% circularidade de construto mitigada pelas tasks-controle.
+
+\section{Conclusion}
+\todo{}
+
+\bibliographystyle{plain}
+\bibliography{refs}
+\end{document}
