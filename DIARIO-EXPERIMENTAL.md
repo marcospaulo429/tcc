@@ -315,3 +315,33 @@
 - Seeds 2–3 rodando (decidem se o colapso do ch replica — esse é o resultado central).
 
 
+
+### Auditoria do revisor sobre C1 (2026-08-22, subagente revisor) — 2 CRÍTICOS
+- **CRÍTICO 1 (risco de artefato no resultado central):** o C_H do braço ch compara
+  r_eff da trajetória ORIGINAL (continuação amostrada da política estocástica de
+  coleta, ~50% summarize ⇒ barata em tokens) vs r_eff do replay do FLIP (continuação
+  greedy = keep-always ⇒ cara). Sob λ=25 isso dá crédito positivo a summarize por um
+  canal que NÃO é irreversibilidade — o colapso pode ser (em parte) artefato do
+  estimador. chm_cm é imune (diff de dois replays greedy cancela o mismatch).
+  → Pré-registro 11 criado; `experiments/audita_ch.py` recomputa C_H em 60 pontos
+  como diff de dois replays greedy (dry-run validou o mapeamento dos 278 episódios;
+  403 créditos: 264 pos / 68 neg / 71 zero). Roda automaticamente após a chain
+  (experiments/pos_c1.sh, PID 3514926), junto com a calibração descritiva no
+  held-out (item 4 do revisor).
+- **CRÍTICO 2:** braço zero NÃO é "política inicial" — com tie-break `p > 0.5` e
+  θ=0, greedy ⇒ keep_context SEMPRE. O controle é "keep-always sem treino".
+  Corrigir a descrição no paper e no diário (feito aqui): o empate exato
+  outcome=chm_cm=zero significa que esses braços convergem/permanecem em keep-always.
+- **IMPORTANTE (itens 3–6):** (3) split held-out alfabético contém 5 tasks s_ e 0 c_
+  ⇒ magnitude do colapso no held-out é inflada; GATE 3 reportará por estrato.
+  (4) teto (keep ótimo) só verificado no treino ⇒ pos_c1.sh roda 3 políticas fixas
+  no held-out (descritivo). (5) margem thr600−keep da calibração (λ=25) testada por
+  bootstrap pareado (10k, seed 20260821): **+0.024, IC95 [−0.026, +0.079],
+  P(diff≤0)=0.19 — NÃO significativa** ⇒ o teto era semi-previsível ex-ante;
+  fortalece o caso do C1b e entra na escrita como limitação declarada.
+  (6) variância de seeds no held-out é degenerada (greedy determinístico) ⇒ GATE 3
+  final analisado por sinal/magnitude de θ e replicação do colapso, não por IC de
+  médias idênticas.
+- Verificado correto pelo revisor: simetria da contabilidade de tokens,
+  forced_actions, reprodutibilidade do split, aritmética de λ*, empates exatos =
+  identidade comportamental (prompt_tokens por task idênticos).
