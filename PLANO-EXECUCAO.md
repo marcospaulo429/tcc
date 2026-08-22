@@ -29,10 +29,7 @@
 - A4. Agregador: `credit/dataset.py` consolida (decisão, features, C_H | C_M | I, config, task, estrato) num parquet/JSONL único. Features em DOIS conjuntos pré-registrados: `pre` (computáveis antes da decisão: turn, context_tokens, n_messages, tests_passed_so_far, action_type, estrato/task) e `post` (só análise: tokens_after, ΔR decomposto). [P8]
 - Pool entre configs SEMPRE com config como covariável; nunca agregar direções nem transições. Frações de descarte (saturação, vácuo, timeout, sem-a′) reportadas por config. [pré-registro (f)]
 
-**GATE 1 (o mais importante):** existe I > 0 (sinergia) mensurável nas tasks S?
-- SIM → claim central mantido: "I como sinal de treino, dois regimes (screening-off e sinergia)".
-- NÃO → reposicionar: "decomposição causal cross-layer + correção de dupla contagem"; C1(iii) continua válido (screening-off basta p/ supercrédito).
-- Também: tasks C com C_H ≈ 0 confirmam que o método distingue (senão, investigar construto).
+**GATE 1 (DECIDIDO 2026-08-22, g600 limpo):** sinergia NÃO observada — C_HM=C_M exato em 21/21 (screening-off nos dois sinais). Controles c_* com C_H=0 em 11/12 ✓ (constructo validado). **Claim reposicionado:** "decomposição causal cross-layer + screening-off como mecanismo dominante + correção de dupla contagem no treino". Anatomia auditada: (1) a′ do estado original re-injeta a informação destruída; (2) harness vivo re-dispara summarize downstream (intervenção transiente). **GATE-1b (novo, pré-registrado no diário):** testar sinergia sob pressão de orçamento (max_turns 12→6, ~70 rollouts) após o grid.
 
 ## Fase B — Critic contra ground truth [P7, P8]
 

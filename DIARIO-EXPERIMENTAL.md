@@ -138,10 +138,33 @@
   credit/critic.py (zero-inflado, split/bootstrap por task, baselines dose-matched),
   paper/main.tex + paper/FIGURAS.md (F1–F5 fixadas antes dos dados).
 
-### GATE 1 (pendente — decide o claim central)
-- Perguntas: (a) existe I > 0 não-saturado nas tasks S? (b) tasks C têm C_H ≈ 0?
-- Desfechos pré-definidos: SIM → "I como sinal de treino, dois regimes"; NÃO → reposicionar para
-  "decomposição cross-layer + correção de dupla contagem" (screening-off ainda sustenta C1-braço 3).
+### GATE 1 (DECIDIDO 2026-08-22, dados limpos g600 — pós-fix APC)
+- Qualidade: piso 0.0 (270 nulos, 0 mismatches), nulos de fila do teste3 exatos → tudo interpretável.
+- (b) Controles: c_* com C_H = 0 em 11/12 pontos → **o método distingue flip inócuo de flip
+  destrutivo; circularidade de construto (P6) respondida.** Exceção instrutiva: c_temp_label
+  turn 0 com C=+0.22 mesmo com TODA a informação nos primeiros 240 chars (auditado no prompt) —
+  o efeito é COMPORTAMENTAL (prompt truncado muda a geração), não informacional. Nuance p/ paper:
+  C(H) captura efeito causal total, não só o canal informacional.
+- (a) Sinergia: **NÃO observada. C_HM = C_M exato em 21/21 pontos** — screening-off nos dois
+  sinais (I=−0.86 quando flip prejudicial; I=+0.15/+1.00 quando benéfico, ex.: summ→keep que
+  salva a task). As 5 tasks S não produziram I>0 não-trivial.
+- **ANATOMIA (auditada nos replays de rate_limiter_bucket):** dois mecanismos compõem o
+  screening-off total:
+  1. *Completude informacional do do-operator:* a′ amostrado do estado ORIGINAL carrega as
+     constantes no conteúdo do write_file — a ação forçada re-injeta a informação que o flip
+     destruiu → C_HM=C_M por quase-necessidade no nosso espaço de ações.
+  2. *Transiência da intervenção:* o harness downstream (regra de threshold, viva no replay)
+     re-dispara summarize 1–2 turnos depois de qualquer jeito (verificado: braço M summariza no
+     turno 2) — o flip só desloca o timing da destruição.
+- **DECISÃO (pré-registrada):** claim central reposicionado para "decomposição causal
+  cross-layer por decisão + screening-off como mecanismo dominante de interação + correção de
+  dupla contagem no treino (C1 braço 3)". A anatomia vira a figura central F3.
+- **HIPÓTESE NOVA (GATE-1b, pré-registro):** sinergia I>0 deve emergir sob PRESSÃO DE ORÇAMENTO:
+  em tasks onde a recuperação é possível mas cara (asserts vazam constantes ← estilo v2),
+  C_H≈0 (recupera com folga), C_M≈0 (a′ inócuo com contexto), mas flip+a′ juntos consomem
+  turnos demais → C_HM>0 → I>0. Variável manipulada: max_turns 12→6. Baseline: mesmas tasks
+  com max_turns 12. Métrica: I não-saturado > 0. Custo: ~10 baselines + ~60 replays. Rodar
+  APÓS o grid (nunca concorrente — sequencialidade é premissa).
 
 ## Sobre benchmarks (pergunta do orientando, 2026-08-22)
 

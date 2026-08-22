@@ -1,0 +1,366 @@
+{
+  "n_counterfactuals": 83,
+  "n_timed_out_excluded": 0,
+  "noise_floor": 0.0,
+  "frac_above_floor": 0.3855421686746988,
+  "mean_C": 0.2521911488778959,
+  "mean_abs_C": 0.28343701144905964,
+  "by_direction": {
+    "keep_context->summarize_context": {
+      "n": 60,
+      "mean_C": 0.36809519184519185,
+      "frac_nonzero": 0.5
+    },
+    "summarize_context->keep_context": {
+      "n": 23,
+      "mean_C": -0.05016722408026755,
+      "frac_nonzero": 0.08695652173913043
+    }
+  },
+  "by_task": {
+    "api_router": {
+      "n": 4,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "c_late_fee": {
+      "n": 2,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "c_parcel_cost": {
+      "n": 2,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "c_temp_label": {
+      "n": 2,
+      "mean_C": 0.1111111111111111,
+      "n_above_floor": 1
+    },
+    "c_username_check": {
+      "n": 2,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "c_vote_tally": {
+      "n": 4,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "config_renderer": {
+      "n": 1,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "csv_normalizer": {
+      "n": 4,
+      "mean_C": 0.25,
+      "n_above_floor": 1
+    },
+    "grade_curve": {
+      "n": 2,
+      "mean_C": 0.4375,
+      "n_above_floor": 1
+    },
+    "inventory_restock": {
+      "n": 2,
+      "mean_C": 0.0,
+      "n_above_floor": 2
+    },
+    "invoice_pricing": {
+      "n": 4,
+      "mean_C": -0.25,
+      "n_above_floor": 1
+    },
+    "l_discount_chain": {
+      "n": 1,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "l_door_controller": {
+      "n": 1,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "l_grade_report": {
+      "n": 4,
+      "mean_C": 0.6136363636363636,
+      "n_above_floor": 3
+    },
+    "l_log_parser": {
+      "n": 4,
+      "mean_C": 0.019230769230769232,
+      "n_above_floor": 2
+    },
+    "l_loyalty_points": {
+      "n": 3,
+      "mean_C": 0.25,
+      "n_above_floor": 2
+    },
+    "l_order_validator": {
+      "n": 1,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "l_payroll_pipeline": {
+      "n": 4,
+      "mean_C": 0.7749999999999999,
+      "n_above_floor": 4
+    },
+    "l_rental_invoice": {
+      "n": 4,
+      "mean_C": 0.6,
+      "n_above_floor": 3
+    },
+    "l_shipping_batch": {
+      "n": 1,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "l_vending_machine": {
+      "n": 4,
+      "mean_C": 0.0,
+      "n_above_floor": 0
+    },
+    "log_formatter": {
+      "n": 4,
+      "mean_C": 0.25,
+      "n_above_floor": 1
+    },
+    "loyalty_points": {
+      "n": 2,
+      "mean_C": 0.4285714285714286,
+      "n_above_floor": 1
+    },
+    "rate_limiter_bucket": {
+      "n": 2,
+      "mean_C": 0.4285714285714286,
+      "n_above_floor": 1
+    },
+    "s_commission_calc": {
+      "n": 4,
+      "mean_C": 0.25,
+      "n_above_floor": 1
+    },
+    "s_energy_bill": {
+      "n": 3,
+      "mean_C": 0.6296296296296297,
+      "n_above_floor": 2
+    },
+    "s_freight_quote": {
+      "n": 4,
+      "mean_C": 0.25,
+      "n_above_floor": 1
+    },
+    "s_sensor_alarm": {
+      "n": 3,
+      "mean_C": 0.6333333333333333,
+      "n_above_floor": 2
+    },
+    "s_ticket_pricer": {
+      "n": 3,
+      "mean_C": 0.6,
+      "n_above_floor": 2
+    },
+    "shift_cipher": {
+      "n": 2,
+      "mean_C": 0.375,
+      "n_above_floor": 1
+    }
+  },
+  "points_above_floor": [
+    {
+      "task_id": "inventory_restock",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 0.14285714285714285
+    },
+    {
+      "task_id": "inventory_restock",
+      "index": 4,
+      "dir": "keep_context->summarize_context",
+      "C": -0.14285714285714285
+    },
+    {
+      "task_id": "s_sensor_alarm",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 1.0
+    },
+    {
+      "task_id": "s_sensor_alarm",
+      "index": 3,
+      "dir": "keep_context->summarize_context",
+      "C": 0.9
+    },
+    {
+      "task_id": "grade_curve",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 0.875
+    },
+    {
+      "task_id": "l_log_parser",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 0.23076923076923078
+    },
+    {
+      "task_id": "l_log_parser",
+      "index": 10,
+      "dir": "summarize_context->keep_context",
+      "C": -0.15384615384615385
+    },
+    {
+      "task_id": "s_ticket_pricer",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 1.0
+    },
+    {
+      "task_id": "s_ticket_pricer",
+      "index": 4,
+      "dir": "keep_context->summarize_context",
+      "C": 0.8
+    },
+    {
+      "task_id": "l_grade_report",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 1.0
+    },
+    {
+      "task_id": "l_grade_report",
+      "index": 4,
+      "dir": "keep_context->summarize_context",
+      "C": 0.8181818181818181
+    },
+    {
+      "task_id": "l_grade_report",
+      "index": 7,
+      "dir": "keep_context->summarize_context",
+      "C": 0.6363636363636364
+    },
+    {
+      "task_id": "l_loyalty_points",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 0.5833333333333334
+    },
+    {
+      "task_id": "l_loyalty_points",
+      "index": 4,
+      "dir": "keep_context->summarize_context",
+      "C": 0.16666666666666669
+    },
+    {
+      "task_id": "shift_cipher",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 0.75
+    },
+    {
+      "task_id": "l_rental_invoice",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 1.0
+    },
+    {
+      "task_id": "l_rental_invoice",
+      "index": 4,
+      "dir": "keep_context->summarize_context",
+      "C": 0.8
+    },
+    {
+      "task_id": "l_rental_invoice",
+      "index": 7,
+      "dir": "keep_context->summarize_context",
+      "C": 0.6
+    },
+    {
+      "task_id": "csv_normalizer",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 1.0
+    },
+    {
+      "task_id": "invoice_pricing",
+      "index": 12,
+      "dir": "summarize_context->keep_context",
+      "C": -1.0
+    },
+    {
+      "task_id": "s_freight_quote",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 1.0
+    },
+    {
+      "task_id": "c_temp_label",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 0.2222222222222222
+    },
+    {
+      "task_id": "rate_limiter_bucket",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 0.8571428571428572
+    },
+    {
+      "task_id": "loyalty_points",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 0.8571428571428572
+    },
+    {
+      "task_id": "l_payroll_pipeline",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 1.0
+    },
+    {
+      "task_id": "l_payroll_pipeline",
+      "index": 4,
+      "dir": "keep_context->summarize_context",
+      "C": 0.8
+    },
+    {
+      "task_id": "l_payroll_pipeline",
+      "index": 7,
+      "dir": "keep_context->summarize_context",
+      "C": 0.6
+    },
+    {
+      "task_id": "l_payroll_pipeline",
+      "index": 10,
+      "dir": "keep_context->summarize_context",
+      "C": 0.7
+    },
+    {
+      "task_id": "s_energy_bill",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 1.0
+    },
+    {
+      "task_id": "s_energy_bill",
+      "index": 3,
+      "dir": "keep_context->summarize_context",
+      "C": 0.8888888888888888
+    },
+    {
+      "task_id": "log_formatter",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 1.0
+    },
+    {
+      "task_id": "s_commission_calc",
+      "index": 0,
+      "dir": "keep_context->summarize_context",
+      "C": 1.0
+    }
+  ]
+}
