@@ -45,7 +45,9 @@ class Episode:
                  sandbox: Sandbox | None = None):
         self.task, self.llm, self.harness, self.recorder = task, llm, harness, recorder
         self.sandbox = sandbox or Sandbox()
-        self._force_next: dict | None = None  # consumida na primeira decisão do replay
+        # fila de ações forçadas (cada item = ação canônica + "_point"); semântica peek-match:
+        # o head só é consumido quando o decision_point atual casa com o dele.
+        self._forced_queue: list[dict] = []
         self.n_retries = 0
         self.n_give_ups = 0
 
@@ -61,9 +63,11 @@ class Episode:
         return did
 
     def _consume_forced(self, point: str) -> dict | None:
-        if self._force_next is not None:
-            forced, self._force_next = self._force_next, None
-            assert forced.pop("_point") == point, "forced action em decision_point errado"
+        """Peek-match ESTRITO: consome o head da fila sse o ponto casa; senão a decisão
+        roda ao vivo e o head fica esperando o ponto certo."""
+        if self._forced_queue and self._forced_queue[0]["_point"] == point:
+            forced = dict(self._forced_queue.pop(0))
+            forced.pop("_point")
             forced.pop("forced", None)  # chave não-canônica de records antigos não pode vazar p/ contexto
             return forced
         return None
@@ -150,7 +154,10 @@ class Episode:
 
     # -- execução ----------------------------------------------------------
     def run(self, resume: dict | None = None) -> dict:
-        """resume = {"messages", "turn", "entry_point", "forced_action"|None} (de um Decision.state_before)."""
+        """resume = {"messages", "turn", "entry_point", "forced_action"|None,
+        "forced_actions"|None} (de um Decision.state_before).
+        forced_actions = [{"point": str, "action": dict}] consumidas em ordem (peek-match);
+        forced_action (singular) é açúcar retro-compatível = fila de 1 no entry_point."""
         config = {"llm": self.llm.config(), "harness": self.harness.config(),
                   "resumed": bool(resume)}
         self.recorder.start(self.task["task_id"], config)
@@ -162,8 +169,11 @@ class Episode:
             entry = resume["entry_point"]
             if entry not in self.PHASES:
                 raise NotImplementedError(f"replay a partir de '{entry}' não suportado")
-            if resume.get("forced_action"):
-                self._force_next = {**resume["forced_action"], "_point": entry}
+            if resume.get("forced_actions"):
+                self._forced_queue = [{**fa["action"], "_point": fa["point"]}
+                                      for fa in resume["forced_actions"]]
+            elif resume.get("forced_action"):
+                self._forced_queue = [{**resume["forced_action"], "_point": entry}]
         else:
             self.sandbox.write_file("solution.py", self.task["starter_code"])
             messages = [{"role": "system", "content": SYSTEM_PROMPT},
@@ -189,6 +199,10 @@ class Episode:
                 if decision == "terminate":
                     break
                 turn += 1
+
+        # invariante anti-bug-silencioso: toda forced action DEVE ter sido consumida
+        if self._forced_queue:
+            raise RuntimeError(f"forced actions não consumidas: {self._forced_queue}")
 
         final = self.sandbox.run_tests(self.task["test_code"])
         n_decisions = len(self.recorder.trajectory.decisions)

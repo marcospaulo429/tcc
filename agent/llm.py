@@ -17,11 +17,15 @@ class LLMClient:
         return {"model": self.model, "temperature": self.temperature,
                 "seed": self.seed, "max_tokens": self.max_tokens}
 
-    def chat(self, messages: list[dict]) -> dict:
+    def chat(self, messages: list[dict], *, temperature=None, seed=None,
+             max_tokens=None) -> dict:
+        """Overrides por chamada (None = default da instância) p/ amostragem de a′."""
         t0 = time.monotonic()
         resp = self.client.chat.completions.create(
             model=self.model, messages=messages,
-            temperature=self.temperature, seed=self.seed, max_tokens=self.max_tokens,
+            temperature=self.temperature if temperature is None else temperature,
+            seed=self.seed if seed is None else seed,
+            max_tokens=self.max_tokens if max_tokens is None else max_tokens,
             extra_body={"chat_template_kwargs": {"enable_thinking": False}},
         )
         return {
@@ -29,4 +33,5 @@ class LLMClient:
             "prompt_tokens": resp.usage.prompt_tokens,
             "completion_tokens": resp.usage.completion_tokens,
             "wall_time_s": time.monotonic() - t0,
+            "finish_reason": resp.choices[0].finish_reason,
         }
