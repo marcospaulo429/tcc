@@ -17,11 +17,12 @@ and the \emph{harness} (context management, retries, termination). We show, via
 deterministic counterfactual replay with a \emph{measured} noise floor (exact
 fidelity under explicit serving premises), that per-decision causal
 contributions $C(H)$, $C(M)$ and their interaction $I(H,M) = C(H,M) - C(H) -
-C(M)$ are identifiable on the same trajectory. Across all measured interaction
-points, the model action \emph{screens off} the harness decision
-($C_{HM}=C_M$), which we dissect into a structural property of the
-do-operator and an empirical downstream-harness effect. This implies that
-single-layer credit double-counts shielded decisions; we correct this bias
+C(M)$ are identifiable on the same trajectory. Interaction is
+\emph{regime-dependent}: with budget slack, the model action screens off the
+harness decision ($C_{HM}=C_M$, 57/57 points); under budget pressure
+(halved turn budget), screening-off breaks (18/21) and genuine non-saturated
+synergy appears. This implies that single-layer credit double-counts shielded
+decisions; we correct this bias
 with interaction-aware credit and evaluate it against outcome-only,
 single-layer, and a zero-credit masking control, dose-matched in total
 rollouts. \todo{números finais}
@@ -93,10 +94,12 @@ HASE & -- & \checkmark & -- & -- & -- \\
 \subsection{$C(H)$ and $C(M)$ (F2)}
 % Figura F2: distribuição de C por camada, direção e estrato; NUNCA agregar direções
 \subsection{Interaction $I(H,M)$ and its anatomy (F3)}
-% Figura F3: screening-off 21/21 (dois sinais); sub-mecanismo 1 (estrutural: a' re-injeta
-% informação — argumento formal) vs sub-mecanismo 2 (empírico: harness vivo re-dispara
-% summarize 1-2 turnos depois); fração de cada um quantificada nos replays; sign test
-% sobre C_HM=C_M exato (pré-registro 10). Fração saturada por config.
+% Figura F3: REGIME-DEPENDENCE (GATE-1b): screening exato 57/57 com folga (max_turns=12,
+% 3 configs) vs 18/21 sob pressão (max_turns=6); 3 exceções todas no mt6 (P=0.0175);
+% sinergia genuína não-saturada (l_vending_machine I=+0.18: C_H=C_M=-0.09, C_HM=0).
+% Sign test do mecanismo: 75/78, P=2.6e-19 (pré-registro 10).
+% Sub-mecanismo 1 (estrutural: a' re-injeta informação — argumento formal) vs
+% sub-mecanismo 2 (empírico: harness vivo re-dispara summarize) — frações quantificadas.
 \subsection{Control tasks and the \texttt{c\_temp\_label} exception}
 % NO CORPO (W8): 11/12 controles com C_H=0 validam o construto; a exceção (C=+0.22 em
 % turn 0) foi auditada — toda a informação estava nos primeiros 240 chars; o efeito é

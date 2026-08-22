@@ -210,3 +210,48 @@
 - Pergunta de rebuttal mais difícil hoje: "por que pagar 3 replays se o crédito marginal é 0?"
   → resposta empírica virá do GATE 3 (braço 3 vs braço 4).
 
+## 2026-08-22 — Fase A COMPLETA + GATE-1b + GATE 2 (pipeline pós-grid)
+
+### Fase A fechada (grid 3 configs × 30 tasks + GATE-1b mt6)
+- **Piso 0.0 em TODAS as configs** (g600/g450/g900/mt6: 270+270+270+270 nulos, exact_rate 1.0;
+  nulos de fila do teste3: 61+64+61+61, 0 inexatos).
+- Yields vs metas pré-registradas: C_H **248 pts / 92 nz** (meta 200/60 ✓✓); I **78 pts /
+  18 não-sat** (meta 50/15 ✓); C_M **66 pts / 13 nz** (meta 60/15: n ✓, nz 13<15 —
+  déficit marginal ACEITO, gargalo endógeno já conhecido: a′ inamostrável em ~70% dos estados;
+  regra de parada NÃO disparada: rodada extra não mudaria a conclusão do critic, ver GATE 2).
+- **Anomalia residual (threat menor, registrada):** 3/1080 replays nulos (só g450,
+  l_grade_report) têm 1 retry a MAIS numa rep que noutra — não-determinismo residual a nível
+  de token no vLLM mesmo com APC off; o retry recupera a MESMA ação e o reward é exato (dr=0).
+  Piso em R não afetado. Nota p/ threats: o piso é definido em R, não em tokens.
+
+### GATE-1b — DECIDIDO: screening-off é DEPENDENTE DE REGIME (achado central novo)
+- Hipótese pré-registrada: sob pressão de orçamento (max_turns 12→6), o modelo perde a folga
+  para "reparar" a intervenção → screening-off quebra e I≠trivial aparece.
+- **Resultado: com folga (g600/g450/g900), screening exato C_HM=C_M em 57/57. Sob pressão
+  (mt6), 18/21 — as 3 exceções TODAS no mt6 (P(acaso)=0.0175, hipergeométrico), incluindo:**
+  - **sinergia genuína não-saturada** (l_vending_machine, turn 3: C_H=−0.09, C_M=−0.09,
+    C_HM=0.00, I=+0.18 — cada intervenção isolada piora, as duas juntas se anulam);
+  - aditividade pura (l_log_parser: I=0.00 com C_HM≠C_M);
+  - interação positiva saturada (api_router: I=+0.38).
+- Sign test do claim mecanístico (pré-registro 10): screening 75/78, P(X≥75|p=0.5)=2.6e-19.
+- **Consequência p/ o claim (melhora!):** não é "screening-off sempre" (que soava degenerado) —
+  é "screening-off domina quando o modelo tem orçamento para reagir; interação emerge sob
+  pressão de orçamento". Regime é MANIPULÁVEL experimentalmente (max_turns) → F3 ganha um
+  painel de regime. C1 treina com max_turns=6 (default) = regime onde crédito marginal ≠ 0.
+
+### GATE 2 — critic vs baselines dose-free (resultado HONESTO, misto)
+- C_H (n=248, 30 tasks, GroupKFold por task, bootstrap clusterizado):
+  - Critic gbm: AUROC 0.846 [0.76,0.91]; linear: Spearman clusterizado 0.718 [0.62,0.81].
+  - **Baselines triviais empatam no ranking:** position 0.752, context_size |−0.796| —
+    ou seja, para RANKEAR C_H, heurísticas simples bastam; a vantagem do critic aprendido está
+    só na DETECÇÃO de crédito não-zero (AUROC 0.846 vs 0.735/0.785), com ICs sobrepostos.
+  - precision@10 ≈ 0 em todos (extremos são difíceis para todos). random: AUROC 0.495 ✓ sanidade.
+- C_M (n=66): critic FALHA (AUROC ~0.5, ICs enormes) — data-starved, esperado.
+- I (n=12 <20): pulado por pré-registro.
+- **Leitura honesta (alinhada a 2608.19760):** nesta escala, critic aprendido ≈ heurísticas
+  para ranking; o achado real é que C_H é ESTRUTURADO (position e context_size carregam quase
+  todo o sinal de ranking — context_size anti-correlaciona ρ=−0.80, ligação direta com I2).
+  Reportar como resultado negativo parcial + análise de estrutura, NÃO como contribuição de
+  critic. A contribuição de treino (C1) não depende do critic: usa replay direto.
+
+

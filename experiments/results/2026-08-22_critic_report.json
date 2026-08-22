@@ -1,0 +1,1053 @@
+{
+  "dataset": "runs/credit_dataset.jsonl",
+  "seed": 20260821,
+  "quantities": {
+    "C_H": {
+      "n": 248,
+      "n_tasks": 30,
+      "linear": {
+        "model": "linear",
+        "n": 248,
+        "n_tasks": 30,
+        "metrics": {
+          "auroc": 0.8313127090301003,
+          "spearman_clustered": 0.7183485104536738,
+          "spearman_pooled": 0.6133361828215682,
+          "precision_at_10": 0.0,
+          "mae_nonzero": 0.23649587164788685
+        },
+        "ci95": {
+          "auroc": {
+            "lo": 0.7403552393857272,
+            "med": 0.8372198108405005,
+            "hi": 0.9096509188302343
+          },
+          "spearman_clustered": {
+            "lo": 0.6189375271359905,
+            "med": 0.7213499349273488,
+            "hi": 0.808730200335939
+          },
+          "spearman_pooled": {
+            "lo": 0.4626050920891626,
+            "med": 0.6167122448103874,
+            "hi": 0.7243777061777201
+          },
+          "precision_at_10": {
+            "lo": 0.0,
+            "med": 0.0,
+            "hi": 0.2
+          },
+          "mae_nonzero": {
+            "lo": 0.1737688205044338,
+            "med": 0.23290599981617555,
+            "hi": 0.3176140383942828
+          }
+        },
+        "folds": [
+          {
+            "train_tasks": [
+              "api_router",
+              "c_late_fee",
+              "c_parcel_cost",
+              "c_username_check",
+              "c_vote_tally",
+              "config_renderer",
+              "csv_normalizer",
+              "grade_curve",
+              "inventory_restock",
+              "invoice_pricing",
+              "l_discount_chain",
+              "l_grade_report",
+              "l_loyalty_points",
+              "l_order_validator",
+              "l_payroll_pipeline",
+              "l_rental_invoice",
+              "l_shipping_batch",
+              "l_vending_machine",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_energy_bill",
+              "s_sensor_alarm",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "c_temp_label",
+              "l_door_controller",
+              "l_log_parser",
+              "log_formatter",
+              "loyalty_points",
+              "s_freight_quote"
+            ]
+          },
+          {
+            "train_tasks": [
+              "api_router",
+              "c_late_fee",
+              "c_temp_label",
+              "c_username_check",
+              "c_vote_tally",
+              "config_renderer",
+              "grade_curve",
+              "invoice_pricing",
+              "l_door_controller",
+              "l_log_parser",
+              "l_loyalty_points",
+              "l_order_validator",
+              "l_payroll_pipeline",
+              "l_rental_invoice",
+              "l_shipping_batch",
+              "l_vending_machine",
+              "log_formatter",
+              "loyalty_points",
+              "rate_limiter_bucket",
+              "s_energy_bill",
+              "s_freight_quote",
+              "s_sensor_alarm",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "c_parcel_cost",
+              "csv_normalizer",
+              "inventory_restock",
+              "l_discount_chain",
+              "l_grade_report",
+              "s_commission_calc"
+            ]
+          },
+          {
+            "train_tasks": [
+              "api_router",
+              "c_late_fee",
+              "c_parcel_cost",
+              "c_temp_label",
+              "c_vote_tally",
+              "config_renderer",
+              "csv_normalizer",
+              "grade_curve",
+              "inventory_restock",
+              "l_discount_chain",
+              "l_door_controller",
+              "l_grade_report",
+              "l_log_parser",
+              "l_payroll_pipeline",
+              "l_rental_invoice",
+              "l_shipping_batch",
+              "log_formatter",
+              "loyalty_points",
+              "s_commission_calc",
+              "s_energy_bill",
+              "s_freight_quote",
+              "s_sensor_alarm",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "c_username_check",
+              "invoice_pricing",
+              "l_loyalty_points",
+              "l_order_validator",
+              "l_vending_machine",
+              "rate_limiter_bucket"
+            ]
+          },
+          {
+            "train_tasks": [
+              "api_router",
+              "c_parcel_cost",
+              "c_temp_label",
+              "c_username_check",
+              "csv_normalizer",
+              "grade_curve",
+              "inventory_restock",
+              "invoice_pricing",
+              "l_discount_chain",
+              "l_door_controller",
+              "l_grade_report",
+              "l_log_parser",
+              "l_loyalty_points",
+              "l_order_validator",
+              "l_payroll_pipeline",
+              "l_shipping_batch",
+              "l_vending_machine",
+              "log_formatter",
+              "loyalty_points",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_freight_quote",
+              "s_sensor_alarm",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "c_late_fee",
+              "c_vote_tally",
+              "config_renderer",
+              "l_rental_invoice",
+              "s_energy_bill",
+              "s_ticket_pricer"
+            ]
+          },
+          {
+            "train_tasks": [
+              "c_late_fee",
+              "c_parcel_cost",
+              "c_temp_label",
+              "c_username_check",
+              "c_vote_tally",
+              "config_renderer",
+              "csv_normalizer",
+              "inventory_restock",
+              "invoice_pricing",
+              "l_discount_chain",
+              "l_door_controller",
+              "l_grade_report",
+              "l_log_parser",
+              "l_loyalty_points",
+              "l_order_validator",
+              "l_rental_invoice",
+              "l_vending_machine",
+              "log_formatter",
+              "loyalty_points",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_energy_bill",
+              "s_freight_quote",
+              "s_ticket_pricer"
+            ],
+            "test_tasks": [
+              "api_router",
+              "grade_curve",
+              "l_payroll_pipeline",
+              "l_shipping_batch",
+              "s_sensor_alarm",
+              "shift_cipher"
+            ]
+          }
+        ]
+      },
+      "gbm": {
+        "model": "gbm",
+        "n": 248,
+        "n_tasks": 30,
+        "metrics": {
+          "auroc": 0.8463977146042363,
+          "spearman_clustered": 0.6550864077923314,
+          "spearman_pooled": 0.6155796673824857,
+          "precision_at_10": 0.1,
+          "mae_nonzero": 0.30169141756796874
+        },
+        "ci95": {
+          "auroc": {
+            "lo": 0.76340772377551,
+            "med": 0.8498969118762457,
+            "hi": 0.9120821176157864
+          },
+          "spearman_clustered": {
+            "lo": 0.5405404573752811,
+            "med": 0.6619182892590982,
+            "hi": 0.7532923472716299
+          },
+          "spearman_pooled": {
+            "lo": 0.4789024032912645,
+            "med": 0.6183055551219061,
+            "hi": 0.7249592051424895
+          },
+          "precision_at_10": {
+            "lo": 0.0,
+            "med": 0.0,
+            "hi": 0.3
+          },
+          "mae_nonzero": {
+            "lo": 0.21883691117871337,
+            "med": 0.29884148676326683,
+            "hi": 0.39600684224835475
+          }
+        },
+        "folds": [
+          {
+            "train_tasks": [
+              "api_router",
+              "c_late_fee",
+              "c_parcel_cost",
+              "c_username_check",
+              "c_vote_tally",
+              "config_renderer",
+              "csv_normalizer",
+              "grade_curve",
+              "inventory_restock",
+              "invoice_pricing",
+              "l_discount_chain",
+              "l_grade_report",
+              "l_loyalty_points",
+              "l_order_validator",
+              "l_payroll_pipeline",
+              "l_rental_invoice",
+              "l_shipping_batch",
+              "l_vending_machine",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_energy_bill",
+              "s_sensor_alarm",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "c_temp_label",
+              "l_door_controller",
+              "l_log_parser",
+              "log_formatter",
+              "loyalty_points",
+              "s_freight_quote"
+            ]
+          },
+          {
+            "train_tasks": [
+              "api_router",
+              "c_late_fee",
+              "c_temp_label",
+              "c_username_check",
+              "c_vote_tally",
+              "config_renderer",
+              "grade_curve",
+              "invoice_pricing",
+              "l_door_controller",
+              "l_log_parser",
+              "l_loyalty_points",
+              "l_order_validator",
+              "l_payroll_pipeline",
+              "l_rental_invoice",
+              "l_shipping_batch",
+              "l_vending_machine",
+              "log_formatter",
+              "loyalty_points",
+              "rate_limiter_bucket",
+              "s_energy_bill",
+              "s_freight_quote",
+              "s_sensor_alarm",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "c_parcel_cost",
+              "csv_normalizer",
+              "inventory_restock",
+              "l_discount_chain",
+              "l_grade_report",
+              "s_commission_calc"
+            ]
+          },
+          {
+            "train_tasks": [
+              "api_router",
+              "c_late_fee",
+              "c_parcel_cost",
+              "c_temp_label",
+              "c_vote_tally",
+              "config_renderer",
+              "csv_normalizer",
+              "grade_curve",
+              "inventory_restock",
+              "l_discount_chain",
+              "l_door_controller",
+              "l_grade_report",
+              "l_log_parser",
+              "l_payroll_pipeline",
+              "l_rental_invoice",
+              "l_shipping_batch",
+              "log_formatter",
+              "loyalty_points",
+              "s_commission_calc",
+              "s_energy_bill",
+              "s_freight_quote",
+              "s_sensor_alarm",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "c_username_check",
+              "invoice_pricing",
+              "l_loyalty_points",
+              "l_order_validator",
+              "l_vending_machine",
+              "rate_limiter_bucket"
+            ]
+          },
+          {
+            "train_tasks": [
+              "api_router",
+              "c_parcel_cost",
+              "c_temp_label",
+              "c_username_check",
+              "csv_normalizer",
+              "grade_curve",
+              "inventory_restock",
+              "invoice_pricing",
+              "l_discount_chain",
+              "l_door_controller",
+              "l_grade_report",
+              "l_log_parser",
+              "l_loyalty_points",
+              "l_order_validator",
+              "l_payroll_pipeline",
+              "l_shipping_batch",
+              "l_vending_machine",
+              "log_formatter",
+              "loyalty_points",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_freight_quote",
+              "s_sensor_alarm",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "c_late_fee",
+              "c_vote_tally",
+              "config_renderer",
+              "l_rental_invoice",
+              "s_energy_bill",
+              "s_ticket_pricer"
+            ]
+          },
+          {
+            "train_tasks": [
+              "c_late_fee",
+              "c_parcel_cost",
+              "c_temp_label",
+              "c_username_check",
+              "c_vote_tally",
+              "config_renderer",
+              "csv_normalizer",
+              "inventory_restock",
+              "invoice_pricing",
+              "l_discount_chain",
+              "l_door_controller",
+              "l_grade_report",
+              "l_log_parser",
+              "l_loyalty_points",
+              "l_order_validator",
+              "l_rental_invoice",
+              "l_vending_machine",
+              "log_formatter",
+              "loyalty_points",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_energy_bill",
+              "s_freight_quote",
+              "s_ticket_pricer"
+            ],
+            "test_tasks": [
+              "api_router",
+              "grade_curve",
+              "l_payroll_pipeline",
+              "l_shipping_batch",
+              "s_sensor_alarm",
+              "shift_cipher"
+            ]
+          }
+        ]
+      },
+      "baselines": {
+        "position": {
+          "n": 248,
+          "n_tasks": 30,
+          "metrics": {
+            "auroc": 0.7354027313266442,
+            "spearman_clustered": 0.7522136572870755,
+            "spearman_pooled": 0.511158565209255,
+            "precision_at_10": 0.0,
+            "mae_nonzero": null
+          },
+          "ci95": {
+            "auroc": {
+              "lo": 0.631808142480477,
+              "med": 0.7399970504151082,
+              "hi": 0.8261694929608137
+            },
+            "spearman_clustered": {
+              "lo": 0.628248797611084,
+              "med": 0.757555638060736,
+              "hi": 0.8730627602189573
+            },
+            "spearman_pooled": {
+              "lo": 0.3893629658155792,
+              "med": 0.5142368795682628,
+              "hi": 0.6206834099145444
+            },
+            "precision_at_10": {
+              "lo": 0.0,
+              "med": 0.0,
+              "hi": 0.2
+            },
+            "mae_nonzero": {
+              "lo": null,
+              "med": null,
+              "hi": null
+            }
+          }
+        },
+        "context_size": {
+          "n": 248,
+          "n_tasks": 30,
+          "metrics": {
+            "auroc": 0.21474358974358976,
+            "spearman_clustered": -0.7956533320772788,
+            "spearman_pooled": -0.5984200892454656,
+            "precision_at_10": 0.0,
+            "mae_nonzero": null
+          },
+          "ci95": {
+            "auroc": {
+              "lo": 0.1183297739213937,
+              "med": 0.20852448638593218,
+              "hi": 0.3222190723568808
+            },
+            "spearman_clustered": {
+              "lo": -0.879311338419587,
+              "med": -0.7995113551909128,
+              "hi": -0.714472730700745
+            },
+            "spearman_pooled": {
+              "lo": -0.7126082674286002,
+              "med": -0.6022710973922785,
+              "hi": -0.45581172171657947
+            },
+            "precision_at_10": {
+              "lo": 0.0,
+              "med": 0.0,
+              "hi": 0.3
+            },
+            "mae_nonzero": {
+              "lo": null,
+              "med": null,
+              "hi": null
+            }
+          }
+        },
+        "random": {
+          "n": 248,
+          "n_tasks": 30,
+          "metrics": {
+            "auroc": 0.4948104793756968,
+            "spearman_clustered": 0.013175208615186002,
+            "spearman_pooled": 0.0014780632916099562,
+            "precision_at_10": 0.043,
+            "mae_nonzero": null
+          },
+          "ci95": {
+            "auroc": {
+              "lo": 0.4279990198320392,
+              "med": 0.5001432220397737,
+              "hi": 0.5678895144453656
+            },
+            "spearman_clustered": {
+              "lo": -0.15430720538020404,
+              "med": -0.001534956027384745,
+              "hi": 0.14184912620882043
+            },
+            "spearman_pooled": {
+              "lo": -0.128100259656077,
+              "med": 3.499820426993543e-05,
+              "hi": 0.1144411332364428
+            },
+            "precision_at_10": {
+              "lo": 0.0,
+              "med": 0.0,
+              "hi": 0.2
+            },
+            "mae_nonzero": {
+              "lo": null,
+              "med": null,
+              "hi": null
+            }
+          }
+        }
+      }
+    },
+    "C_M": {
+      "n": 66,
+      "n_tasks": 22,
+      "linear": {
+        "model": "linear",
+        "n": 66,
+        "n_tasks": 22,
+        "metrics": {
+          "auroc": 0.5384615384615384,
+          "spearman_clustered": -0.05865733292594161,
+          "spearman_pooled": 0.02709024907608034,
+          "precision_at_10": 0.2,
+          "mae_nonzero": 0.8047706287410623
+        },
+        "ci95": {
+          "auroc": {
+            "lo": 0.20768350930115634,
+            "med": 0.5477941176470588,
+            "hi": 0.947149242838898
+          },
+          "spearman_clustered": {
+            "lo": -0.8660254037844386,
+            "med": -0.04985873298705037,
+            "hi": 0.4761360513115979
+          },
+          "spearman_pooled": {
+            "lo": -0.3938100917652087,
+            "med": 0.02374451132116136,
+            "hi": 0.3984731396105537
+          },
+          "precision_at_10": {
+            "lo": 0.0,
+            "med": 0.2,
+            "hi": 0.4
+          },
+          "mae_nonzero": {
+            "lo": 0.3769767657269945,
+            "med": 0.8057854100892067,
+            "hi": 1.1679252533064313
+          }
+        },
+        "folds": [
+          {
+            "train_tasks": [
+              "c_parcel_cost",
+              "c_temp_label",
+              "c_vote_tally",
+              "csv_normalizer",
+              "grade_curve",
+              "l_door_controller",
+              "l_grade_report",
+              "l_log_parser",
+              "l_payroll_pipeline",
+              "l_vending_machine",
+              "loyalty_points",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_energy_bill",
+              "s_freight_quote",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "api_router",
+              "c_username_check",
+              "invoice_pricing",
+              "l_loyalty_points",
+              "log_formatter"
+            ]
+          },
+          {
+            "train_tasks": [
+              "api_router",
+              "c_parcel_cost",
+              "c_temp_label",
+              "c_username_check",
+              "c_vote_tally",
+              "csv_normalizer",
+              "invoice_pricing",
+              "l_door_controller",
+              "l_grade_report",
+              "l_log_parser",
+              "l_loyalty_points",
+              "l_payroll_pipeline",
+              "l_vending_machine",
+              "log_formatter",
+              "loyalty_points",
+              "s_energy_bill",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "grade_curve",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_freight_quote"
+            ]
+          },
+          {
+            "train_tasks": [
+              "api_router",
+              "c_parcel_cost",
+              "c_temp_label",
+              "c_username_check",
+              "csv_normalizer",
+              "grade_curve",
+              "invoice_pricing",
+              "l_door_controller",
+              "l_log_parser",
+              "l_loyalty_points",
+              "l_payroll_pipeline",
+              "log_formatter",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_energy_bill",
+              "s_freight_quote",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "c_vote_tally",
+              "l_grade_report",
+              "l_vending_machine",
+              "loyalty_points"
+            ]
+          },
+          {
+            "train_tasks": [
+              "api_router",
+              "c_temp_label",
+              "c_username_check",
+              "c_vote_tally",
+              "grade_curve",
+              "invoice_pricing",
+              "l_door_controller",
+              "l_grade_report",
+              "l_loyalty_points",
+              "l_payroll_pipeline",
+              "l_vending_machine",
+              "log_formatter",
+              "loyalty_points",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_freight_quote",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "c_parcel_cost",
+              "csv_normalizer",
+              "l_log_parser",
+              "s_energy_bill"
+            ]
+          },
+          {
+            "train_tasks": [
+              "api_router",
+              "c_parcel_cost",
+              "c_username_check",
+              "c_vote_tally",
+              "csv_normalizer",
+              "grade_curve",
+              "invoice_pricing",
+              "l_grade_report",
+              "l_log_parser",
+              "l_loyalty_points",
+              "l_vending_machine",
+              "log_formatter",
+              "loyalty_points",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_energy_bill",
+              "s_freight_quote"
+            ],
+            "test_tasks": [
+              "c_temp_label",
+              "l_door_controller",
+              "l_payroll_pipeline",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ]
+          }
+        ]
+      },
+      "gbm": {
+        "model": "gbm",
+        "n": 66,
+        "n_tasks": 22,
+        "metrics": {
+          "auroc": 0.4847605224963715,
+          "spearman_clustered": 0.46850819749134187,
+          "spearman_pooled": -0.026352884018011613,
+          "precision_at_10": 0.2,
+          "mae_nonzero": 0.5635434626423715
+        },
+        "ci95": {
+          "auroc": {
+            "lo": 0.17635582010582015,
+            "med": 0.49924242424242427,
+            "hi": 0.9264912280701753
+          },
+          "spearman_clustered": {
+            "lo": 0.0,
+            "med": 0.47506038271946,
+            "hi": 0.8903697928262764
+          },
+          "spearman_pooled": {
+            "lo": -0.21481629650813466,
+            "med": -0.009087802095587717,
+            "hi": 0.2504653728212232
+          },
+          "precision_at_10": {
+            "lo": 0.0,
+            "med": 0.2,
+            "hi": 0.6
+          },
+          "mae_nonzero": {
+            "lo": 0.20771110040466212,
+            "med": 0.5412875026081169,
+            "hi": 1.1062076831499459
+          }
+        },
+        "folds": [
+          {
+            "train_tasks": [
+              "c_parcel_cost",
+              "c_temp_label",
+              "c_vote_tally",
+              "csv_normalizer",
+              "grade_curve",
+              "l_door_controller",
+              "l_grade_report",
+              "l_log_parser",
+              "l_payroll_pipeline",
+              "l_vending_machine",
+              "loyalty_points",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_energy_bill",
+              "s_freight_quote",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "api_router",
+              "c_username_check",
+              "invoice_pricing",
+              "l_loyalty_points",
+              "log_formatter"
+            ]
+          },
+          {
+            "train_tasks": [
+              "api_router",
+              "c_parcel_cost",
+              "c_temp_label",
+              "c_username_check",
+              "c_vote_tally",
+              "csv_normalizer",
+              "invoice_pricing",
+              "l_door_controller",
+              "l_grade_report",
+              "l_log_parser",
+              "l_loyalty_points",
+              "l_payroll_pipeline",
+              "l_vending_machine",
+              "log_formatter",
+              "loyalty_points",
+              "s_energy_bill",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "grade_curve",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_freight_quote"
+            ]
+          },
+          {
+            "train_tasks": [
+              "api_router",
+              "c_parcel_cost",
+              "c_temp_label",
+              "c_username_check",
+              "csv_normalizer",
+              "grade_curve",
+              "invoice_pricing",
+              "l_door_controller",
+              "l_log_parser",
+              "l_loyalty_points",
+              "l_payroll_pipeline",
+              "log_formatter",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_energy_bill",
+              "s_freight_quote",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "c_vote_tally",
+              "l_grade_report",
+              "l_vending_machine",
+              "loyalty_points"
+            ]
+          },
+          {
+            "train_tasks": [
+              "api_router",
+              "c_temp_label",
+              "c_username_check",
+              "c_vote_tally",
+              "grade_curve",
+              "invoice_pricing",
+              "l_door_controller",
+              "l_grade_report",
+              "l_loyalty_points",
+              "l_payroll_pipeline",
+              "l_vending_machine",
+              "log_formatter",
+              "loyalty_points",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_freight_quote",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ],
+            "test_tasks": [
+              "c_parcel_cost",
+              "csv_normalizer",
+              "l_log_parser",
+              "s_energy_bill"
+            ]
+          },
+          {
+            "train_tasks": [
+              "api_router",
+              "c_parcel_cost",
+              "c_username_check",
+              "c_vote_tally",
+              "csv_normalizer",
+              "grade_curve",
+              "invoice_pricing",
+              "l_grade_report",
+              "l_log_parser",
+              "l_loyalty_points",
+              "l_vending_machine",
+              "log_formatter",
+              "loyalty_points",
+              "rate_limiter_bucket",
+              "s_commission_calc",
+              "s_energy_bill",
+              "s_freight_quote"
+            ],
+            "test_tasks": [
+              "c_temp_label",
+              "l_door_controller",
+              "l_payroll_pipeline",
+              "s_ticket_pricer",
+              "shift_cipher"
+            ]
+          }
+        ]
+      },
+      "baselines": {
+        "position": {
+          "n": 66,
+          "n_tasks": 22,
+          "metrics": {
+            "auroc": 0.2830188679245283,
+            "spearman_clustered": -0.046177363176208165,
+            "spearman_pooled": 0.24386338193458476,
+            "precision_at_10": 0.3,
+            "mae_nonzero": null
+          },
+          "ci95": {
+            "auroc": {
+              "lo": 0.04879744651483783,
+              "med": 0.2737967914438503,
+              "hi": 0.6124704192021633
+            },
+            "spearman_clustered": {
+              "lo": -0.8660254037844387,
+              "med": -0.046177363176208165,
+              "hi": 0.5720775535473555
+            },
+            "spearman_pooled": {
+              "lo": -0.320136630065824,
+              "med": 0.23325545904134204,
+              "hi": 0.5997729357731629
+            },
+            "precision_at_10": {
+              "lo": 0.0,
+              "med": 0.3,
+              "hi": 0.6
+            },
+            "mae_nonzero": {
+              "lo": null,
+              "med": null,
+              "hi": null
+            }
+          }
+        },
+        "context_size": {
+          "n": 66,
+          "n_tasks": 22,
+          "metrics": {
+            "auroc": 0.7554426705370101,
+            "spearman_clustered": 0.11420305201925766,
+            "spearman_pooled": -0.2105089884454129,
+            "precision_at_10": 0.4,
+            "mae_nonzero": null
+          },
+          "ci95": {
+            "auroc": {
+              "lo": 0.5080637915543577,
+              "med": 0.7643097643097643,
+              "hi": 0.9489355742296919
+            },
+            "spearman_clustered": {
+              "lo": -0.4440340447623373,
+              "med": 0.13320508075688775,
+              "hi": 0.8660254037844387
+            },
+            "spearman_pooled": {
+              "lo": -0.5301446413174905,
+              "med": -0.19897293447817344,
+              "hi": 0.2951387107468298
+            },
+            "precision_at_10": {
+              "lo": 0.0,
+              "med": 0.3,
+              "hi": 0.7
+            },
+            "mae_nonzero": {
+              "lo": null,
+              "med": null,
+              "hi": null
+            }
+          }
+        },
+        "random": {
+          "n": 66,
+          "n_tasks": 22,
+          "metrics": {
+            "auroc": 0.5088534107402033,
+            "spearman_clustered": -0.008636454317884852,
+            "spearman_pooled": -0.010441321638901687,
+            "precision_at_10": 0.161,
+            "mae_nonzero": null
+          },
+          "ci95": {
+            "auroc": {
+              "lo": 0.29991228070175435,
+              "med": 0.499484004127967,
+              "hi": 0.6930272108843537
+            },
+            "spearman_clustered": {
+              "lo": -0.7480294425188088,
+              "med": 0.0,
+              "hi": 0.704064731551174
+            },
+            "spearman_pooled": {
+              "lo": -0.24792336796894765,
+              "med": 0.002860493052430006,
+              "hi": 0.23914726328064267
+            },
+            "precision_at_10": {
+              "lo": 0.0,
+              "med": 0.1,
+              "hi": 0.4
+            },
+            "mae_nonzero": {
+              "lo": null,
+              "med": null,
+              "hi": null
+            }
+          }
+        }
+      }
+    },
+    "I": {
+      "skipped": "n=12 < 20 pontos"
+    }
+  }
+}

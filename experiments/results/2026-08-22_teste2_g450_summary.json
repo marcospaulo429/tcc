@@ -1,0 +1,112 @@
+{
+  "n_points_sampled": 76,
+  "n_no_alternative": 53,
+  "n_excluded_retry": 18,
+  "n_counterfactuals": 23,
+  "n_timed_out_excluded": 0,
+  "noise_floor": 0.0,
+  "frac_above_floor": 0.13043478260869565,
+  "by_transition": {
+    "finish->write_file": {
+      "n": 1,
+      "frac_above_floor": 0.0,
+      "mean_abs_C": 0.0,
+      "max_abs_C": 0.0
+    },
+    "write_file->write_file": {
+      "n": 22,
+      "frac_above_floor": 0.13636363636363635,
+      "mean_abs_C": 0.05844155844155843,
+      "max_abs_C": 0.8571428571428571
+    }
+  },
+  "by_task": {
+    "c_parcel_cost": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "c_temp_label": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "c_username_check": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "c_vote_tally": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "csv_normalizer": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "grade_curve": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "invoice_pricing": {
+      "n": 2,
+      "n_above_floor": 2
+    },
+    "l_door_controller": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "l_grade_report": {
+      "n": 2,
+      "n_above_floor": 0
+    },
+    "l_log_parser": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "l_loyalty_points": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "l_payroll_pipeline": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "l_vending_machine": {
+      "n": 2,
+      "n_above_floor": 0
+    },
+    "log_formatter": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "loyalty_points": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "rate_limiter_bucket": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "s_energy_bill": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "s_freight_quote": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "s_ticket_pricer": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "shift_cipher": {
+      "n": 1,
+      "n_above_floor": 0
+    }
+  },
+  "turn_distribution": {
+    "0": 11,
+    "1": 5,
+    "2": 3,
+    "4": 3,
+    "6": 1
+  }
+}

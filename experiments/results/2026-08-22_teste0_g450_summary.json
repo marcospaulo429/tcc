@@ -1,0 +1,149 @@
+{
+  "n_replays": 270,
+  "n_timed_out_excluded": 0,
+  "exact_rate": 1.0,
+  "mean_abs_dr": 0.0,
+  "max_abs_dr": 0.0,
+  "p95_abs_dr": 0.0,
+  "noise_floor": 0.0,
+  "suffix_len_mismatches": 3,
+  "by_decision_point": {
+    "context_policy": {
+      "n": 81,
+      "exact": 1.0,
+      "mean_abs": 0.0
+    },
+    "tool_call": {
+      "n": 90,
+      "exact": 1.0,
+      "mean_abs": 0.0
+    },
+    "termination": {
+      "n": 99,
+      "exact": 1.0,
+      "mean_abs": 0.0
+    }
+  },
+  "by_task": {
+    "api_router": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "c_late_fee": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "c_parcel_cost": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "c_temp_label": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "c_username_check": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "c_vote_tally": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "config_renderer": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "csv_normalizer": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "grade_curve": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "inventory_restock": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "invoice_pricing": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "l_discount_chain": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "l_door_controller": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "l_grade_report": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "l_log_parser": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "l_loyalty_points": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "l_order_validator": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "l_payroll_pipeline": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "l_rental_invoice": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "l_shipping_batch": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "l_vending_machine": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "log_formatter": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "loyalty_points": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "rate_limiter_bucket": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "s_commission_calc": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "s_energy_bill": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "s_freight_quote": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "s_sensor_alarm": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "s_ticket_pricer": {
+      "n": 9,
+      "exact": 1.0
+    },
+    "shift_cipher": {
+      "n": 9,
+      "exact": 1.0
+    }
+  }
+}

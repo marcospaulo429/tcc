@@ -1,0 +1,130 @@
+{
+  "queue_floor_ok": true,
+  "n_null_replays": 61,
+  "n_null_inexact": 0,
+  "n_points_sampled": 61,
+  "n_no_alternative": 40,
+  "n_counterfactuals": 21,
+  "n_timed_out_excluded": 0,
+  "noise_floor": 0.0,
+  "confirmatory_direction": "keep_context->summarize_context",
+  "by_direction": {
+    "keep_context->summarize_context": {
+      "n": 15,
+      "n_saturated": 12,
+      "I_values": [
+        -0.6,
+        -1.0,
+        -1.0,
+        -0.75,
+        0.0,
+        -0.875,
+        -0.8571428571428572,
+        -0.8,
+        -0.8888888888888888,
+        -1.0,
+        0.0,
+        -0.9,
+        0.0,
+        0.375,
+        -0.8571428571428572
+      ],
+      "n_above_floor_nonsaturated": 2
+    },
+    "summarize_context->keep_context": {
+      "n": 6,
+      "n_saturated": 3,
+      "I_values": [
+        0.23076923076923078,
+        0.07692307692307693,
+        -0.8888888888888888,
+        0.0,
+        1.0,
+        0.18181818181818188
+      ],
+      "n_above_floor_nonsaturated": 3
+    }
+  },
+  "by_task": {
+    "api_router": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "c_parcel_cost": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "c_temp_label": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "c_username_check": {
+      "n": 1,
+      "n_above_floor": 0
+    },
+    "csv_normalizer": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "grade_curve": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "invoice_pricing": {
+      "n": 2,
+      "n_above_floor": 1
+    },
+    "l_log_parser": {
+      "n": 3,
+      "n_above_floor": 2
+    },
+    "l_payroll_pipeline": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "l_vending_machine": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "log_formatter": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "loyalty_points": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "rate_limiter_bucket": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "s_commission_calc": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "s_energy_bill": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "s_freight_quote": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "s_ticket_pricer": {
+      "n": 1,
+      "n_above_floor": 1
+    },
+    "shift_cipher": {
+      "n": 1,
+      "n_above_floor": 1
+    }
+  },
+  "turn_distribution": {
+    "0": 10,
+    "1": 3,
+    "2": 3,
+    "3": 3,
+    "4": 1,
+    "5": 1
+  }
+}
