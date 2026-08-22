@@ -49,7 +49,9 @@ audited exception where a harness decision had a \emph{behavioral} (not
 informational) effect; (5) interaction-aware credit for harness training
 evaluated against outcome-only, single-layer credit (a reproduction of the
 CHILL-Harness principle in our environment), and a zero-credit masking
-control, dose-matched in total rollouts. \todo{ajustar pós-gates}
+control (which, under our greedy tie-break at $\theta=0$, is de facto an
+untrained keep-always policy --- we state this explicitly), dose-matched in
+total rollouts. \todo{ajustar pós-gates}
 
 \section{Related Work}
 % CHILL-Harness (2607.25825): counterfactual só na camada harness — nosso braço 2 é
