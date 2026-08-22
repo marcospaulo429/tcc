@@ -298,4 +298,20 @@
   (c) efeito pode depender de λ (custo é o combustível da armadilha) — candidata a ablation;
   (d) fração de fallback (71%) tem que ser reportada.
 
+### C1 seed 1 COMPLETA — GATE 3 preliminar (aguarda seeds 2–3)
+- **zero: R=0.847/R_eff=0.237 (656 eps) — IDÊNTICO a outcome e chm_cm.** O controle W1 fez
+  exatamente o que o reviewer previu: neste ambiente, a política inicial greedy (θ=0) já
+  equivale ao ótimo simples (keep-ish), então NENHUM braço demonstra ganho sobre "não treinar".
+- Leitura preliminar do GATE 3 (seed 1): braço 3 > braço 2 ✓ (0.237 vs −0.464, colapso);
+  braço 3 > braço 4 ✗ (empate exato). Pelo desfecho pré-definido: o claim de treino muda de
+  "crédito marginal ajuda" para **"crédito single-layer é ATIVAMENTE nocivo (colapsa abaixo
+  de não-treinar); crédito corrigido por interação é seguro (não colapsa)"** — segurança,
+  não vantagem. Efeito de teto: o ótimo de custo do ambiente é trivial (keep), não há o que
+  aprender além de evitar o veneno.
+- Disciplina: NÃO vamos recalibrar λ após ver resultados (pré-registro proíbe). Se quisermos
+  demonstrar vantagem positiva do crédito marginal, será um experimento NOVO pré-registrado
+  (C1b, ambiente com ótimo não-trivial — ex.: tasks com contexto longo onde keep estoura o
+  orçamento), decidido APÓS as seeds 2–3.
+- Seeds 2–3 rodando (decidem se o colapso do ch replica — esse é o resultado central).
+
 
