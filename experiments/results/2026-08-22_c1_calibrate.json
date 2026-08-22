@@ -1,0 +1,384 @@
+{
+  "lambda_cost": 1.0,
+  "policies": {
+    "keep_always": {
+      "mean_R": 0.598397435897436,
+      "mean_R_eff": 0.5771039358974359,
+      "per_task": [
+        {
+          "task_id": "api_router",
+          "R": 0.0,
+          "R_eff": -0.05025,
+          "prompt_tokens_total": 5025
+        },
+        {
+          "task_id": "c_late_fee",
+          "R": 1.0,
+          "R_eff": 0.99211,
+          "prompt_tokens_total": 789
+        },
+        {
+          "task_id": "c_parcel_cost",
+          "R": 1.0,
+          "R_eff": 0.99233,
+          "prompt_tokens_total": 767
+        },
+        {
+          "task_id": "c_temp_label",
+          "R": 1.0,
+          "R_eff": 0.99166,
+          "prompt_tokens_total": 834
+        },
+        {
+          "task_id": "c_username_check",
+          "R": 1.0,
+          "R_eff": 0.99249,
+          "prompt_tokens_total": 751
+        },
+        {
+          "task_id": "c_vote_tally",
+          "R": 1.0,
+          "R_eff": 0.97549,
+          "prompt_tokens_total": 2451
+        },
+        {
+          "task_id": "config_renderer",
+          "R": 0.0,
+          "R_eff": -0.00754,
+          "prompt_tokens_total": 754
+        },
+        {
+          "task_id": "csv_normalizer",
+          "R": 1.0,
+          "R_eff": 0.97401,
+          "prompt_tokens_total": 2599
+        },
+        {
+          "task_id": "grade_curve",
+          "R": 1.0,
+          "R_eff": 0.99119,
+          "prompt_tokens_total": 881
+        },
+        {
+          "task_id": "inventory_restock",
+          "R": 0.14285714285714285,
+          "R_eff": 0.12597714285714284,
+          "prompt_tokens_total": 1688
+        },
+        {
+          "task_id": "invoice_pricing",
+          "R": 0.8571428571428571,
+          "R_eff": 0.7961928571428571,
+          "prompt_tokens_total": 6095
+        },
+        {
+          "task_id": "l_discount_chain",
+          "R": 0.0,
+          "R_eff": -0.00918,
+          "prompt_tokens_total": 918
+        },
+        {
+          "task_id": "l_door_controller",
+          "R": 0.0,
+          "R_eff": -0.01048,
+          "prompt_tokens_total": 1048
+        },
+        {
+          "task_id": "l_grade_report",
+          "R": 1.0,
+          "R_eff": 0.97249,
+          "prompt_tokens_total": 2751
+        },
+        {
+          "task_id": "l_log_parser",
+          "R": 0.38461538461538464,
+          "R_eff": 0.3281553846153846,
+          "prompt_tokens_total": 5646
+        },
+        {
+          "task_id": "l_loyalty_points",
+          "R": 0.5833333333333334,
+          "R_eff": 0.5570333333333334,
+          "prompt_tokens_total": 2630
+        },
+        {
+          "task_id": "l_order_validator",
+          "R": 0.0,
+          "R_eff": -0.00942,
+          "prompt_tokens_total": 942
+        },
+        {
+          "task_id": "l_payroll_pipeline",
+          "R": 1.0,
+          "R_eff": 0.97381,
+          "prompt_tokens_total": 2619
+        },
+        {
+          "task_id": "l_rental_invoice",
+          "R": 1.0,
+          "R_eff": 0.97535,
+          "prompt_tokens_total": 2465
+        },
+        {
+          "task_id": "l_shipping_batch",
+          "R": 0.0,
+          "R_eff": -0.00934,
+          "prompt_tokens_total": 934
+        }
+      ]
+    },
+    "summarize_always": {
+      "mean_R": 0.20625,
+      "mean_R_eff": 0.19763850000000008,
+      "per_task": [
+        {
+          "task_id": "api_router",
+          "R": 0.0,
+          "R_eff": -0.00181,
+          "prompt_tokens_total": 181
+        },
+        {
+          "task_id": "c_late_fee",
+          "R": 1.0,
+          "R_eff": 0.99475,
+          "prompt_tokens_total": 525
+        },
+        {
+          "task_id": "c_parcel_cost",
+          "R": 1.0,
+          "R_eff": 0.99498,
+          "prompt_tokens_total": 502
+        },
+        {
+          "task_id": "c_temp_label",
+          "R": 0.0,
+          "R_eff": -0.03136,
+          "prompt_tokens_total": 3136
+        },
+        {
+          "task_id": "c_username_check",
+          "R": 1.0,
+          "R_eff": 0.99487,
+          "prompt_tokens_total": 513
+        },
+        {
+          "task_id": "c_vote_tally",
+          "R": 1.0,
+          "R_eff": 0.9946,
+          "prompt_tokens_total": 540
+        },
+        {
+          "task_id": "config_renderer",
+          "R": 0.0,
+          "R_eff": -0.0018,
+          "prompt_tokens_total": 180
+        },
+        {
+          "task_id": "csv_normalizer",
+          "R": 0.0,
+          "R_eff": -0.00398,
+          "prompt_tokens_total": 398
+        },
+        {
+          "task_id": "grade_curve",
+          "R": 0.125,
+          "R_eff": 0.08946,
+          "prompt_tokens_total": 3554
+        },
+        {
+          "task_id": "inventory_restock",
+          "R": 0.0,
+          "R_eff": -0.0297,
+          "prompt_tokens_total": 2970
+        },
+        {
+          "task_id": "invoice_pricing",
+          "R": 0.0,
+          "R_eff": -0.00181,
+          "prompt_tokens_total": 181
+        },
+        {
+          "task_id": "l_discount_chain",
+          "R": 0.0,
+          "R_eff": -0.00182,
+          "prompt_tokens_total": 182
+        },
+        {
+          "task_id": "l_door_controller",
+          "R": 0.0,
+          "R_eff": -0.00182,
+          "prompt_tokens_total": 182
+        },
+        {
+          "task_id": "l_grade_report",
+          "R": 0.0,
+          "R_eff": -0.00182,
+          "prompt_tokens_total": 182
+        },
+        {
+          "task_id": "l_log_parser",
+          "R": 0.0,
+          "R_eff": -0.00182,
+          "prompt_tokens_total": 182
+        },
+        {
+          "task_id": "l_loyalty_points",
+          "R": 0.0,
+          "R_eff": -0.0309,
+          "prompt_tokens_total": 3090
+        },
+        {
+          "task_id": "l_order_validator",
+          "R": 0.0,
+          "R_eff": -0.00181,
+          "prompt_tokens_total": 181
+        },
+        {
+          "task_id": "l_payroll_pipeline",
+          "R": 0.0,
+          "R_eff": -0.00182,
+          "prompt_tokens_total": 182
+        },
+        {
+          "task_id": "l_rental_invoice",
+          "R": 0.0,
+          "R_eff": -0.00182,
+          "prompt_tokens_total": 182
+        },
+        {
+          "task_id": "l_shipping_batch",
+          "R": 0.0,
+          "R_eff": -0.0018,
+          "prompt_tokens_total": 180
+        }
+      ]
+    },
+    "thr600": {
+      "mean_R": 0.5440018315018315,
+      "mean_R_eff": 0.5258508315018315,
+      "per_task": [
+        {
+          "task_id": "api_router",
+          "R": 0.0,
+          "R_eff": -0.03382,
+          "prompt_tokens_total": 3382
+        },
+        {
+          "task_id": "c_late_fee",
+          "R": 1.0,
+          "R_eff": 0.99211,
+          "prompt_tokens_total": 789
+        },
+        {
+          "task_id": "c_parcel_cost",
+          "R": 1.0,
+          "R_eff": 0.99233,
+          "prompt_tokens_total": 767
+        },
+        {
+          "task_id": "c_temp_label",
+          "R": 1.0,
+          "R_eff": 0.99166,
+          "prompt_tokens_total": 834
+        },
+        {
+          "task_id": "c_username_check",
+          "R": 1.0,
+          "R_eff": 0.99249,
+          "prompt_tokens_total": 751
+        },
+        {
+          "task_id": "c_vote_tally",
+          "R": 1.0,
+          "R_eff": 0.97912,
+          "prompt_tokens_total": 2088
+        },
+        {
+          "task_id": "config_renderer",
+          "R": 0.0,
+          "R_eff": -0.00754,
+          "prompt_tokens_total": 754
+        },
+        {
+          "task_id": "csv_normalizer",
+          "R": 1.0,
+          "R_eff": 0.97794,
+          "prompt_tokens_total": 2206
+        },
+        {
+          "task_id": "grade_curve",
+          "R": 1.0,
+          "R_eff": 0.99119,
+          "prompt_tokens_total": 881
+        },
+        {
+          "task_id": "inventory_restock",
+          "R": 0.14285714285714285,
+          "R_eff": 0.12597714285714284,
+          "prompt_tokens_total": 1688
+        },
+        {
+          "task_id": "invoice_pricing",
+          "R": 0.0,
+          "R_eff": -0.03845,
+          "prompt_tokens_total": 3845
+        },
+        {
+          "task_id": "l_discount_chain",
+          "R": 0.0,
+          "R_eff": -0.00918,
+          "prompt_tokens_total": 918
+        },
+        {
+          "task_id": "l_door_controller",
+          "R": 0.0,
+          "R_eff": -0.01048,
+          "prompt_tokens_total": 1048
+        },
+        {
+          "task_id": "l_grade_report",
+          "R": 1.0,
+          "R_eff": 0.97249,
+          "prompt_tokens_total": 2751
+        },
+        {
+          "task_id": "l_log_parser",
+          "R": 0.15384615384615385,
+          "R_eff": 0.11374615384615386,
+          "prompt_tokens_total": 4010
+        },
+        {
+          "task_id": "l_loyalty_points",
+          "R": 0.5833333333333334,
+          "R_eff": 0.5570333333333334,
+          "prompt_tokens_total": 2630
+        },
+        {
+          "task_id": "l_order_validator",
+          "R": 0.0,
+          "R_eff": -0.00942,
+          "prompt_tokens_total": 942
+        },
+        {
+          "task_id": "l_payroll_pipeline",
+          "R": 1.0,
+          "R_eff": 0.97381,
+          "prompt_tokens_total": 2619
+        },
+        {
+          "task_id": "l_rental_invoice",
+          "R": 1.0,
+          "R_eff": 0.97535,
+          "prompt_tokens_total": 2465
+        },
+        {
+          "task_id": "l_shipping_batch",
+          "R": 0.0,
+          "R_eff": -0.00934,
+          "prompt_tokens_total": 934
+        }
+      ]
+    }
+  },
+  "keep_always_is_best": true
+}

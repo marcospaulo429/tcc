@@ -268,5 +268,13 @@
 ### Fase C1 iniciada
 - Calibração de λ lançada (pré-registro: UMA vez, antes de qualquer treino; valida que
   keep-always NÃO é ótimo sob R_eff com λ=1). 3 políticas fixas × 20 tasks de treino.
+- **Resultado da calibração: λ=1 insuficiente** (keep_always domina: R=0.598/2.129 tok vs
+  thr600 R=0.544/1.815 tok vs summ R=0.206/0.861 tok). Como R_eff é LINEAR em λ, a escolha
+  foi analítica sobre os MESMOS dados (sem recoleta, sem iterar em treino — pré-registro
+  honrado): cruzamento thr600>keep em λ*=17.2; **λ=25 fixado** — nesse ponto a política
+  intermediária é a melhor das três (0.090 vs 0.066 keep vs −0.009 summ), i.e., existe ótimo
+  não-trivial aprendível. Registrado ANTES de qualquer braço rodar.
+- Cadeia lançada (experiments/c1_chain.sh): 4 braços × 3 seeds, SEED-MAJOR (comparação
+  completa dos braços já na 1ª seed), budget 2000 chamadas/braço, idempotente.
 
 
