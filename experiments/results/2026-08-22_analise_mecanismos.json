@@ -1,0 +1,533 @@
+{
+  "counts": {
+    "screening_total": 75,
+    "blindados": 52,
+    "mech1": 23,
+    "mech2": 22,
+    "ambos": 9,
+    "nenhum": 1,
+    "sem_dicionario": 28
+  },
+  "points": [
+    {
+      "tag": "g600",
+      "task_id": "grade_curve",
+      "cp_index": 0,
+      "C_H": 0.875,
+      "I": -0.875,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g600",
+      "task_id": "l_log_parser",
+      "cp_index": 10,
+      "C_H": -0.15384615384615385,
+      "I": 0.15384615384615385,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": true,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g600",
+      "task_id": "s_ticket_pricer",
+      "cp_index": 4,
+      "C_H": 0.8,
+      "I": -0.8,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g600",
+      "task_id": "shift_cipher",
+      "cp_index": 0,
+      "C_H": 0.75,
+      "I": -0.75,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g600",
+      "task_id": "invoice_pricing",
+      "cp_index": 30,
+      "C_H": -1.0,
+      "I": 1.0,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": true,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g600",
+      "task_id": "s_freight_quote",
+      "cp_index": 4,
+      "C_H": 0.8888888888888888,
+      "I": -0.8888888888888888,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g600",
+      "task_id": "c_temp_label",
+      "cp_index": 0,
+      "C_H": 0.2222222222222222,
+      "I": -0.2222222222222222,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g600",
+      "task_id": "rate_limiter_bucket",
+      "cp_index": 0,
+      "C_H": 0.8571428571428572,
+      "I": -0.8571428571428572,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": true,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g600",
+      "task_id": "loyalty_points",
+      "cp_index": 0,
+      "C_H": 0.8571428571428572,
+      "I": -0.8571428571428572,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g600",
+      "task_id": "l_payroll_pipeline",
+      "cp_index": 7,
+      "C_H": 0.6,
+      "I": -0.6,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": true,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g600",
+      "task_id": "s_energy_bill",
+      "cp_index": 3,
+      "C_H": 0.8888888888888888,
+      "I": -0.8888888888888888,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g600",
+      "task_id": "log_formatter",
+      "cp_index": 0,
+      "C_H": 1.0,
+      "I": -1.0,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": true,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g600",
+      "task_id": "s_commission_calc",
+      "cp_index": 3,
+      "C_H": 0.9,
+      "I": -0.9,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g450",
+      "task_id": "s_energy_bill",
+      "cp_index": 3,
+      "C_H": 0.8888888888888888,
+      "I": -0.8888888888888888,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": true,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g450",
+      "task_id": "log_formatter",
+      "cp_index": 0,
+      "C_H": 1.0,
+      "I": -1.0,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": true,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g450",
+      "task_id": "shift_cipher",
+      "cp_index": 0,
+      "C_H": 0.75,
+      "I": -0.75,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": true,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g450",
+      "task_id": "rate_limiter_bucket",
+      "cp_index": 0,
+      "C_H": 0.8571428571428572,
+      "I": -0.8571428571428572,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": true,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g450",
+      "task_id": "s_ticket_pricer",
+      "cp_index": 4,
+      "C_H": 0.8,
+      "I": -0.8,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": true,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g450",
+      "task_id": "s_commission_calc",
+      "cp_index": 3,
+      "C_H": 0.9,
+      "I": -0.9,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": true,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g450",
+      "task_id": "s_freight_quote",
+      "cp_index": 10,
+      "C_H": 0.8888888888888888,
+      "I": -0.8888888888888888,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": true,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g450",
+      "task_id": "grade_curve",
+      "cp_index": 0,
+      "C_H": 0.875,
+      "I": -0.875,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g450",
+      "task_id": "loyalty_points",
+      "cp_index": 0,
+      "C_H": 0.8571428571428572,
+      "I": -0.8571428571428572,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g450",
+      "task_id": "csv_normalizer",
+      "cp_index": 0,
+      "C_H": 1.0,
+      "I": -1.0,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": true,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g450",
+      "task_id": "c_temp_label",
+      "cp_index": 0,
+      "C_H": 1.0,
+      "I": -1.0,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g450",
+      "task_id": "invoice_pricing",
+      "cp_index": 18,
+      "C_H": -1.0,
+      "I": 1.0,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": true,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g900",
+      "task_id": "l_payroll_pipeline",
+      "cp_index": 7,
+      "C_H": 0.6,
+      "I": -0.6,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g900",
+      "task_id": "s_ticket_pricer",
+      "cp_index": 4,
+      "C_H": 0.8,
+      "I": -0.8,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g900",
+      "task_id": "s_commission_calc",
+      "cp_index": 3,
+      "C_H": 0.9,
+      "I": -0.9,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g900",
+      "task_id": "shift_cipher",
+      "cp_index": 0,
+      "C_H": 0.75,
+      "I": -0.75,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g900",
+      "task_id": "rate_limiter_bucket",
+      "cp_index": 0,
+      "C_H": 0.8571428571428572,
+      "I": -0.8571428571428572,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g900",
+      "task_id": "grade_curve",
+      "cp_index": 0,
+      "C_H": 0.875,
+      "I": -0.875,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g900",
+      "task_id": "log_formatter",
+      "cp_index": 0,
+      "C_H": 1.0,
+      "I": -1.0,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g900",
+      "task_id": "s_energy_bill",
+      "cp_index": 3,
+      "C_H": 0.8888888888888888,
+      "I": -0.8888888888888888,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "g900",
+      "task_id": "invoice_pricing",
+      "cp_index": 18,
+      "C_H": -0.8571428571428571,
+      "I": 0.857142857142857,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": true,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g900",
+      "task_id": "invoice_pricing",
+      "cp_index": 30,
+      "C_H": -0.8571428571428571,
+      "I": 0.857142857142857,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g900",
+      "task_id": "loyalty_points",
+      "cp_index": 0,
+      "C_H": 0.8571428571428572,
+      "I": -0.8571428571428572,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "g900",
+      "task_id": "csv_normalizer",
+      "cp_index": 0,
+      "C_H": 1.0,
+      "I": -1.0,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "mt6",
+      "task_id": "l_payroll_pipeline",
+      "cp_index": 7,
+      "C_H": 0.6,
+      "I": -0.6,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": true,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "mt6",
+      "task_id": "csv_normalizer",
+      "cp_index": 0,
+      "C_H": 1.0,
+      "I": -1.0,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": true,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "mt6",
+      "task_id": "log_formatter",
+      "cp_index": 0,
+      "C_H": 1.0,
+      "I": -1.0,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": true,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "mt6",
+      "task_id": "shift_cipher",
+      "cp_index": 0,
+      "C_H": 0.75,
+      "I": -0.75,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "mt6",
+      "task_id": "l_log_parser",
+      "cp_index": 10,
+      "C_H": -0.23076923076923078,
+      "I": 0.23076923076923078,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": true,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "mt6",
+      "task_id": "l_log_parser",
+      "cp_index": 16,
+      "C_H": -0.07692307692307693,
+      "I": 0.07692307692307693,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "mt6",
+      "task_id": "grade_curve",
+      "cp_index": 0,
+      "C_H": 0.875,
+      "I": -0.875,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "mt6",
+      "task_id": "loyalty_points",
+      "cp_index": 0,
+      "C_H": 0.8571428571428572,
+      "I": -0.8571428571428572,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": false,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "mt6",
+      "task_id": "s_freight_quote",
+      "cp_index": 10,
+      "C_H": 0.8888888888888888,
+      "I": -0.8888888888888888,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": true,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "mt6",
+      "task_id": "s_ticket_pricer",
+      "cp_index": 4,
+      "C_H": 0.8,
+      "I": -0.8,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "mt6",
+      "task_id": "s_energy_bill",
+      "cp_index": 3,
+      "C_H": 0.8888888888888888,
+      "I": -0.8888888888888888,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "mt6",
+      "task_id": "c_temp_label",
+      "cp_index": 0,
+      "C_H": 1.0,
+      "I": -1.0,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "mt6",
+      "task_id": "s_commission_calc",
+      "cp_index": 3,
+      "C_H": 0.9,
+      "I": -0.9,
+      "mech1_reinjecao": true,
+      "mech2_redisparo": false,
+      "tem_dicionario": true
+    },
+    {
+      "tag": "mt6",
+      "task_id": "invoice_pricing",
+      "cp_index": 12,
+      "C_H": -1.0,
+      "I": 1.0,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": true,
+      "tem_dicionario": false
+    },
+    {
+      "tag": "mt6",
+      "task_id": "rate_limiter_bucket",
+      "cp_index": 0,
+      "C_H": 0.8571428571428572,
+      "I": -0.8571428571428572,
+      "mech1_reinjecao": false,
+      "mech2_redisparo": true,
+      "tem_dicionario": false
+    }
+  ]
+}

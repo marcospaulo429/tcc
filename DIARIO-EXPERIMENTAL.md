@@ -254,4 +254,19 @@
   Reportar como resultado negativo parcial + análise de estrutura, NÃO como contribuição de
   critic. A contribuição de treino (C1) não depende do critic: usa replay direto.
 
+### D1/W5 — Sub-mecanismos do screening-off quantificados (experiments/analise_mecanismos.py)
+- 75 pontos de screening exato; 52 "blindados" (C_H ≠ 0, o caso interessante).
+- **mech1 (re-injeção estrutural):** nos 24 pontos com dicionário de constantes (tasks v3),
+  **23/24 têm a′ re-injetando ≥1 constante crítica** — confirma: propriedade do estimando
+  do-operator (a′ amostrada do estado PRÉ-intervenção carrega a informação), argumentável
+  formalmente. 28 pontos v2 sem dicionário (limitação anotada: extrair constantes v2 depois).
+- **mech2 (re-disparo empírico):** 22/52 — o harness vivo dispara summarize ≤2 decisões
+  depois no braço M de qualquer forma (a intervenção só antecipa). 9 pontos têm ambos.
+- 1 ponto com nenhum dos dois (l_log_parser mt6, |C_H|=0.08 — efeito pequeno, outra via).
+- Consequência p/ F3: pizza/barras dos mecanismos por regime; mech1 formal + mech2 empírico.
+
+### Fase C1 iniciada
+- Calibração de λ lançada (pré-registro: UMA vez, antes de qualquer treino; valida que
+  keep-always NÃO é ótimo sob R_eff com λ=1). 3 políticas fixas × 20 tasks de treino.
+
 
