@@ -277,4 +277,25 @@
 - Cadeia lançada (experiments/c1_chain.sh): 4 braços × 3 seeds, SEED-MAJOR (comparação
   completa dos braços já na 1ª seed), budget 2000 chamadas/braço, idempotente.
 
+### C1 seed 1 — prévia (outcome/ch/chm_cm prontos; zero rodando)
+- Held-out (10 tasks, greedy): outcome R=0.847/R_eff=0.237 (571 eps); **ch COLAPSA:
+  R=0.054/R_eff=−0.464 (278 eps)**; chm_cm R=0.847/R_eff=0.237 (104 eps).
+- **Mecanismo do colapso do ch (verificado nos logs, não especulação):** 264/403 créditos
+  positivos (média +0.106), θ_bias 0.3→3.3 monotônico ENQUANTO R de treino caía 0.374→0.142.
+  Cadeia causal: assimetria de irreversibilidade (flip summarize→keep não recupera reward
+  quando a informação já foi destruída) + custo de tokens do flip com λ=25 ⇒ C_H_eff > 0
+  para summarize em trajetórias já perdidas ⇒ REINFORCE reforça summarize ⇒ mais destruição
+  ⇒ feedback positivo. É a dupla contagem prevista no pré-registro — só que em forma de
+  colapso, não de ruído.
+- **Por que chm_cm resiste (auditoria dos créditos):** créditos genuínos C_HM−C_M são
+  majoritariamente negativos (42/50, média −0.22) — condicionar na ação do modelo cancela o
+  componente "trajetória já estava perdida" e sobra o sinal certo ("resumir piora"). Os 125
+  fallbacks→C_H (71%, a′ não encontrado) têm média +0.076 mas NÃO envenenam: são estados de
+  baixa entropia (reparo/verificação), distribuição diferente dos pontos que alimentam a
+  armadilha no ch. Dose de veneno menor + 50 créditos genuínos fortes = θ→−4 (keep).
+- Cautelas pré-registradas para a escrita: (a) chm_cm EMPATA com outcome (não "vence") —
+  claim é robustez ao modo de falha, dose-matched; (b) falta braço zero e seeds 2–3;
+  (c) efeito pode depender de λ (custo é o combustível da armadilha) — candidata a ablation;
+  (d) fração de fallback (71%) tem que ser reportada.
+
 
