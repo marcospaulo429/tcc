@@ -59,6 +59,7 @@
 
 - D1. Anatomia de I: taxonomia screening-off vs sinergia com exemplos (OBRIGATÓRIA — vira figura central).
 - D2. Generalização: critic treinado em threshold 600 → testado em 450/900; tasks held-out.
+- D2b. **Validação externa (verificada 2026-08-22): MBPP+ adaptado a multi-turn, subset ~100 tasks** — única âncora comparável (C3 v2 usa Qwen3-4B em MBPP+ e reporta credit fidelity Spearman vs replay GT = 0.260); reportar nossa fidelity lado a lado (mesma métrica, decomposição camadas vs agentes). Custo ~1–2 dias/4090. Prioridade: depois de C1, antes de D3.
 - D3. Budget de counterfactuals (1/2/4/8) — PRIMEIRA a cortar (CHILL/CAR cobrem).
 
 ## Fase E — Artigo (começa JÁ, não na semana 4) [P11]
