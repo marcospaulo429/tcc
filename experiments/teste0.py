@@ -61,6 +61,18 @@ def run_null_replays(out: Path, llm: LLMClient, n_points: int, n_reps: int):
                     continue
                 r = replay_from(traj, d.index, llm, out / "replays")
                 dr = r["reward"] - traj.final_reward
+                # Retries irmãos: gravados ANTES do tool_call (dentro de
+                # _call_and_parse), mas reexecutados pelo replay que parte do
+                # tool_call — contam no sufixo esperado (causa raiz do falso
+                # mismatch de config_renderer/inventory_restock, ver Fase 0.1).
+                n_sibling_retries = 0
+                j = d.index - 1
+                while (d.decision_point == "tool_call" and j >= 0
+                       and traj.decisions[j].decision_point == "retry"
+                       and traj.decisions[j].state_before.get("turn")
+                       == d.state_before.get("turn")):
+                    n_sibling_retries += 1
+                    j -= 1
                 append_row(results, {
                     "task_id": traj.task_id, "trajectory_id": traj.trajectory_id,
                     "index": d.index, "decision_type": d.decision_type,
@@ -70,7 +82,8 @@ def run_null_replays(out: Path, llm: LLMClient, n_points: int, n_reps: int):
                     "n_retries": r["n_retries"], "n_give_ups": r["n_give_ups"],
                     "final_timed_out": r["final_timed_out"],
                     "n_decisions_replay": r["n_decisions"],
-                    "n_decisions_suffix": len(traj.decisions) - d.index,
+                    "n_decisions_suffix": len(traj.decisions) - d.index
+                    + n_sibling_retries,
                     "replay_traj": r["trajectory_path"]})
                 print(f"[replay] {traj.task_id} idx={d.index} rep={rep} "
                       f"dR={dr:+.2f}", flush=True)
