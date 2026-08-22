@@ -1,4 +1,10 @@
-"""C1 — treino REINFORCE da política de context_policy em 3 braços dose-matched.
+"""C1 — treino REINFORCE da política de context_policy em 4 braços dose-matched.
+
+Braços: outcome (R_eff − baseline em todos os cp), ch (crédito C_H por replay),
+chm_cm (crédito marginal C_HM − C_M, 2 replays + amostragem), zero (CONTROLE W1 do
+review ICLR: crédito identicamente 0 → θ congelado, 0 replays, mesmo orçamento de
+episódios — se chm_cm não vencer este braço dose-matched, o crédito marginal não
+carrega informação além de "não atualizar").
 
 Contabilidade de orçamento: TODA chamada LLM conta (episódios + replays de crédito +
 amostragem de a′). O llm passado deve expor `call_count` (o CLI embrulha o LLMClient
@@ -21,6 +27,7 @@ Split determinístico: tasks do módulo ordenadas por task_id; 20 primeiras = tr
 import argparse
 import importlib
 import json
+import math
 import random
 from pathlib import Path
 
@@ -222,7 +229,7 @@ def credit_for_point(traj: Trajectory, cp_decision, llm, policy_greedy, arm: str
 
 def train(tasks: list[dict], llm, arm: str, budget_calls: int, seed: int, out_dir,
           lambda_cost: float = 1.0, k_credit: int = 2, lr: float = 0.5) -> dict:
-    if arm not in ("outcome", "ch", "chm_cm"):
+    if arm not in ("outcome", "ch", "chm_cm", "zero"):
         raise ValueError(f"arm desconhecido: {arm}")
     out_dir = Path(out_dir)
     llm = _ensure_counting(llm)
@@ -239,7 +246,9 @@ def train(tasks: list[dict], llm, arm: str, budget_calls: int, seed: int, out_di
                              episode_seed, lambda_cost)
         grad_sum = [0.0] * N_FEATURES
         credits: list[dict] = []
-        if arm == "outcome":
+        if arm == "zero":
+            pass  # controle: crédito 0 em todo ponto → grad_sum fica nulo, θ congelado
+        elif arm == "outcome":
             adv = ep["R_eff"] - baseline
             for pt in ep["cp_points"]:
                 g = policy.grad_logp(pt["phi"], pt["action"])
@@ -262,6 +271,7 @@ def train(tasks: list[dict], llm, arm: str, budget_calls: int, seed: int, out_di
             "episode_idx": episode_idx, "task_id": task["task_id"],
             "seed": episode_seed, "R": ep["R"], "R_eff": ep["R_eff"],
             "calls_cum": llm.call_count, "theta": theta,
+            "grad_norm": math.sqrt(sum(g * g for g in grad_sum)),
             "credits": credits, "arm": arm})
         episode_idx += 1
     return {"arm": arm, "seed": seed, "lambda_cost": lambda_cost,
@@ -332,7 +342,7 @@ def load_task_split(module_name: str) -> tuple[list[dict], list[dict]]:
 def main() -> None:
     ap = argparse.ArgumentParser(description="C1: treino REINFORCE da context_policy")
     ap.add_argument("--arm", required=True,
-                    choices=["outcome", "ch", "chm_cm", "calibrate"])
+                    choices=["outcome", "ch", "chm_cm", "zero", "calibrate"])
     ap.add_argument("--tasks-module", default="environment.tasks_all")
     ap.add_argument("--budget-calls", type=int, default=2000)
     ap.add_argument("--seed", type=int, default=1)

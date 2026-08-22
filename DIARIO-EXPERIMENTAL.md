@@ -185,3 +185,28 @@
     C3 ("mesma métrica, decomposição diferente"), nunca como head-to-head.
   - Barra evidencial de review: reproduzir o protocolo de auditoria de 2608.19760 (rank corr.
     vs replay GT, dose-matching) — já incorporado nas Fases B/C do plano.
+
+## 2026-08-22 — Review ICLR simulado (subagente iclr, criado a pedido do orientando)
+
+- Score global 6/10 (borderline → accept condicional ao GATE 3). Diagnóstico: infraestrutura de
+  medição e anatomia do screening-off estão sólidas; a significância depende do que ainda não
+  rodou (critic, C1, MBPP+).
+- **Weakness mais perigosa (W1):** sob screening-off puro, crédito marginal C_HM−C_M ≡ 0 →
+  braço 3 pode ser indistinguível de "não treinar", pagando 3 replays por isso. **Ação tomada
+  IMEDIATA (antes do C1 rodar):** braço 4 "zero" implementado em rl/train_c1.py (crédito ≡ 0,
+  θ congelado, 0 replays, mesma dose de episódios) + grad_norm logado por episódio (contra a
+  explicação "variância menor, não crédito", W6). Pré-registros 9 e 10 adicionados ao plano.
+  GATE 3 agora exige braço 3 > braço 4.
+- **W2 (N de I pequeno, 3 pts não-saturados/config):** teste certo do claim mecanístico é o
+  sign test sobre C_HM=C_M EXATO (N=21+/config), não a magnitude dos não-saturados. Pré-registrado.
+- **W3 (um modelo):** screening-off pode ser artefato da baixa entropia do Qwen3-4B. Nova
+  ablation D2c: réplica do teste 3 com Qwen3-1.7B, thr600, ~10 tasks (~1 dia/4090).
+- **W5 (trivialidade):** parte do screening-off (a′ re-injeta informação) é propriedade
+  ESTRUTURAL do estimando, não achado — D1 vai separar: mecanismo 1 com argumento formal,
+  mecanismo 2 (re-disparo downstream do harness vivo) como achado empírico, com fração
+  quantificada nos replays já coletados.
+- O que o review mandou NÃO atacar mais: fidelidade do replay, controles de circularidade,
+  pré-registros, justificativa das tasks sintéticas, ausência de sinergia (GATE-1b basta).
+- Pergunta de rebuttal mais difícil hoje: "por que pagar 3 replays se o crédito marginal é 0?"
+  → resposta empírica virá do GATE 3 (braço 3 vs braço 4).
+

@@ -224,3 +224,19 @@ def test_train_budget_accounting_and_stop(tmp_path):
         assert rows[-2]["calls_cum"] < budget
     for r in rows:
         assert r["arm"] == "outcome" and len(r["theta"]) == 5
+
+
+def test_train_arm_zero_freezes_theta_and_pays_no_replays(tmp_path):
+    llm = _branching_training_llm()
+    summary = train([SYNTH_TASK], llm, arm="zero", budget_calls=20, seed=3,
+                    out_dir=tmp_path / "train", lambda_cost=1.0)
+    assert summary["theta"] == [0.0] * 5  # controle: crédito 0 → θ nunca muda
+    rows = [json.loads(line) for line in
+            (tmp_path / "train" / "train_log.jsonl").read_text().splitlines()]
+    for r in rows:
+        assert r["credits"] == [] and r["grad_norm"] == 0.0
+    # 0 replays: todas as chamadas vêm de episódios (mesma dose que outcome)
+    llm2 = _branching_training_llm()
+    ref = train([SYNTH_TASK], llm2, arm="outcome", budget_calls=20, seed=3,
+                out_dir=tmp_path / "ref", lambda_cost=1.0)
+    assert summary["episodes"] == ref["episodes"]

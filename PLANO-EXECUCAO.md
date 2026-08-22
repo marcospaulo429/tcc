@@ -56,6 +56,12 @@
   3. *corrigido por interação:* mesmos K pontos; crédito = C_HM − C_M (contribuição marginal do
      harness condicional à ação do modelo; = 0 sob screening-off) via a′ (8 seeds) + 2 replays.
      Sem a′ encontrado → crédito = C_H (sem evidência de mediação; custo da amostragem contado).
+  4. *zero (controle W1 do review ICLR, pré-registrado ANTES de rodar C1):* crédito ≡ 0 →
+     θ congelado, 0 replays, mesmo orçamento de episódios. Neutraliza "o ganho do braço 3 é
+     só masking/menor variância": se braço 3 ≯ braço 4 dose-matched, o crédito marginal não
+     carrega informação além de "não atualizar" — e reportamos isso como resultado.
+- **Variância de gradiente por braço:** `grad_norm` logado por episódio (grátis) — evidência
+   direta contra a explicação "variância menor, não crédito" (W6).
 - **Dose-matching (pré-registrado):** orçamento B de ROLLOUTS TOTAIS por braço (episódios +
   replays de crédito; chamadas de amostragem de a′ contadas como rollout/12 ≈ custo médio por
   turno). Curvas por rollout acumulado. 3 seeds de treino. Tasks: 20 treino / 10 held-out
@@ -73,13 +79,22 @@
 - Métricas: success rate final + área sob a curva de aprendizado; 3 seeds de treino; tasks held-out.
 - C2 (stretch): LoRA GRPO no Qwen3-4B com C(M). Só se C1 fechar antes do dia 21.
 
-**GATE 3:** braço 3 > braço 2 em eficiência? → título/claim final do artigo.
+**GATE 3:** braço 3 > braço 2 em eficiência? E braço 3 > braço 4 (controle zero)? → título/claim final do artigo.
 
 ## Fase D — Ablations (cortáveis nesta ordem) [Q4]
 
 - D1. Anatomia de I: taxonomia screening-off vs sinergia com exemplos (OBRIGATÓRIA — vira figura central).
+  Inclui (W5 do review): quantificar nos replays JÁ COLETADOS a fração de screening-off por
+  sub-mecanismo (re-injeção de informação pela a′ = propriedade estrutural do estimando, com
+  argumento formal; re-disparo downstream do harness vivo = achado empírico). Teste do claim
+  mecanístico = sign test sobre "C_HM = C_M exato" (usa TODOS os pontos, N=21+ por config,
+  não só os não-saturados) (W2).
 - D2. Generalização: critic treinado em threshold 600 → testado em 450/900; tasks held-out.
 - D2b. **Validação externa (verificada 2026-08-22): MBPP+ adaptado a multi-turn, subset ~100 tasks** — única âncora comparável (C3 v2 usa Qwen3-4B em MBPP+ e reporta credit fidelity Spearman vs replay GT = 0.260); reportar nossa fidelity lado a lado (mesma métrica, decomposição camadas vs agentes). Custo ~1–2 dias/4090. Prioridade: depois de C1, antes de D3.
+- D2c. **Réplica com 2º modelo (W3 do review ICLR):** teste 3 (I) com Qwen3-1.7B (mesma infra vLLM),
+  só thr600, ~10 tasks (30 baselines + ~80 replays, ~1 dia/4090). Pergunta: screening-off reaparece?
+  SIM → mecanismo é do desenho da intervenção, não do modelo (generalidade). NÃO → limitação
+  declarada com evidência. Prioridade: entre D2 e D2b — melhor gasto marginal contra "um modelo".
 - D3. Budget de counterfactuals (1/2/4/8) — PRIMEIRA a cortar (CHILL/CAR cobrem).
 
 ## Fase E — Artigo (começa JÁ, não na semana 4) [P11]
@@ -90,7 +105,15 @@
 
 ## Pré-registros consolidados
 
-1. Piso por config; execução sequencial como premissa. 2. Yield e regra de parada da Fase A. 3. Estatística do critic (cluster por task, zero-inflation, k=10). 4. Features pre vs post. 5. Perturbação estruturada de a′ = estimando distinto (só ablation, nunca pooled). 6. Dose-matching de C1 por rollout total. 7. Direções/transições jamais agregadas. 8. Saturação fora dos critérios confirmatórios.
+1. Piso por config; execução sequencial como premissa. 2. Yield e regra de parada da Fase A. 3. Estatística do critic (cluster por task, zero-inflation, k=10). 4. Features pre vs post. 5. Perturbação estruturada de a′ = estimando distinto (só ablation, nunca pooled). 6. Dose-matching de C1 por rollout total. 7. Direções/transições jamais agregadas. 8. Saturação fora dos critérios confirmatórios. 9. Braço 4 (zero) como controle de masking do C1; GATE 3 exige braço 3 > braço 4 (pré-registrado 2026-08-22, antes de qualquer treino). 10. Claim mecanístico do screening-off testado por sign test sobre C_HM=C_M exato (todos os pontos, não só não-saturados).
+
+## Review ICLR simulado (2026-08-22, subagente iclr) — resumo acionável
+
+- Score global 6 (borderline → accept condicional a GATE 3). Novidade 7, rigor 7.5, significância 5→7 se C1 fechar.
+- [MATA-PAPER] W1 braço 4 zero → **implementado + pré-registrado** (rl/train_c1.py). W2 N de I pequeno → grid + GATE-1b + sign test (pré-registro 10).
+- [SCORE-DOWN] W3 um modelo → D2c (Qwen3-1.7B). W4 distância p/ CHILL → braço 2 enquadrado como reprodução de CHILL no nosso ambiente + tabela T1. W5 trivialidade do screening-off → D1 separa propriedade estrutural (mecanismo 1, com argumento formal) de achado empírico (mecanismo 2). W6 variância → grad_norm logado + braço 4.
+- [POLIMENTO] W7 piso como medição sob premissas (não garantia) + parágrafo próprio p/ achado APC. W8 c_temp_label no corpo do paper, não footnote.
+- Pergunta de rebuttal mais difícil: "se C_HM−C_M ≡ 0 nos pontos medidos, por que pagar 3 replays em vez de não treinar o harness nesses pontos?" → resposta empírica = GATE 3 (braço 3 vs braço 4).
 
 ## Cronograma (gates > datas)
 
