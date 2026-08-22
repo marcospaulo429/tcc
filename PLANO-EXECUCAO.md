@@ -42,6 +42,29 @@
 
 ## Fase C — Crédito em treino (LLM frozen; C2 é stretch) [P2, P3]
 
+### C1 — desenho fechado (2026-08-22, pós-GATE 1)
+- **Política treinável:** logística π_θ(summarize | φ) nos pontos de context_policy;
+  φ = [1, context_tokens/1000, turn/max_turns, tests_passed_frac, n_writes_so_far/3].
+  Demais decisões do harness (retry, termination) permanecem regras fixas. LLM frozen (T=0, seed).
+- **Objetivo com pressão de custo (pré-registrado; sem ele "keep sempre" é trivialmente ótimo):**
+  R_eff = R_testes − λ·(prompt_tokens_totais/100000), λ=1 (≈0.1 por 10k tokens; calibrar UMA vez
+  para que a regra fixa thr600 não seja ótima, ANTES de qualquer treino — nunca depois).
+- **Braços (REINFORCE, baseline = média móvel de R_eff):**
+  1. *outcome-only:* todo ponto cp recebe advantage (R_eff − b̄).
+  2. *C(H) puro:* K=2 pontos cp/episódio amostrados; crédito = C_H via 1 replay flip on-policy
+     (política atual, DURANTE o treino); demais pontos sem update.
+  3. *corrigido por interação:* mesmos K pontos; crédito = C_HM − C_M (contribuição marginal do
+     harness condicional à ação do modelo; = 0 sob screening-off) via a′ (8 seeds) + 2 replays.
+     Sem a′ encontrado → crédito = C_H (sem evidência de mediação; custo da amostragem contado).
+- **Dose-matching (pré-registrado):** orçamento B de ROLLOUTS TOTAIS por braço (episódios +
+  replays de crédito; chamadas de amostragem de a′ contadas como rollout/12 ≈ custo médio por
+  turno). Curvas por rollout acumulado. 3 seeds de treino. Tasks: 20 treino / 10 held-out
+  (estratificado). Métricas: R_eff e success rate em held-out, AUC da curva.
+- **Predição pré-registrada:** braço 2 supercredita decisões blindadas (screening-off) →
+  gradiente ruidoso; braço 3 zera crédito blindado e concentra update onde há efeito marginal
+  real. Falseável: braço 3 paga 2× por crédito; se a correção não ajudar, perde dose-matched.
+
+
 - C1. Harness treinável: política logística (features `pre`: context_tokens, turn, tests_passed) com temperatura, decide context_policy. **TRÊS braços obrigatórios:**
   1. outcome-only (REINFORCE com R final);
   2. crédito C(H) puro por decisão (replay on-policy: 1 replay counterfactual por decisão amostrada, DURANTE o treino);
