@@ -1,0 +1,27 @@
+{
+  "data": "2026-08-23",
+  "pre_registro": 14,
+  "modelo": "Qwen/Qwen3-1.7B",
+  "configs": {
+    "q17_g600": {
+      "n_cf": 11,
+      "quebras": 0,
+      "quebras_ids": [],
+      "noise_floor": 0.0,
+      "n_null_inexact": 0
+    },
+    "q17_mt6": {
+      "n_cf": 12,
+      "quebras": 0,
+      "quebras_ids": [],
+      "noise_floor": 0.0,
+      "n_null_inexact": 0
+    }
+  },
+  "leitura": {
+    "a_piso": "REPLICA: 0.0 exato, 0 nulos inexatos nas 2 configs (premissa vale p/ 1.7B)",
+    "b_folga": "REPLICA: 0/11 quebras (screening-off exato)",
+    "c_pressao": "INCONCLUSIVA (não refutada): 0/12 quebras, mas saturação 11/12 (vs ~70% no 4B) e yield 12 vs 22; sob a taxa do 4B (8/65) P(0 em 12)≈0.21 — sem poder",
+    "mecanismo_do_confound": "1.7B falha mais tasks → r_orig menor e flip não consegue piorar → saturação mascara I; mesmo fenômeno do mt4 no W3 (U invertido)"
+  }
+}

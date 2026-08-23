@@ -469,3 +469,17 @@
   — quebras são propriedade de decisões específicas, não ruído.
 - Artefato: experiments/results/2026-08-23_w3_dose_resposta.json. F3 vira
   curva de 4 configs com anotação dos pontos recorrentes.
+
+### D2c COMPLETA — replicação parcial com Qwen3-1.7B (2026-08-23)
+- Hipóteses do pré-registro 14: (a) piso 0.0 **REPLICA** (0 nulos inexatos nas
+  2 configs — premissa de identificação não é específica do 4B); (b) folga
+  **REPLICA** (0/11 quebras, screening-off exato); (c) pressão **INCONCLUSIVA**:
+  0/12 quebras, mas saturação 11/12 (vs ~70% no 4B) e yield reduzido — sob a
+  taxa do 4B, P(0 em 12)≈0.21. Não é refutação; é falta de poder.
+- Mecanismo do confound: o 1.7B falha mais tasks → r_orig menor → flip não
+  piora o que já é ruim → saturação mascara I. É o MESMO fenômeno do mt4 no
+  W3 (U invertido) — consistência interna entre os dois achados: a janela de
+  detecção de interação exige competência intermediária (nem folga total, nem
+  fracasso generalizado). Vira parágrafo de discussão, não limitação solta.
+- vLLM restaurado para Qwen3-4B automaticamente (verificado).
+- Artefato: experiments/results/2026-08-23_d2c_replicacao.json.
