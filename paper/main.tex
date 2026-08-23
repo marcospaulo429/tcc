@@ -33,14 +33,17 @@ configurations); under budget pressure, screening-off breaks (8/65 across
 three pressure levels; $p=0.005$ point-level, $p=0.125$ task-clustered ---
 we report both) at \emph{recurring} decision points, with a non-monotonic
 dependence on pressure intensity partially mediated by reward saturation.
-The noise floor and the slack regime replicate on two additional models
+The noise floor replicates on two additional models
 (Qwen3-1.7B and Qwen3-8B) and on a second environment (a multi-turn MBPP+
-adaptation, where screening-off holds at 66/66 interaction points);
-4{,}033 null replays across three models and two environments are all
-exact. The pressure
-regime replicates directionally on Qwen3-8B (a non-saturated synergy break,
-$I=+0.38$); reward saturation dominates both auxiliary models, in opposite
-directions --- the competence window operating as predicted.
+adaptation): 4{,}033 null replays across three models and two environments
+are all exact. Screening-off itself replicates unconditionally on Qwen3-1.7B
+(0 raw breaks) and on MBPP+ (66/66 points); on Qwen3-8B it does
+\emph{not}: raw breaks appear at a similar rate in both regimes (5/28 slack,
+6/34 pressure), concentrated at recurring short tasks where the shield
+\emph{inverts} ($C_{HM} \approx C_H$): the stronger model's sampled
+alternative no longer re-injects the destroyed information, so whether
+screening-off holds is itself competence-dependent --- the shield is a
+property of the model--harness pair, not of the harness.
 This implies that single-layer credit double-counts shielded
 decisions --- not approximately but exactly: at screened points the
 single-layer harness credit equals the negated interaction,
@@ -132,8 +135,10 @@ $C_{HM} - C_M$ as the correction rule), a coalescence lemma and corollary
 whose occurrence we \emph{verify in the recorded traces} (72/75 screened
 points explained; 3 residuals, including 2 reward collisions, declared), and
 a pivotality argument that unifies the competence window, the mt4 collapse,
-and the saturation-dominated nulls of both auxiliary models (1.7B below the
-window, 8B above it); empirically, a structural component (the sampled $a'$
+and the saturation profiles of both auxiliary models; the replications show
+the shield itself is competence-dependent --- on Qwen3-8B it inverts
+($C_{HM} \approx C_H$) exactly where the sampled $a'$ stops re-injecting the
+destroyed information; empirically, a structural component (the sampled $a'$
 re-injects destroyed information, 23/24 annotated points) and a closed-loop
 component (the live downstream harness re-triggers the intervened decision,
 22/52 points).
@@ -580,9 +585,10 @@ of the ranking value of $C(H)$ from features they already log, reserving
 replay for calibration and for the interaction term, which no cheap feature
 predicts. The cross-environment test sharpens this: a critic trained on all
 $C(M)$ ground truth from the designed tasks and evaluated on the 94 MBPP+
-points transfers at chance (Spearman $0.03$ linear / $-0.08$ GBM, AUROC
-$\leq 0.50$, MAE worse than a constant predictor; pre-registered secondary
-of D3). Amortized credit does not cross environments here --- consistent
+$C(M)$ points (the only quantity with data on both sides; $C(H)$ has none in
+the MBPP+ runs) transfers at chance (Spearman $0.03$ linear / $-0.08$ GBM,
+AUROC $0.30$/$0.50$, MAE worse than a constant predictor; pre-registered
+secondary of D3). Amortized credit does not cross environments here --- consistent
 with the replay-ground-truth bar of \cite{audit2026}, and a further reason
 the training signal should be anchored in replay rather than in a learned
 proxy.
@@ -691,7 +697,7 @@ pressure configuration on Qwen3-4B. The floor replicates exactly (1{,}294
 null replays, all exact) and \textbf{screening-off replicates at 66/66
 interaction points} --- including a non-saturated point with $I=-0.4$, a
 live double-counting case in an external benchmark. What the adaptation
-cannot yet test is the pressure-regime break rate: 59/66 points are
+cannot yet test is the pressure-regime break rate: 60/66 points are
 reward-saturated (Qwen3-4B is too strong for MBPP+), leaving 6 non-saturated
 points and no breaks --- inconclusive at that power, the same saturation
 boundary seen at 1.7B and 8B. The designed tasks remain necessary for the
@@ -701,23 +707,37 @@ We position this as a methods
 paper: the transferable artifact is the recorder/replay/forced-queue
 infrastructure, the APC finding, and the measurement protocol.
 
-\paragraph{The pressure-regime break rate is powered on one model.} The floor
-and slack regime replicate on Qwen3-1.7B and Qwen3-8B (pre-registered as D2c
-and D2d before running): the 8B contributes 810 dedicated and 234 attached
-null replays, all exact, and 0 non-saturated breaks in slack. Under pressure
-the 8B shows a genuine non-saturated break at \texttt{l\_door\_controller}
-($C_{HM}=0.23$ vs.\ $C_M=-0.46$, $I=+0.38$ --- a synergy, not a shield), so
-the qualitative claim (breaks exist under pressure, not under slack)
-replicates directionally on a powered model. What does \emph{not} transfer is
-the break \emph{rate}: reward saturation dominates both auxiliary models in
-opposite directions --- 11/12 of the 1.7B's pressure points are saturated
-because the model is too weak (it fails at both flips), 90/97 of the 8B's
-points are saturated because it is too strong for this task pool (it succeeds
-through both flips; its pre-registered escalation to mt4 still yielded only
-2 non-saturated confirmatory points). This is the competence window operating
-as predicted by the pivotality remark, measured now at three model scales;
-but estimating the break rate on a second powered model requires a task pool
-curated to that model's competence, which we flag as the remaining step.
+\paragraph{What replicates, raw, per model and environment.} The floor
+replicates everywhere (pre-registered as D2c, D2d, D3 before running): the
+8B contributes 810 dedicated and 234 attached null replays and MBPP+
+contributes 1{,}294, all exact. Screening-off replicates
+\emph{unconditionally} on Qwen3-1.7B (0 raw breaks in 23 points) and on
+MBPP+ (66/66). On Qwen3-8B it does not: raw break rates are flat across
+regimes (5/28 slack, 6/34 mt6, 7/35 mt4), so the slack/pressure contrast
+established on Qwen3-4B does \emph{not} transfer to the 8B, and we report
+this as the headline of the replication rather than conditioning it away.
+Saturation-based exclusion would be invalid here: clipping $R$ at $\{0,1\}$
+can only \emph{shrink} $|C_{HM}-C_M|$, so saturation can mask nulls but
+cannot fabricate breaks --- a saturated break of $0.9$ is a real break. The
+8B slack breaks have a sharp common structure ($C_H = 1.0$, $C_M = 0.0$,
+$C_{HM} \approx 0.9$, hence $I \approx -0.1$): the harness flip alone is
+catastrophic, the model flip alone is null, and the joint flip tracks the
+harness --- the shield \emph{inverts}. The mechanism is the one the anatomy
+of \S\ref{sec:interaction} identified: on the same tasks the 4B's sampled $a'$
+re-injects all destroyed critical constants (5/5, 5/5, 6/6 on the shielded
+points), while the 8B's $a'$ re-injects none (0/5, 0/6, 0/8, 0/5) --- its
+solutions are structured so that the alternative action no longer carries
+the constants. Whether screening-off holds is therefore itself
+competence-dependent: the shield is a property of the model--harness pair.
+Under pressure the 8B also shows a genuine non-saturated synergy break at
+\texttt{l\_door\_controller} ($C_{HM}=0.23$ vs.\ $C_M=-0.46$, $I=+0.38$).
+Saturation still dominates both auxiliary models in opposite directions
+(11/12 of the 1.7B's pressure points, from weakness; 90/97 of the 8B's
+points, from strength --- and the slack regime leaves the 8B a single
+non-saturated point, so the conditioned slack contrast has essentially no
+power and we do not claim it). Estimating the \emph{break rate} on a second
+powered model still requires a task pool curated to that model's competence,
+which we flag as the remaining step.
 
 \paragraph{Clustered inference.} Points within a task are not independent.
 At the task level the pressure-vs-slack contrast is 3 tasks vs.\ 0 (sign
@@ -794,7 +814,7 @@ failed. Failed predictions are reported in the main text where they occur.
 12 & C1b primary outcome: held-out $R_{\text{eff}}>0.30$, $\geq$2/3 seeds & no arm reached it & \textbf{failed} \\
 13 & Dose-response: monotonic break rate in pressure & inverted U ($p=0.38$) & \textbf{failed} \\
 14 & D2c replication: floor, slack, pressure on Qwen3-1.7B & floor+slack replicate; pressure inconclusive & partial \\
-15 & D2d replication: floor, slack, pressure on Qwen3-8B (incl.\ mt4 escalation rule) & floor+slack replicate; 1 non-saturated pressure break & held \\
+15 & D2d replication: floor, slack, pressure on Qwen3-8B (incl.\ mt4 escalation rule) & floor replicates; raw screening does \emph{not} (5/28 slack breaks, shield inversion); 1 non-saturated pressure break & partial \\
 16 & D3 second environment: floor, screening, pressure on MBPP+ (60 tasks); critic transfer A$\to$B & floor+screening replicate (66/66); pressure inconclusive (saturation); transfer null & partial \\
 \bottomrule
 \end{tabular}}

@@ -644,3 +644,19 @@
   -0.08 (gbm), AUC 0.30/0.50, MAE pior que baseline constante; alvo B
   zero-inflado (86/94 zeros). Reportado como está: critic amortizado não
   cruza ambientes, consistente com o bar de 2608.19760.
+
+## 2026-08-23 — Review 9 (7.5) e correção W1: escudo invertido no 8B
+- Review 9 verificou artefatos e achou W1 real: eu reportava o 8B só sob
+  métrica condicionada por saturação (raw: 5/28 quebras em FOLGA, taxas
+  planas 18-20% entre regimes) enquanto o 4B usa raw nos headlines. Argumento
+  do reviewer correto: clipping em {0,1} só contrai |C_HM-C_M| — saturação
+  mascara nulos, não fabrica quebras.
+- Investigação (experiments/analise_q8_shield.py, 0 rollouts): as 5 quebras
+  de folga do 8B têm estrutura comum C_H=1.0, C_M=0.0, C_HM≈0.9 (I≈-0.1) —
+  ESCUDO INVERTIDO (C_HM≈C_H). Mecanismo fecha com a anatomia: nas mesmas
+  tasks, a′ do 4B re-injeta 5/5, 5/5, 6/6 constantes críticas (screened);
+  a′ do 8B re-injeta 0/5, 0/6, 0/8, 0/5 (quebra). O escudo é propriedade do
+  PAR modelo-harness, competence-dependent — achado, não sujeira.
+- Paper corrigido: abstract e threat reescritos com taxas raw e mecanismo;
+  ledger 15 held→partial; 59/66→60/66 (W3); transfer explicitado como C_M
+  (W4); replicacao.json regenerado com todas as tags (W5).

@@ -1,0 +1,164 @@
+{
+ "q8_g600_breaks": [
+  {
+   "task_id": "s_freight_quote",
+   "cp_index": 0,
+   "raw_break": true,
+   "saturated": true,
+   "C_H": 1.0,
+   "C_M": 0.0,
+   "C_HM": 0.8888888888888888,
+   "I": -0.11111111111111116,
+   "n_consts": 5,
+   "n_consts_in_aprime": 0
+  },
+  {
+   "task_id": "s_commission_calc",
+   "cp_index": 0,
+   "raw_break": true,
+   "saturated": true,
+   "C_H": 1.0,
+   "C_M": 0.0,
+   "C_HM": 0.9,
+   "I": -0.09999999999999998,
+   "n_consts": 6,
+   "n_consts_in_aprime": 0
+  },
+  {
+   "task_id": "s_sensor_alarm",
+   "cp_index": 0,
+   "raw_break": true,
+   "saturated": true,
+   "C_H": 1.0,
+   "C_M": 0.0,
+   "C_HM": 0.9,
+   "I": -0.09999999999999998,
+   "n_consts": 8,
+   "n_consts_in_aprime": 0
+  },
+  {
+   "task_id": "s_ticket_pricer",
+   "cp_index": 0,
+   "raw_break": true,
+   "saturated": true,
+   "C_H": 1.0,
+   "C_M": 0.0,
+   "C_HM": 0.8,
+   "I": -0.19999999999999996,
+   "n_consts": 5,
+   "n_consts_in_aprime": 0
+  },
+  {
+   "task_id": "invoice_pricing",
+   "cp_index": 0,
+   "raw_break": true,
+   "saturated": true,
+   "C_H": 1.0,
+   "C_M": 0.0,
+   "C_HM": 0.8571428571428572,
+   "I": -0.1428571428571428,
+   "n_consts": 0,
+   "n_consts_in_aprime": 0
+  }
+ ],
+ "g600_4b_same_tasks": [
+  {
+   "task_id": "s_ticket_pricer",
+   "cp_index": 4,
+   "raw_break": false,
+   "saturated": true,
+   "C_H": 0.8,
+   "C_M": 0.0,
+   "C_HM": 0.0,
+   "I": -0.8,
+   "n_consts": 5,
+   "n_consts_in_aprime": 5
+  },
+  {
+   "task_id": "invoice_pricing",
+   "cp_index": 0,
+   "raw_break": false,
+   "saturated": true,
+   "C_H": 0.0,
+   "C_M": 0.0,
+   "C_HM": 0.0,
+   "I": 0.0,
+   "n_consts": 0,
+   "n_consts_in_aprime": 0
+  },
+  {
+   "task_id": "invoice_pricing",
+   "cp_index": 6,
+   "raw_break": false,
+   "saturated": true,
+   "C_H": 0.0,
+   "C_M": -0.8571428571428571,
+   "C_HM": -0.8571428571428571,
+   "I": 0.0,
+   "n_consts": 0,
+   "n_consts_in_aprime": 0
+  },
+  {
+   "task_id": "invoice_pricing",
+   "cp_index": 30,
+   "raw_break": false,
+   "saturated": true,
+   "C_H": -1.0,
+   "C_M": -0.14285714285714285,
+   "C_HM": -0.14285714285714285,
+   "I": 1.0,
+   "n_consts": 0,
+   "n_consts_in_aprime": 0
+  },
+  {
+   "task_id": "s_freight_quote",
+   "cp_index": 4,
+   "raw_break": false,
+   "saturated": true,
+   "C_H": 0.8888888888888888,
+   "C_M": 0.0,
+   "C_HM": 0.0,
+   "I": -0.8888888888888888,
+   "n_consts": 5,
+   "n_consts_in_aprime": 5
+  },
+  {
+   "task_id": "s_freight_quote",
+   "cp_index": 10,
+   "raw_break": false,
+   "saturated": true,
+   "C_H": 0.0,
+   "C_M": 0.0,
+   "C_HM": 0.0,
+   "I": 0.0,
+   "n_consts": 5,
+   "n_consts_in_aprime": 5
+  },
+  {
+   "task_id": "s_commission_calc",
+   "cp_index": 3,
+   "raw_break": false,
+   "saturated": true,
+   "C_H": 0.9,
+   "C_M": 0.0,
+   "C_HM": 0.0,
+   "I": -0.9,
+   "n_consts": 6,
+   "n_consts_in_aprime": 6
+  }
+ ],
+ "raw_break_rates_q8": {
+  "q8_g600": {
+   "n": 28,
+   "raw_breaks": 5
+  },
+  "q8_mt6": {
+   "n": 34,
+   "raw_breaks": 6
+  },
+  "q8_mt4": {
+   "n": 35,
+   "raw_breaks": 7
+  }
+ }
+}
