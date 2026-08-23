@@ -1,0 +1,52 @@
+{
+ "data": "2026-08-23",
+ "analise": "W5/W6 do review 4",
+ "W5": {
+  "n_tasks_pareadas": 4,
+  "diffs_pareados": {
+   "l_log_parser": 0.571,
+   "l_payroll_pipeline": 0.0,
+   "l_vending_machine": 0.4,
+   "rate_limiter_bucket": 0.0
+  },
+  "estat_obs_pareada": 0.2429,
+  "p_signflip_pareado": 0.24934,
+  "estat_obs_nao_pareada": 0.1943,
+  "n_clusters": 11,
+  "p_permutacao_labels": 0.18219
+ },
+ "W6": {
+  "outcome": {
+   "episodios_total_3seeds": 1789,
+   "decisoes_context_policy": 5103,
+   "ctx_tokens_p50": 425,
+   "ctx_tokens_p90": 866,
+   "ctx_tokens_max": 1532,
+   "frac_estados_>=2500_tokens": 0.0
+  },
+  "ch": {
+   "episodios_total_3seeds": 786,
+   "decisoes_context_policy": 2196,
+   "ctx_tokens_p50": 424,
+   "ctx_tokens_p90": 849,
+   "ctx_tokens_max": 1532,
+   "frac_estados_>=2500_tokens": 0.0
+  },
+  "chm_cm": {
+   "episodios_total_3seeds": 319,
+   "decisoes_context_policy": 929,
+   "ctx_tokens_p50": 425,
+   "ctx_tokens_p90": 862,
+   "ctx_tokens_max": 1532,
+   "frac_estados_>=2500_tokens": 0.0
+  },
+  "zero": {
+   "episodios_total_3seeds": 1910,
+   "decisoes_context_policy": 5270,
+   "ctx_tokens_p50": 414,
+   "ctx_tokens_p90": 839,
+   "ctx_tokens_max": 1532,
+   "frac_estados_>=2500_tokens": 0.0
+  }
+ }
+}

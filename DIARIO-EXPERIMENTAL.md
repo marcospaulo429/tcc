@@ -503,3 +503,24 @@
   Ledger" (14 pré-registros, incluindo os 3 que falharam); W-D (incompatibilidade
   com benchmarks públicos + enquadramento methods paper) esboçado em Threats.
 - Restante da fase E: prosa das seções, figuras F1–F5, refs.bib, ledger em tabela.
+
+### Review ICLR nº 4 (draft completo) + correções W1-W7 (2026-08-23)
+- **Review 4: 7.5/10, lean accept** (clarity 6→8). Achou 3 imprecisões que a
+  prosa introduziu (anatomia 23/22/9/1 "de 52" não fecha — denominador certo é
+  23/24 anotados p/ mech1 e 22/52 p/ mech2; "pooled 0.718 (GBM)" — 0.718 é do
+  linear; abstract invertia o referente 0.398/0.237). Todas corrigidas.
+- **W6 (análise CPU decisiva): starvação de exploração DEMONSTRADA.**
+  0 de 13.498 decisões context_policy em TODOS os braços/seeds visitaram
+  estados ≥2500 tokens (máx 1532). A região onde thr600 paga é NÃO-VISITADA,
+  inclusive no braço outcome com dose cheia (1789 episódios vs 786/319).
+  Fecha a pergunta difícil do reviewer ("crédito viu 6× menos dados?"):
+  mais dados da mesma distribuição não ajudariam.
+- **W5 (honesto): contraste condicionado também é fraco clusterizado** —
+  sign-flip pareado 4 tasks p=0.25, permutação de labels p=0.18. Reportado
+  no paper ao lado dos p point-level.
+- Contagem de nulos VERIFICADA nos artefatos: 1.695 nulos exatos (1.230
+  teste0 + 401 anexos 4B + 64 no 1.7B); F1 e prosa corrigidas (antes: números
+  inventados 1.253/23). Anomalia dos 3 retries declarada com def. do piso em R.
+- Contribuições viraram lista enumerada; T1 100% inglês; ledger com resizebox.
+- Artefato: experiments/results/2026-08-23_w5_w6_review4.json.
+- Paper compila limpo (tectonic), 0 citações não resolvidas, 292 testes ok.

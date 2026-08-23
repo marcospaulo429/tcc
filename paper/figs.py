@@ -55,9 +55,9 @@ def fig1() -> None:
         names.append(name)
         ns.append(d["n_replays"])
         assert d["noise_floor"] == 0.0 and d["exact_rate"] == 1.0
-    # 1.7B (D2c): nulos exatos nas 2 configs
+    # 1.7B (D2c): nulos exatos nas 2 configs (null_results.jsonl: 32+32, 0 inexatos)
     names += ["1.7B g600", "1.7B mt6"]
-    ns += [11, 12]  # nulos do D2c (n_null_inexact=0)
+    ns += [32, 32]
 
     apc = load(RUNS / "_apc_contaminado" / "teste0_g600" / "summary.json")
 

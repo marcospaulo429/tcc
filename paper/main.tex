@@ -36,9 +36,10 @@ decisions. We then train the harness layer with interaction-aware credit
 against outcome-only, single-layer, and untrained controls (dose-matched in
 total rollouts, 3 seeds, twice --- the second run with a pre-registered
 optimization fix): no credit signal learns the threshold policy that is
-expressible by the policy class and dominant on held-out tasks (held-out
-$R_\text{eff}$ 0.398 vs.\ 0.237
-for the best fixed policy), and credit-driven arms add collapse risk that the
+expressible by the policy class and dominant on held-out tasks (the
+threshold policy reaches held-out $R_\text{eff}$ 0.398; every trained arm
+converges to keep-always at 0.237 or collapses), and credit-driven arms add
+collapse risk that the
 outcome-only arm avoids. A pre-registered audit (60 points, two-greedy-replay
 recomputation, 58/60 sign agreement) rules out the estimator as the cause: the
 binding constraint is \emph{exploration}, not credit quality. We report this
@@ -95,32 +96,37 @@ is exploration. We report this as a design lesson for cross-layer training
 benchmarks, not as a method contribution.
 
 \paragraph{Contributions.}
-(1) Deterministic replay infrastructure with measured noise floor \emph{under
-explicit identification premises} (fixed config, sequential execution, prefix
-caching off) --- including a cautionary finding: vLLM automatic prefix caching
-silently breaks greedy-decoding determinism across differing histories;
-(2) per-decision counterfactual decomposition $C(H)$, $C(M)$, $I(H,M)$ on the
-same trajectory; (3) anatomy of screening-off: a structural component (the
-sampled $a'$ re-injects destroyed information) proven as a property of the
-estimand, and an empirical component (the live downstream harness re-triggers
-the intervened decision); (4) control tasks showing the method distinguishes
-harmless from harmful harness decisions by construction --- including one
-audited exception where a harness decision had a \emph{behavioral} (not
-informational) effect; (5) a pre-registered training comparison ---
-interaction-aware credit vs.\ outcome-only, single-layer credit (a
-reproduction of the CHILL-Harness principle in our environment), and a
-zero-credit masking control (which, under our greedy tie-break at $\theta=0$,
-is de facto an untrained keep-always policy --- we state this explicitly),
-dose-matched in total rollouts --- whose honest outcome is a \emph{two-stage
-identified negative}: (act 1) with raw features and high learning rate, every
-trained arm collapses seed-dependently into one of two policy attractors;
-(act 2) with a pre-registered optimization fix (centered features, lower
-learning rate, gradient clipping), training is stable and moves in the right
-direction, yet no arm discovers the threshold policy that provably exists on
-held-out tasks --- and credit-driven arms retain collapse risk (1/3 seeds)
-that outcome-only avoids (0/3). A pre-registered audit (58/60 sign agreement
-between logged credits and two-greedy-replay recomputation) rules out the
-estimator: exploration, not credit quality, is the binding constraint.
+\begin{enumerate}
+\item \textbf{Deterministic replay infrastructure with a measured noise
+floor} under explicit identification premises (fixed config, sequential
+execution, prefix caching off) --- including a cautionary finding: vLLM
+automatic prefix caching silently breaks greedy-decoding determinism across
+differing serving histories.
+\item \textbf{Per-decision counterfactual decomposition} of $C(H)$, $C(M)$,
+and $I(H,M)$ on the same trajectory, and the finding that screening-off is
+regime-dependent (exact under slack, breaking at recurring points under
+pressure).
+\item \textbf{Anatomy of screening-off}: a structural component (the sampled
+$a'$ re-injects destroyed information --- a property of the estimand,
+23/24 annotated points) and an empirical component (the live downstream
+harness re-triggers the intervened decision, 22/52 points).
+\item \textbf{Construct validation by control tasks}: the method separates
+harmless from harmful harness decisions by construction (11/12), including
+one audited exception where a harness decision had a \emph{behavioral}, not
+informational, effect.
+\item \textbf{A pre-registered training comparison with an identified
+negative outcome}: interaction-aware credit vs.\ outcome-only, single-layer
+credit (a reproduction of the CHILL-Harness principle in our environment),
+and a zero-credit masking control (de facto an untrained keep-always policy
+under our greedy tie-break --- stated explicitly), dose-matched in total
+rollouts. Act 1: every trained arm collapses seed-dependently. Act 2 (after
+a pre-registered optimization fix): stable training, right direction, yet no
+arm discovers the threshold policy that is expressible and dominant on
+held-out tasks, and credit-driven arms retain collapse risk (1/3 seeds) that
+outcome-only avoids (0/3). A pre-registered audit (58/60 sign agreement)
+rules out the estimator; state-visitation analysis localizes the failure in
+exploration.
+\end{enumerate}
 
 \section{Related Work}
 Counterfactual replay for agent credit is an active area, but every existing
@@ -154,7 +160,7 @@ Method & via replay & $C(H)$ & $C(M)$ & trajectory & with $I$ \\
 \midrule
 CHILL-Harness & \checkmark & \checkmark & -- & -- & -- \\
 CAR & \checkmark & -- & \checkmark & -- & -- \\
-C3 v2 & \checkmark & \multicolumn{2}{c}{(por agente)} & -- & -- \\
+C3 v2 & \checkmark & \multicolumn{2}{c}{(per agent)} & -- & -- \\
 HASE & -- & \checkmark & -- & -- & -- \\
 \textbf{Ours} & \checkmark & \checkmark & \checkmark & \checkmark & tested$^{\dagger}$ \\
 \bottomrule
@@ -216,9 +222,15 @@ and analyze its consequences explicitly (\S\ref{sec:interaction},
 Every causal claim below is only as good as the replay. We therefore
 \emph{measure} the noise floor rather than assume it: the pre-registered floor
 for each configuration is $\max |\Delta R|$ over null replays (replay with no
-intervention). Across seven configurations of Qwen3-4B (1{,}230 null replays)
-and two configurations of Qwen3-1.7B, \textbf{every null replay reproduced
-$R$ exactly}: the floor is $0.0$ in all nine configurations
+intervention). The floor is defined on the reward $R$, not on trace
+equality: in 3 null replays (all in one configuration) the replayed
+trajectory took one extra retry while reproducing $R$ exactly, and we report
+this rather than hide it.
+Across seven dedicated null-replay runs of Qwen3-4B (1{,}230 nulls), the
+nulls attached to every interaction run (401 more on Qwen3-4B), and two
+configurations of Qwen3-1.7B (64 nulls), \textbf{every one of 1{,}695 null
+replays reproduced $R$ exactly}: the floor is $0.0$ in all
+configurations
 (Figure~\ref{fig:floor}a). This is a measurement under explicit premises ---
 fixed serving config, strictly sequential requests, prefix caching off ---
 not a guarantee.
@@ -236,9 +248,10 @@ default vLLM settings inherits this silent failure.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/f1_noise_floor.pdf}
-\caption{\textbf{F1 --- Measured noise floor.} (a) Null replays per
-configuration (Qwen3-4B blue, Qwen3-1.7B purple); every one of $\sim$1{,}250
-null replays is exact, floor $=0.0$. (b) With vLLM automatic prefix caching
+\caption{\textbf{F1 --- Measured noise floor.} (a) Dedicated null-replay
+runs (Qwen3-4B blue, Qwen3-1.7B purple); together with nulls attached to
+interaction runs, all 1{,}695 null replays are exact, floor $=0.0$. (b) With
+vLLM automatic prefix caching
 on, the floor rises to $0.417$ (7/270 inexact): greedy determinism breaks
 silently.}
 \label{fig:floor}
@@ -293,7 +306,11 @@ no flip can make things worse and interaction is masked. Conditioning on
 non-saturated points sharpens the contrast (slack 0/12 vs.\ pressure 6/19,
 $p = 0.037$) and partially restores the mt4 rate ($0.045 \to 0.143$), though
 the ordering mt8 $>$ mt6 $>$ mt4 persists --- saturation mediates the window
-partially, not fully (Figure~\ref{fig:regime}). We call the resulting
+partially, not fully (Figure~\ref{fig:regime}). At the task-cluster level
+the conditioned contrast, like the raw one, is weak (paired sign-flip
+permutation over 4 tasks $p = 0.25$; cluster-label permutation $p = 0.18$);
+the point-level and mechanism-level evidence carry the claim
+(\S\ref{sec:threats}). We call the resulting
 picture a \emph{competence window}: cross-layer interaction is detectable
 only where the agent neither saturates success nor failure.
 
@@ -311,13 +328,17 @@ pressure null is explained by saturation (only 1 non-saturated point).}
 \paragraph{Anatomy of the shield.} Why does screening-off hold so often? A
 sign-test of the mechanism's core prediction --- that the model flip weakly
 dominates the harness flip at shielded points --- holds in 75/78 points
-($P = 2.6\times10^{-19}$, pre-registered). Decomposing the shielded points
-for which we have mechanism annotations: in 23 the sampled alternative action
-$a'$ \emph{structurally re-injects} the destroyed information (a property of
-the estimand: $a'$ is sampled from the model conditioned on the un-summarized
-state, so it can carry the information across the cut); in 22 the \emph{live
-downstream harness} re-triggers summarization anyway, equalizing the
-branches; 9 show both, 1 neither. Screening-off is thus partly a theorem
+($P = 2.6\times10^{-19}$, pre-registered). Of the 52 shielded points, 24
+carry constant-dictionary annotations that make the re-injection check
+possible (the remaining 28 are unannotated V2 points, which we declare
+rather than extrapolate). Among the annotated: \textbf{23/24} show
+\emph{structural re-injection} --- the sampled alternative action $a'$
+carries the destroyed information across the cut, a property of the estimand
+(since $a'$ is sampled from the model conditioned on the un-summarized
+state); 9 also show the second mechanism and 1 shows neither. The second
+mechanism is checkable on all 52 shielded points: in \textbf{22/52} the
+\emph{live downstream harness} re-triggers summarization anyway, equalizing
+the branches. Screening-off is thus partly a theorem
 about the estimator and partly an empirical fact about closed-loop harness
 behavior --- and we found genuine non-saturated synergy where it breaks
 (\texttt{l\_vending\_machine}: $C_H = C_M = -0.09$, $C_{HM} = 0$, so
@@ -349,8 +370,12 @@ points (features: turn, context size, position, test progress;
 task-clustered evaluation) against the baselines mandated
 by~\cite{audit2026}: position and context-size heuristics. The honest answer
 is that \textbf{the critic never beats the heuristics}
-(Figure~\ref{fig:critic}): pooled ranking 0.718 (GBM) vs.\ 0.796
-($|$context$|$); per stratum, L is a tie (0.747 vs.\ 0.741), V2 the heuristic
+(Figure~\ref{fig:critic}): on the combined L+V2 strata ($n=161$,
+task-clustered Spearman) the GBM reaches 0.667 and the linear critic 0.675,
+against 0.708 for the position heuristic and 0.770 for $|$context$|$; pooled
+over all 248 points the linear critic's 0.718 still trails the context-size
+heuristic. Per stratum, L is a tie (GBM 0.747 vs.\ position 0.741), in V2
+the heuristic
 wins (0.693 vs.\ 0.796), and S saturates for everything (AUROC 1.0). For
 detection ($|C| > 0$) the GBM has a modest edge (AUROC 0.846 vs.\
 0.735/0.785) with overlapping CIs.
@@ -410,10 +435,19 @@ Figure~\ref{fig:training}). Worse, credit-driven arms retain collapse risk
 the outcome-only arm avoids ($C(H)$: 1/3 seeds; $C_{HM}-C_M$: 1/3;
 outcome-only and zero: 0/3).
 
-\paragraph{Diagnosis.} The learned thresholds sit at 2.5k--5.8k tokens, but
-under keep-heavy behavior the training distribution rarely visits such
-states: the informative region is barely explored, so the gradient toward
-thr600 is starved regardless of how accurate the per-decision credit is.
+\paragraph{Diagnosis.} Dose-matching in total rollouts means credit arms pay
+for replays with episodes: across 3 seeds the outcome arm saw 1{,}789
+training episodes, $C(H)$ 786, $C_{HM}-C_M$ 319 (zero: 1{,}910). One might
+suspect the credit arms simply saw too little data. The state-visitation
+record rules this reading out and localizes the failure: across \emph{all}
+arms and seeds, \textbf{0 of 13{,}498} \texttt{context\_policy} decisions
+occurred at context sizes $\geq 2{,}500$ tokens (maximum visited: 1{,}532)
+--- yet the threshold policy's held-out advantage comes precisely from
+multi-thousand-token states (e.g.\ \texttt{l\_vending\_machine} reaches
+5{,}933 prompt tokens under keep-always, $R_{\text{eff}} = -1.12$). The
+region where the target policy pays is not rare in training; it is
+\emph{unvisited}, including by the full-dose outcome arm. More data from the
+same distribution would not help.
 \textbf{The binding constraint is exploration, not credit quality.} We
 report this two-stage identified negative as a design lesson: a cross-layer
 training benchmark must guarantee coverage of the states where layers
@@ -454,7 +488,9 @@ pressure regime general.
 
 \paragraph{Clustered inference.} Points within a task are not independent.
 At the task level the pressure-vs-slack contrast is 3 tasks vs.\ 0 (sign
-test $p = 0.125$); at the point level $p = 0.005$. We report both and lean
+test $p = 0.125$); at the point level $p = 0.005$; the saturation-conditioned
+contrast behaves the same way (point-level $p = 0.037$; task-clustered
+permutation $p = 0.18$--$0.25$). We report all levels and lean
 on the mechanism-level sign test (75/78, $P = 2.6\times10^{-19}$) and
 cross-configuration recurrence of break points as the stronger evidence.
 
@@ -462,7 +498,8 @@ cross-configuration recurrence of break points as the stronger evidence.
 action $a'$: they are not independent evidence, and the structural component
 of screening-off (\S\ref{sec:interaction}) is partly a property of the
 estimand --- $a'$ sampled from the un-summarized state can re-inject
-information. We quantified this (23/52 shielded points) rather than hiding
+information. We quantified this (23/24 annotated shielded points; 28
+unannotated points declared) rather than hiding
 it; an estimand with $a'$ sampled from the summarized state would measure a
 different, also legitimate, quantity.
 
