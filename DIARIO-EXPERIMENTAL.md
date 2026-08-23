@@ -543,3 +543,24 @@
 - **P2 corrigido:** AUROC 0.785 declarado como heurística |ctx| com sinal
   invertido.
 - Paper compila limpo, 0 citações não resolvidas.
+
+### Review ICLR nº 6 (confirmação) + correção de unidades W-A/W-B (2026-08-23)
+- **Review 6: 7.5, accept (lean), condicionado a W-A (obrigatória) e W-B.**
+  P1/P2/W-NOVA verificadas ok contra artefatos.
+- **W-A confirmada por verificação própria: 5.933 era custo CUMULATIVO do
+  episódio, não contexto por decisão.** Held-out keep-always capa em 1.200
+  tokens por decisão (verificado nos logs de calibração) — abaixo do máx de
+  treino (1.532). O Diagnosis foi reescrito em 3 passos: (1) limiares
+  aprendidos (2,5k–5,8k) inalcançáveis em QUALQUER lugar ⇒ políticas
+  aprendidas são keep-always em comportamento; (2) onde as políticas diferem
+  no treino (thr600 dispara >600 tokens, região visitada), margem de reward
+  é n.s. (+0.024, IC95 [−0.026,+0.079], P(≤0)=0.19 — W-B incluída, era o
+  fecho que faltava); (3) dominância held-out do thr600 vem de estrutura de
+  custo cumulativo que o treino nunca torna consequente.
+- Claim reenquadrado: "binding constraint is the training task distribution"
+  (não mais "state coverage", que era vulnerável). Propagado em abstract,
+  contribuições, Diagnosis e conclusão.
+- Paper compila limpo; 292 testes ok.
+- **Estado do loop: 3 reviews consecutivos em 7.5; correções restantes são
+  cosméticas (\todo autores, estilo ICLR oficial). Loop encerrado por
+  convergência.**
