@@ -600,3 +600,17 @@
   intra-camada (célula --^s), fusão Co-Harness/HASE ok, HarnessCompass fora ok.
   refs.bib: autores reais do CHILL preenchidos.
 - Compila limpo, 0 refs quebradas, 292 testes verdes.
+
+## 2026-08-23 — Review 8: 8.0 (accept) + fix W1
+- Review 8 verificou toda a aritmética contra o JSON e subiu para **8.0
+  (accept)**: soundness 8.5, novelty 7.5, significance 6.5, clarity 8.5.
+  Veredicto: teto sem GPU = 8.0; acima exige MBPP+ multi-turn e/ou 2º modelo
+  powered (~1–2 GPU-dias cada, orçamento fechado, declarados em Threats).
+- W1 (única superfície restante) corrigida: enunciado Corollary 2
+  (coalescência comportamental no turno da intervenção ⇒ R_M=R_HM, via
+  "context ops não tocam o ambiente"); contagem honesta em todo o paper:
+  29/75 = hipótese do lema verificada estritamente, 72/75 = explicados pelos
+  argumentos enunciados (29 ⊆ 72), 3 residuais declarados (2 colisões de
+  reward + 1 ponto saturado com coalescência em profundidade 3, consistente
+  mas não coberto). Abstract/contribuições: "hypothesis we verify" →
+  "occurrence we verify".

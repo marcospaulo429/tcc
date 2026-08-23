@@ -39,7 +39,7 @@ second model's null is itself explained by saturation (1 non-saturated
 point). This implies that single-layer credit double-counts shielded
 decisions --- not approximately but exactly: at screened points the
 single-layer harness credit equals the negated interaction,
-$C(H) = -I(H,M)$, and a coalescence argument --- whose hypothesis we verify
+$C(H) = -I(H,M)$, and a coalescence argument --- whose occurrence we verify
 in the recorded traces --- shows why determinism makes
 the equality exact. We then train the harness layer with interaction-aware credit
 against outcome-only, single-layer, and untrained controls (dose-matched in
@@ -123,9 +123,9 @@ regime-dependent (exact under slack, breaking at recurring points under
 pressure).
 \item \textbf{Anatomy of screening-off, with a formal core}: a
 double-counting identity ($C(H) = -I(H,M)$ exactly at screened points, with
-$C_{HM} - C_M$ as the correction rule), a coalescence lemma whose hypothesis
-we \emph{verify in the recorded traces} (73/75 screened points coalesce at
-trace level; the 2 exceptions are reward collisions, reported as such), and
+$C_{HM} - C_M$ as the correction rule), a coalescence lemma and corollary
+whose occurrence we \emph{verify in the recorded traces} (72/75 screened
+points explained; 3 residuals, including 2 reward collisions, declared), and
 a pivotality argument that unifies the competence window, the mt4 collapse,
 and the 1.7B null; empirically, a structural component (the sampled $a'$
 re-injects destroyed information, 23/24 annotated points) and a closed-loop
@@ -377,11 +377,11 @@ state); 9 also show the second mechanism and 1 shows neither. The second
 mechanism is checkable on all 52 shielded points: in \textbf{22/52} the
 \emph{live downstream harness} re-triggers summarization anyway, equalizing
 the branches. Section~\ref{sec:formal} makes this division precise: a
-coalescence lemma guarantees that whenever the two branches reach the same
-state, the resulting equality is exact --- and we verify the hypothesis
-directly in the recorded traces (50/52 shielded points coalesce; the 2
-exceptions are reward collisions, which we separate from true shielding). We
-also found genuine
+coalescence lemma and a one-line corollary guarantee that whenever the two
+branches coalesce, the resulting equality is exact --- and we verify the
+occurrence directly in the recorded traces (the arguments explain 72/75
+screened points; the 3 residuals, including 2 reward collisions, are
+declared). We also found genuine
 non-saturated synergy where the shield breaks
 (\texttt{l\_vending\_machine}: $C_H = C_M = -0.09$, $C_{HM} = 0$, so
 $I = +0.18$: either flip alone hurts, together they cancel).
@@ -448,28 +448,41 @@ successor states; induction to termination yields identical suffixes, hence
 identical final rewards.
 \end{proof}
 
+\begin{corollary}[Behavioral coalescence at the intervened turn]
+\label{cor:behav}
+If both branches execute identical action sequences from turn $t$ to
+termination, then $R_M = R_{HM}$. (Harness context operations do not modify
+the environment, so the environment states at turn $t$ agree; identical
+action suffixes applied to equal environment states under a deterministic
+environment yield equal final environment states, and $R$ is a function of
+the final environment state.)
+\end{corollary}
+
 The two empirical mechanisms of the anatomy are the two
 \emph{coalescence-inducing events} we observe in practice; the lemma's role
 is to guarantee that \emph{whenever} coalescence occurs, the resulting
 equality is exact rather than approximate. Because reward equality does
 \emph{not} certify coalescence (with reward resolution $1/n_{\text{tests}}$,
-collisions are possible), we verified the lemma's hypothesis directly in the
+collisions are possible), we verified the hypotheses directly in the
 recorded branch traces of all 75 screened points, comparing per-turn states
 $(c_k, e_k)$ and per-turn behavior (action, observation), normalizing
 non-semantic identifiers that leak into test output (memory addresses,
-sandbox paths). The result: \textbf{73/75} screened points coalesce at the
-trace level --- identical (action, observation) suffixes down to termination.
-In 72 of the 73 the suffix already coincides at the intervened turn itself;
-there, since context operations never touch the environment and reward is a
-function of the final environment state, behavioral coalescence \emph{entails}
-$R_M = R_{HM}$. In \textbf{29/75} the full state $(c_k, e_k)$ becomes
-byte-identical within 1--4 turns of the intervention. Among the 52 shielded
-points, 50/52 coalesce; the \textbf{2 exceptions}
+sandbox paths). The result, stated so that each count matches an enunciated
+argument: in \textbf{29/75} points the full state $(c_k, e_k)$ becomes
+byte-identical within 1--4 turns of the intervention ---
+Lemma~\ref{lem:coalesce}'s hypothesis, verified; in \textbf{72/75}
+(a superset of the 29) the two branches execute identical action suffixes
+from the intervened turn itself --- Corollary~\ref{cor:behav} applies and
+entails $R_M = R_{HM}$. The formal arguments therefore \emph{explain 72 of
+the 75} measured screening events. The \textbf{3 residuals}: two
 (\texttt{l\_log\_parser} idx~10, in two configurations) are exactly the
-reward-collision case: $R_M = R_{HM}$ holds without trace coalescence, so
-the screening statistic counts them but the lemma does not explain them ---
-we flag them as reward collisions rather than coalescence-explained
-screening. No suffix violated
+reward-collision case --- $R_M = R_{HM}$ holds without trace coalescence, so
+the screening statistic counts them but the theory does not explain them ---
+and one (\texttt{l\_payroll\_pipeline} idx~7 under g900, saturated at
+$R = 1.0$) coalesces behaviorally only 3 turns after the intervention, which
+is consistent with screening but not covered by
+Corollary~\ref{cor:behav}; we declare all three rather than absorb them into
+the explained count. No suffix violated
 determinism: whenever states matched at some turn, the branches were
 identical from that turn to termination, corroborating the premises at trace
 level. \emph{Re-triggering} (22/52): both branches executed the same $a'$,
