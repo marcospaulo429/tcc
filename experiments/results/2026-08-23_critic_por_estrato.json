@@ -1,0 +1,106 @@
+{
+  "L": {
+    "n": 82,
+    "n_tasks": 10,
+    "linear": {
+      "spearman_clustered": 0.663,
+      "auroc": 0.793
+    },
+    "gbm": {
+      "spearman_clustered": 0.747,
+      "auroc": 0.789
+    },
+    "baselines": {
+      "position": {
+        "spearman_clustered": 0.741,
+        "auroc": 0.746
+      },
+      "context_size": {
+        "spearman_clustered": -0.741,
+        "auroc": 0.2
+      },
+      "random": {
+        "spearman_clustered": 0.005,
+        "auroc": 0.495
+      }
+    }
+  },
+  "S": {
+    "n": 51,
+    "n_tasks": 5,
+    "linear": {
+      "spearman_clustered": 0.851,
+      "auroc": 1.0
+    },
+    "gbm": {
+      "spearman_clustered": 1.0,
+      "auroc": 1.0
+    },
+    "baselines": {
+      "position": {
+        "spearman_clustered": 0.885,
+        "auroc": 1.0
+      },
+      "context_size": {
+        "spearman_clustered": -0.882,
+        "auroc": 0.0
+      },
+      "random": {
+        "spearman_clustered": -0.012,
+        "auroc": 0.494
+      }
+    }
+  },
+  "V2": {
+    "n": 79,
+    "n_tasks": 10,
+    "linear": {
+      "spearman_clustered": 0.66,
+      "auroc": 0.636
+    },
+    "gbm": {
+      "spearman_clustered": 0.693,
+      "auroc": 0.766
+    },
+    "baselines": {
+      "position": {
+        "spearman_clustered": 0.679,
+        "auroc": 0.79
+      },
+      "context_size": {
+        "spearman_clustered": -0.796,
+        "auroc": 0.189
+      },
+      "random": {
+        "spearman_clustered": -0.002,
+        "auroc": 0.509
+      }
+    }
+  },
+  "L+V2": {
+    "n": 161,
+    "n_tasks": 20,
+    "linear": {
+      "spearman_clustered": 0.675,
+      "auroc": 0.79
+    },
+    "gbm": {
+      "spearman_clustered": 0.667,
+      "auroc": 0.811
+    },
+    "baselines": {
+      "position": {
+        "spearman_clustered": 0.708,
+        "auroc": 0.731
+      },
+      "context_size": {
+        "spearman_clustered": -0.77,
+        "auroc": 0.194
+      },
+      "random": {
+        "spearman_clustered": 0.01,
+        "auroc": 0.497
+      }
+    }
+  }
+}

@@ -435,3 +435,17 @@
   em definitivo (negativo em dois estágios, identificado).
 - Próximo: dose-resposta W3 (max_turns ∈ {4,8}, 4B ainda carregado) → D2c
   (Qwen3-1.7B, troca de modelo no vLLM) → W4 critic por estrato (CPU).
+
+### W4: critic por estrato (CPU-only, 2026-08-23)
+- Pergunta do review 2: o critic ganha das heurísticas onde context_size não
+  separa? **NÃO.** Dentro dos estratos (GroupKFold por task preservado, n_boot
+  200, descritivo): L: gbm 0.747 vs position 0.741 vs |ctx| 0.741 (empate);
+  V2: gbm 0.693 vs |ctx| 0.796 (heurística ganha); S: tudo satura (AUROC 1.0,
+  crédito uniforme no estrato); L+V2: gbm 0.667/AUROC 0.811 vs |ctx| 0.77/0.81.
+- Decisão de escrita (a executar na fase E): cortar a promessa de critic do
+  abstract de vez; seção B vira "análise de estrutura do crédito": C_H é
+  majoritariamente previsível por tamanho de contexto + posição, consistente
+  com o mecanismo de destruição de informação (limitação I2 vira achado).
+- Heurísticas por estrato (sp(|C|,·)): ctx −0.51 global, mas −0.91 em S vs
+  −0.47/−0.58 em V2/L — a previsibilidade é ela própria dependente de estrato.
+- Artefato: experiments/results/2026-08-23_critic_por_estrato.json.
