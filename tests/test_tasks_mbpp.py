@@ -75,3 +75,10 @@ def test_get_task_roundtrip():
     assert get_task(tid)["task_id"] == tid
     with pytest.raises(KeyError):
         get_task("nao_existe")
+
+
+def test_registry_resolve_mbpp():
+    from environment.registry import resolve_task
+    from environment.tasks_mbpp import TASKS
+    t = resolve_task(TASKS[0]["task_id"])
+    assert t["task_id"] == TASKS[0]["task_id"]
