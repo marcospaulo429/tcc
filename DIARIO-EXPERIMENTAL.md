@@ -629,3 +629,18 @@
   (saturação domina): consistente com o Remark de pivotalidade; sem pooling.
 - Yields 8B maiores (28/34/35 cf vs 21 no 4B g600). Análise em
   experiments/results/2026-08-23_replicacao.json.
+
+## 2026-08-23 — D3 (pré-registro 16): segundo ambiente MBPP+ multi-turn
+- 1º lançamento quebrou: environment/registry.py não resolvia tasks_mbpp
+  (KeyError no replay). Fix 1 linha + teste (305 verdes), relançado idempotente.
+- (a) Piso 0.0 ✓: 1080 nulos dedicados + 214 acoplados, TODOS exatos, em
+  benchmark externo. Total do projeto: 4033 nulos exatos.
+- (b) Folga: screening-off replica 31/31 (todos os pontos) ✓.
+- (c) Pressão: 0 quebras não-saturadas em 6 pontos elegíveis — INCONCLUSIVO
+  por saturação (59/66 saturados; 4B forte demais p/ MBPP+), como no D2c.
+  Screening total no MBPP+: 66/66 exato, incluindo ponto não-saturado com
+  I=-0.4 (dupla contagem viva em benchmark externo).
+- Secundário (transfer critic A→B): NULO — Spearman pooled 0.03 (linear) /
+  -0.08 (gbm), AUC 0.30/0.50, MAE pior que baseline constante; alvo B
+  zero-inflado (86/94 zeros). Reportado como está: critic amortizado não
+  cruza ambientes, consistente com o bar de 2608.19760.
