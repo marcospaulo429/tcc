@@ -1,0 +1,204 @@
+{
+  "lambda_cost": 25.0,
+  "policies": {
+    "keep_always": {
+      "mean_R": 0.8474747474747474,
+      "mean_R_eff": 0.23654974747474747,
+      "per_task": [
+        {
+          "task_id": "l_vending_machine",
+          "R": 0.36363636363636365,
+          "R_eff": -1.1196136363636362,
+          "prompt_tokens_total": 5933
+        },
+        {
+          "task_id": "log_formatter",
+          "R": 1.0,
+          "R_eff": 0.28875000000000006,
+          "prompt_tokens_total": 2845
+        },
+        {
+          "task_id": "loyalty_points",
+          "R": 1.0,
+          "R_eff": 0.798,
+          "prompt_tokens_total": 808
+        },
+        {
+          "task_id": "rate_limiter_bucket",
+          "R": 1.0,
+          "R_eff": 0.79575,
+          "prompt_tokens_total": 817
+        },
+        {
+          "task_id": "s_commission_calc",
+          "R": 1.0,
+          "R_eff": 0.16949999999999998,
+          "prompt_tokens_total": 3322
+        },
+        {
+          "task_id": "s_energy_bill",
+          "R": 1.0,
+          "R_eff": 0.63875,
+          "prompt_tokens_total": 1445
+        },
+        {
+          "task_id": "s_freight_quote",
+          "R": 0.1111111111111111,
+          "R_eff": -1.185888888888889,
+          "prompt_tokens_total": 5188
+        },
+        {
+          "task_id": "s_sensor_alarm",
+          "R": 1.0,
+          "R_eff": 0.6619999999999999,
+          "prompt_tokens_total": 1352
+        },
+        {
+          "task_id": "s_ticket_pricer",
+          "R": 1.0,
+          "R_eff": 0.53375,
+          "prompt_tokens_total": 1865
+        },
+        {
+          "task_id": "shift_cipher",
+          "R": 1.0,
+          "R_eff": 0.7845,
+          "prompt_tokens_total": 862
+        }
+      ]
+    },
+    "summarize_always": {
+      "mean_R": 0.05357142857142857,
+      "mean_R_eff": -0.46352857142857146,
+      "per_task": [
+        {
+          "task_id": "l_vending_machine",
+          "R": 0.0,
+          "R_eff": -0.04575,
+          "prompt_tokens_total": 183
+        },
+        {
+          "task_id": "log_formatter",
+          "R": 0.0,
+          "R_eff": -0.8002499999999999,
+          "prompt_tokens_total": 3201
+        },
+        {
+          "task_id": "loyalty_points",
+          "R": 0.14285714285714285,
+          "R_eff": -0.705642857142857,
+          "prompt_tokens_total": 3394
+        },
+        {
+          "task_id": "rate_limiter_bucket",
+          "R": 0.14285714285714285,
+          "R_eff": -0.7388928571428572,
+          "prompt_tokens_total": 3527
+        },
+        {
+          "task_id": "s_commission_calc",
+          "R": 0.0,
+          "R_eff": -0.70425,
+          "prompt_tokens_total": 2817
+        },
+        {
+          "task_id": "s_energy_bill",
+          "R": 0.0,
+          "R_eff": -0.0455,
+          "prompt_tokens_total": 182
+        },
+        {
+          "task_id": "s_freight_quote",
+          "R": 0.0,
+          "R_eff": -0.8534999999999999,
+          "prompt_tokens_total": 3414
+        },
+        {
+          "task_id": "s_sensor_alarm",
+          "R": 0.0,
+          "R_eff": -0.0455,
+          "prompt_tokens_total": 182
+        },
+        {
+          "task_id": "s_ticket_pricer",
+          "R": 0.0,
+          "R_eff": -0.0455,
+          "prompt_tokens_total": 182
+        },
+        {
+          "task_id": "shift_cipher",
+          "R": 0.25,
+          "R_eff": -0.6505000000000001,
+          "prompt_tokens_total": 3602
+        }
+      ]
+    },
+    "thr600": {
+      "mean_R": 0.9272727272727274,
+      "mean_R_eff": 0.39752272727272725,
+      "per_task": [
+        {
+          "task_id": "l_vending_machine",
+          "R": 0.2727272727272727,
+          "R_eff": -0.9720227272727273,
+          "prompt_tokens_total": 4979
+        },
+        {
+          "task_id": "log_formatter",
+          "R": 1.0,
+          "R_eff": 0.41525,
+          "prompt_tokens_total": 2339
+        },
+        {
+          "task_id": "loyalty_points",
+          "R": 1.0,
+          "R_eff": 0.798,
+          "prompt_tokens_total": 808
+        },
+        {
+          "task_id": "rate_limiter_bucket",
+          "R": 1.0,
+          "R_eff": 0.79575,
+          "prompt_tokens_total": 817
+        },
+        {
+          "task_id": "s_commission_calc",
+          "R": 1.0,
+          "R_eff": 0.30174999999999996,
+          "prompt_tokens_total": 2793
+        },
+        {
+          "task_id": "s_energy_bill",
+          "R": 1.0,
+          "R_eff": 0.63875,
+          "prompt_tokens_total": 1445
+        },
+        {
+          "task_id": "s_freight_quote",
+          "R": 1.0,
+          "R_eff": 0.01749999999999996,
+          "prompt_tokens_total": 3930
+        },
+        {
+          "task_id": "s_sensor_alarm",
+          "R": 1.0,
+          "R_eff": 0.6619999999999999,
+          "prompt_tokens_total": 1352
+        },
+        {
+          "task_id": "s_ticket_pricer",
+          "R": 1.0,
+          "R_eff": 0.53375,
+          "prompt_tokens_total": 1865
+        },
+        {
+          "task_id": "shift_cipher",
+          "R": 1.0,
+          "R_eff": 0.7845,
+          "prompt_tokens_total": 862
+        }
+      ]
+    }
+  },
+  "keep_always_is_best": false
+}

@@ -1,0 +1,430 @@
+{
+  "n": 60,
+  "llm_calls": 316,
+  "frac_pos_logged": 0.5,
+  "frac_pos_corrigido": 0.5166666666666667,
+  "frac_pos_logged_summarize": 0.58,
+  "frac_pos_corrigido_summarize": 0.6,
+  "results": [
+    {
+      "task_id": "c_temp_label",
+      "index": 3,
+      "action_orig": "keep_context",
+      "credit_logged": 0.0025000000000000577,
+      "credit_corrigido": 0.0020000000000000018
+    },
+    {
+      "task_id": "c_late_fee",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.03300000000000003,
+      "credit_corrigido": 0.03300000000000003
+    },
+    {
+      "task_id": "config_renderer",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.14350000000000002,
+      "credit_corrigido": 0.14350000000000002
+    },
+    {
+      "task_id": "api_router",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.75925,
+      "credit_corrigido": 0.75925
+    },
+    {
+      "task_id": "l_shipping_batch",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.1885,
+      "credit_corrigido": 0.1885
+    },
+    {
+      "task_id": "l_shipping_batch",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.1885,
+      "credit_corrigido": 0.1885
+    },
+    {
+      "task_id": "l_payroll_pipeline",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.6180000000000001,
+      "credit_corrigido": 0.6180000000000001
+    },
+    {
+      "task_id": "c_parcel_cost",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.03400000000000003,
+      "credit_corrigido": 0.03400000000000003
+    },
+    {
+      "task_id": "c_late_fee",
+      "index": 3,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.03299999999999992,
+      "credit_corrigido": 0.03299999999999992
+    },
+    {
+      "task_id": "l_grade_report",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.5871818181818181,
+      "credit_corrigido": 0.5871818181818181
+    },
+    {
+      "task_id": "grade_curve",
+      "index": 9,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.15249999999999986,
+      "credit_corrigido": 0.15249999999999986
+    },
+    {
+      "task_id": "grade_curve",
+      "index": 12,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.21050000000000002,
+      "credit_corrigido": 0.21050000000000002
+    },
+    {
+      "task_id": "invoice_pricing",
+      "index": 9,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.03775000000000006,
+      "credit_corrigido": 0.03775000000000006
+    },
+    {
+      "task_id": "c_username_check",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.030000000000000027,
+      "credit_corrigido": 0.030000000000000027
+    },
+    {
+      "task_id": "inventory_restock",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.10064285714285715,
+      "credit_corrigido": 0.10064285714285715
+    },
+    {
+      "task_id": "l_grade_report",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.5871818181818181,
+      "credit_corrigido": 0.5871818181818181
+    },
+    {
+      "task_id": "l_discount_chain",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.184,
+      "credit_corrigido": 0.184
+    },
+    {
+      "task_id": "l_door_controller",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.21650000000000003,
+      "credit_corrigido": 0.21650000000000003
+    },
+    {
+      "task_id": "c_username_check",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.030000000000000027,
+      "credit_corrigido": 0.030000000000000027
+    },
+    {
+      "task_id": "c_username_check",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.030000000000000027,
+      "credit_corrigido": 0.030000000000000027
+    },
+    {
+      "task_id": "config_renderer",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.14350000000000002,
+      "credit_corrigido": 0.14350000000000002
+    },
+    {
+      "task_id": "c_vote_tally",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.35324999999999995,
+      "credit_corrigido": 0.35324999999999995
+    },
+    {
+      "task_id": "config_renderer",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.14350000000000002,
+      "credit_corrigido": 0.14350000000000002
+    },
+    {
+      "task_id": "l_rental_invoice",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.6527499999999998,
+      "credit_corrigido": 0.6527499999999998
+    },
+    {
+      "task_id": "c_username_check",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.030000000000000027,
+      "credit_corrigido": 0.030000000000000027
+    },
+    {
+      "task_id": "c_late_fee",
+      "index": 3,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.03299999999999992,
+      "credit_corrigido": 0.03299999999999992
+    },
+    {
+      "task_id": "c_late_fee",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.03300000000000003,
+      "credit_corrigido": 0.03300000000000003
+    },
+    {
+      "task_id": "c_late_fee",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.03300000000000003,
+      "credit_corrigido": 0.03300000000000003
+    },
+    {
+      "task_id": "grade_curve",
+      "index": 9,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.15249999999999986,
+      "credit_corrigido": 0.15249999999999986
+    },
+    {
+      "task_id": "l_shipping_batch",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.1885,
+      "credit_corrigido": 0.1885
+    },
+    {
+      "task_id": "l_loyalty_points",
+      "index": 7,
+      "action_orig": "summarize_context",
+      "credit_logged": -0.33499999999999996,
+      "credit_corrigido": -0.32575
+    },
+    {
+      "task_id": "l_loyalty_points",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": -0.2934166666666666,
+      "credit_corrigido": -0.2934166666666666
+    },
+    {
+      "task_id": "grade_curve",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": -1.73225,
+      "credit_corrigido": -1.5797500000000002
+    },
+    {
+      "task_id": "l_loyalty_points",
+      "index": 17,
+      "action_orig": "keep_context",
+      "credit_logged": -0.04000000000000026,
+      "credit_corrigido": -0.04000000000000026
+    },
+    {
+      "task_id": "l_loyalty_points",
+      "index": 7,
+      "action_orig": "summarize_context",
+      "credit_logged": -0.3750000000000002,
+      "credit_corrigido": -0.32575
+    },
+    {
+      "task_id": "csv_normalizer",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": -0.5815,
+      "credit_corrigido": -0.5815
+    },
+    {
+      "task_id": "l_discount_chain",
+      "index": 0,
+      "action_orig": "keep_context",
+      "credit_logged": -0.184,
+      "credit_corrigido": -0.184
+    },
+    {
+      "task_id": "csv_normalizer",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": -0.5815,
+      "credit_corrigido": -0.5815
+    },
+    {
+      "task_id": "csv_normalizer",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": -0.5815,
+      "credit_corrigido": -0.5815
+    },
+    {
+      "task_id": "c_parcel_cost",
+      "index": 3,
+      "action_orig": "keep_context",
+      "credit_logged": -0.03225,
+      "credit_corrigido": -0.03225
+    },
+    {
+      "task_id": "c_late_fee",
+      "index": 0,
+      "action_orig": "keep_context",
+      "credit_logged": -0.03300000000000003,
+      "credit_corrigido": -0.03300000000000003
+    },
+    {
+      "task_id": "l_log_parser",
+      "index": 0,
+      "action_orig": "keep_context",
+      "credit_logged": -0.23030769230769232,
+      "credit_corrigido": -0.7235
+    },
+    {
+      "task_id": "c_vote_tally",
+      "index": 0,
+      "action_orig": "keep_context",
+      "credit_logged": -0.35324999999999995,
+      "credit_corrigido": -0.47775
+    },
+    {
+      "task_id": "csv_normalizer",
+      "index": 6,
+      "action_orig": "keep_context",
+      "credit_logged": -0.09824999999999995,
+      "credit_corrigido": -0.033499999999999974
+    },
+    {
+      "task_id": "api_router",
+      "index": 0,
+      "action_orig": "keep_context",
+      "credit_logged": -0.8282499999999999,
+      "credit_corrigido": -0.75925
+    },
+    {
+      "task_id": "csv_normalizer",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": -0.5815,
+      "credit_corrigido": -0.5815
+    },
+    {
+      "task_id": "l_shipping_batch",
+      "index": 0,
+      "action_orig": "keep_context",
+      "credit_logged": -0.1885,
+      "credit_corrigido": -0.1885
+    },
+    {
+      "task_id": "grade_curve",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": -1.5797500000000002,
+      "credit_corrigido": -1.5797500000000002
+    },
+    {
+      "task_id": "csv_normalizer",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": -0.5815,
+      "credit_corrigido": -0.5815
+    },
+    {
+      "task_id": "inventory_restock",
+      "index": 0,
+      "action_orig": "summarize_context",
+      "credit_logged": -0.08410714285714271,
+      "credit_corrigido": 0.10064285714285715
+    },
+    {
+      "task_id": "c_username_check",
+      "index": 3,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.0,
+      "credit_corrigido": 0.0
+    },
+    {
+      "task_id": "c_temp_label",
+      "index": 6,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.0,
+      "credit_corrigido": -0.0010000000000000009
+    },
+    {
+      "task_id": "c_parcel_cost",
+      "index": 3,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.0,
+      "credit_corrigido": 0.0
+    },
+    {
+      "task_id": "c_parcel_cost",
+      "index": 3,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.0,
+      "credit_corrigido": 0.0
+    },
+    {
+      "task_id": "c_parcel_cost",
+      "index": 3,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.0,
+      "credit_corrigido": 0.0
+    },
+    {
+      "task_id": "c_username_check",
+      "index": 3,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.0,
+      "credit_corrigido": 0.0
+    },
+    {
+      "task_id": "inventory_restock",
+      "index": 6,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.0,
+      "credit_corrigido": 0.0
+    },
+    {
+      "task_id": "inventory_restock",
+      "index": 6,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.0,
+      "credit_corrigido": 0.0
+    },
+    {
+      "task_id": "c_username_check",
+      "index": 3,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.0,
+      "credit_corrigido": 0.0
+    },
+    {
+      "task_id": "c_late_fee",
+      "index": 3,
+      "action_orig": "summarize_context",
+      "credit_logged": 0.0,
+      "credit_corrigido": 0.0
+    }
+  ]
+}

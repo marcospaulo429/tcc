@@ -369,3 +369,24 @@
   CRÍTICO 1 (audita_ch, rodando) decide se o viés positivo de C_H em s1/s2 é
   artefato de mismatch de continuação — relevante para explicar a instabilidade.
 - Artefatos: experiments/results/2026-08-22_c1_summary.json (12 células).
+
+### Pós-C1: auditoria do CRÍTICO 1 + calibração held-out (2026-08-22 noite)
+- **Auditoria audita_ch (pré-registro 11): C_H do braço ch NÃO é artefato de
+  mismatch de continuação.** 60 pontos recomputados como diff de dois replays
+  greedy (316 chamadas LLM): concordância de sinal 58/60, ZERO flips +→−,
+  diff médio corrigido−logado = −0.0015. Pelo desfecho pré-definido, o viés
+  positivo é genuíno — a instabilidade do treino não vem do estimador.
+  Artefatos: experiments/results/2026-08-22_audita_ch.json.
+- **Calibração descritiva no held-out (item 4 do revisor) DERRUBA o teto:**
+  keep 0.237, summarize −0.464, **thr600 0.398**. O ótimo trivial (keep) só
+  existe no TREINO; no held-out uma política de limiar dá +0.16 sobre keep.
+  Leitura refinada do resultado negativo: não é só "ótimo trivial" — é que
+  NENHUM braço aprendeu comportamento de limiar (a classe logística expressa
+  thr600 via feature tokens/1000, mas o REINFORCE colapsa nos extremos via
+  bias). Diagnóstico: updates dominados pelo termo de bias (feature 1 constante)
+  >> termos de features; candidato a C1b barato: reduzir lr do bias ou
+  normalizar features — MAS isso é experimento NOVO, pré-registro obrigatório.
+  Artefato: experiments/results/2026-08-22_calibrate_heldout.json.
+- Próximo: review ICLR simulado do pacote completo (pedido explícito do usuário),
+  depois decidir C1b (agora com motivação forte: ótimo não-trivial JÁ EXISTE no
+  held-out; generalização keep→thr600 é aprendível em princípio) vs D2c.
