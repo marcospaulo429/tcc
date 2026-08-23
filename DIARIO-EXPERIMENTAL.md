@@ -449,3 +449,23 @@
 - Heurísticas por estrato (sp(|C|,·)): ctx −0.51 global, mas −0.91 em S vs
   −0.47/−0.58 em V2/L — a previsibilidade é ela própria dependente de estrato.
 - Artefato: experiments/results/2026-08-23_critic_por_estrato.json.
+
+### W3 dose-resposta COMPLETA (pré-registro 13) — monotonicidade FALHA, claim binário FORTALECE (2026-08-23)
+- Pisos 0.0 e nulos exatos nas 2 configs novas (61+61). Quebras C_HM≠C_M por
+  config: mt12 0/21, mt8 4/22, mt6 3/21, mt4 1/22.
+- **Hipótese direcional pré-registrada (monotônica com pressão) FALHA**
+  (Cochran-Armitage p=0.38). Forma observada: U invertido — quebras concentram
+  em pressão INTERMEDIÁRIA. Interpretação exploratória (não pré-registrada):
+  sob mt4 o orçamento é tão curto que quase toda trajetória falha de qualquer
+  jeito (saturação semântica: flip não muda R que já é ruim), mascarando I.
+- **Claim binário do GATE-1b FORTALECE:** folga (g600+g450+g900) 0/57 vs
+  pressão (mt4+6+8) 8/65, hipergeométrico unilateral **p=0.0052** — agora com
+  3 configs de cada lado (antes 57 vs 21). Reescrever no paper: "quebras de
+  screening-off ocorrem apenas sob pressão de orçamento (0/57 vs 8/65), com
+  relação não-monotônica na intensidade da pressão" — mais honesto e mais
+  interessante que a monotonicidade.
+- Estabilidade estrutural: os MESMOS pontos quebram entre configs
+  (l_log_parser idx8 em 3/3; api_router idx1 e l_vending_machine idx11 em 2/3)
+  — quebras são propriedade de decisões específicas, não ruído.
+- Artefato: experiments/results/2026-08-23_w3_dose_resposta.json. F3 vira
+  curva de 4 configs com anotação dos pontos recorrentes.

@@ -1,0 +1,79 @@
+{
+  "data": "2026-08-23",
+  "pre_registro": 13,
+  "curva": {
+    "mt4": {
+      "n": 22,
+      "quebras": 1,
+      "frac": 0.045,
+      "quebras_ids": [
+        [
+          "l_log_parser",
+          8
+        ]
+      ]
+    },
+    "mt6": {
+      "n": 21,
+      "quebras": 3,
+      "frac": 0.143,
+      "quebras_ids": [
+        [
+          "l_log_parser",
+          8
+        ],
+        [
+          "l_vending_machine",
+          11
+        ],
+        [
+          "api_router",
+          1
+        ]
+      ]
+    },
+    "mt8": {
+      "n": 22,
+      "quebras": 4,
+      "frac": 0.182,
+      "quebras_ids": [
+        [
+          "api_router",
+          1
+        ],
+        [
+          "l_vending_machine",
+          11
+        ],
+        [
+          "l_log_parser",
+          8
+        ],
+        [
+          "l_log_parser",
+          11
+        ]
+      ]
+    },
+    "mt12": {
+      "n": 21,
+      "quebras": 0,
+      "frac": 0.0,
+      "quebras_ids": []
+    }
+  },
+  "trend": {
+    "z": 0.30117683499370246,
+    "p_unilateral": 0.38163982660781226
+  },
+  "leitura": {
+    "monotonicidade_pre_registrada": "FALHA (Cochran-Armitage p=0.38); forma observada = U invertido (0/21 mt12, 4/22 mt8, 3/21 mt6, 1/22 mt4), exploratória",
+    "contraste_folga_vs_pressao": {
+      "folga_g600_g450_g900": "0/57",
+      "pressao_mt4_6_8": "8/65",
+      "p_hipergeometrico_unilateral": 0.005241909915241699
+    },
+    "estabilidade_pontos": "mesmos pontos quebram entre configs (l_log_parser idx8 em 3/3 configs de pressão; api_router idx1 e l_vending_machine idx11 em 2)",
+    "saturacao_plana": "15/15/16/16 — não explica a queda no mt4"
+  }
+}
