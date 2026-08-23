@@ -11,8 +11,11 @@ import argparse
 import json
 from pathlib import Path
 
-from environment.tasks_all import STRATA
+from environment.tasks_all import STRATA as _STRATA_ALL
+from environment.tasks_mbpp import STRATA as _STRATA_MBPP
 from trajectories.schema import Trajectory, load_trajectory
+
+STRATA = _STRATA_ALL | _STRATA_MBPP  # task_ids não colidem entre os ambientes
 
 DEFAULT_MAX_TURNS = 12
 
