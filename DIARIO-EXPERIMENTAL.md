@@ -660,3 +660,15 @@
 - Paper corrigido: abstract e threat reescritos com taxas raw e mecanismo;
   ledger 15 held→partial; 59/66→60/66 (W3); transfer explicitado como C_M
   (W4); replicacao.json regenerado com todas as tags (W5).
+
+## 2026-08-23/24 — Review 10: 8.0 (accept); itens de custo zero p/ 8.5 aplicados
+- Review 10 auditou as correções do W1 e subiu para 8.0 (nov 8, rigor 8.5,
+  sig 7.5, clareza 8.5). Veredicto: com itens 1-4 (custo zero), 8.5 é o
+  score defensável e o TETO do pacote atual; acima exige pool curado à
+  competência do 8B (~40-60 GPU-h), mantido como limitação declarada.
+- Itens aplicados: (1) ledger "14 predictions"→16 (2 lugares); (2)
+  analise_q8_shield.py estendido a mt6/mt4 — as 5 tasks de quebra da folga
+  RECORREM identicamente (mesma estrutura por task) nas duas configs de
+  pressão (recurrence 5/6 e 5/7), artefato regenerado; (3) declarado 4/5
+  (invoice_pricing sem constantes anotadas) + regra de matching (substring
+  do literal no a′ serializado); (4) I≈-0.1 → I∈[-0.2,-0.1].

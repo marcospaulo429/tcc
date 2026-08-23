@@ -720,14 +720,19 @@ Saturation-based exclusion would be invalid here: clipping $R$ at $\{0,1\}$
 can only \emph{shrink} $|C_{HM}-C_M|$, so saturation can mask nulls but
 cannot fabricate breaks --- a saturated break of $0.9$ is a real break. The
 8B slack breaks have a sharp common structure ($C_H = 1.0$, $C_M = 0.0$,
-$C_{HM} \approx 0.9$, hence $I \approx -0.1$): the harness flip alone is
+$C_{HM} \in [0.8, 0.9]$, hence $I \in [-0.2, -0.1]$): the harness flip alone is
 catastrophic, the model flip alone is null, and the joint flip tracks the
 harness --- the shield \emph{inverts}. The mechanism is the one the anatomy
 of \S\ref{sec:interaction} identified: on the same tasks the 4B's sampled $a'$
 re-injects all destroyed critical constants (5/5, 5/5, 6/6 on the shielded
-points), while the 8B's $a'$ re-injects none (0/5, 0/6, 0/8, 0/5) --- its
+points), while the 8B's $a'$ re-injects none (0/5, 0/6, 0/8, 0/5; matching
+by constant-literal substring in the serialized $a'$) --- its
 solutions are structured so that the alternative action no longer carries
-the constants. Whether screening-off holds is therefore itself
+the constants. The mechanism is verifiable on 4 of the 5 slack breaks (the
+fifth, \texttt{invoice\_pricing}, has no annotated constants), and the
+breaks \emph{recur}: all 5 slack break tasks break again, with identical
+per-task structure, in both pressure configurations (6/34 at mt6, 7/35 at
+mt4). Whether screening-off holds is therefore itself
 competence-dependent: the shield is a property of the model--harness pair.
 Under pressure the 8B also shows a genuine non-saturated synergy break at
 \texttt{l\_door\_controller} ($C_{HM}=0.23$ vs.\ $C_M=-0.46$, $I=+0.38$).
@@ -782,7 +787,8 @@ the training task distribution itself: no reward margin where policies
 differ, unreachable states where learned thresholds would fire. We offer the
 infrastructure, the
 regime-dependence finding, the APC determinism warning, and a
-pre-registration ledger of 14 predictions (including 3 failures) as the
+pre-registration ledger of 16 predictions (including 3 failures and 3
+partials) as the
 contributions, and the training negative as the design brief for the
 benchmark this field still needs.
 
@@ -790,8 +796,8 @@ benchmark this field still needs.
 \section{Pre-Registration Ledger}
 All confirmatory analyses were pre-registered in the project's execution plan
 before the corresponding data were collected. Table~\ref{tab:ledger} lists
-all 14 pre-registrations with their outcomes, including the three that
-failed. Failed predictions are reported in the main text where they occur.
+all 16 pre-registrations with their outcomes, including the three that
+failed and the three partial. Failed predictions are reported in the main text where they occur.
 
 \begin{table}[h]
 \centering\scriptsize
