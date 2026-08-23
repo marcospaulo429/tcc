@@ -22,10 +22,14 @@ C(M)$ are identifiable on the same trajectory. Interaction is
 harness decision ($C_{HM}=C_M$, 57/57 points); under budget pressure
 (halved turn budget), screening-off breaks (18/21) and genuine non-saturated
 synergy appears. This implies that single-layer credit double-counts shielded
-decisions; we correct this bias
-with interaction-aware credit and evaluate it against outcome-only,
-single-layer, and a zero-credit masking control, dose-matched in total
-rollouts. \todo{números finais}
+decisions. We then train the harness layer with interaction-aware credit
+against outcome-only, single-layer, and untrained controls (dose-matched in
+total rollouts, 3 seeds): in an environment whose cost-optimal policy is
+trivial, \emph{all} credit signals are equally unstable --- REINFORCE falls
+into one of two policy attractors depending on seed, and no signal confers a
+differential advantage or safety. We report this pre-registered negative
+result and its diagnosis (bimodal attractor landscape with trivial optimum)
+as a design lesson for cross-layer training benchmarks.
 \end{abstract}
 
 \section{Introduction}
@@ -46,12 +50,17 @@ estimand, and an empirical component (the live downstream harness re-triggers
 the intervened decision); (4) control tasks showing the method distinguishes
 harmless from harmful harness decisions by construction --- including one
 audited exception where a harness decision had a \emph{behavioral} (not
-informational) effect; (5) interaction-aware credit for harness training
-evaluated against outcome-only, single-layer credit (a reproduction of the
-CHILL-Harness principle in our environment), and a zero-credit masking
-control (which, under our greedy tie-break at $\theta=0$, is de facto an
-untrained keep-always policy --- we state this explicitly), dose-matched in
-total rollouts. \todo{ajustar pós-gates}
+informational) effect; (5) a pre-registered training comparison ---
+interaction-aware credit vs.\ outcome-only, single-layer credit (a
+reproduction of the CHILL-Harness principle in our environment), and a
+zero-credit masking control (which, under our greedy tie-break at $\theta=0$,
+is de facto an untrained keep-always policy --- we state this explicitly),
+dose-matched in total rollouts --- whose honest outcome is \emph{negative}:
+with a trivial cost-optimum, every trained arm collapses into one of two
+attractors seed-dependently (outcome k/k/s, single-layer s/s/k,
+interaction-corrected k/s/s across 3 seeds), so credit quality is not the
+binding constraint; environment geometry is. \todo{integrar auditoria do
+estimador (mismatch de continuação) quando audita\_ch fechar}
 
 \section{Related Work}
 % CHILL-Harness (2607.25825): counterfactual só na camada harness — nosso braço 2 é
