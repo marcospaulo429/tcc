@@ -577,3 +577,26 @@
 - Cuidado epistêmico: mecanismos (23/24, 22/52) são eventos indutores de
   coalescência (empíricos); só o lema é teorema. Corrigido antes do reviewer.
 - Contribuições e abstract atualizados. Compila limpo, 0 refs quebradas.
+
+## 2026-08-23 — Review 7 (7.5) e correções da seção formal
+- Review 7 achou 2 erros lógicos reais (E-1: corolário afirmava que sinal
+  single-layer é "correto em pontos quebrados" — falso, erra por I em todo
+  ponto com I≠0, o próprio l_vending_machine inverte o sinal; E-2: "igualdade
+  de reward certifica coalescência" — afirmação do consequente) + 2 imprecisões
+  (E-3 pivotalidade "single flip"→"qualquer intervenção"; E-4 lema vale para R,
+  não R_eff). Todos corrigidos.
+- W-2 executado (experiments/w7_coalescencia.py, 0 rollouts): verificação de
+  coalescência de trace nos 75 pontos screened. Resultado: 73/75 coalescem
+  comportamentalmente (72 já no turno da intervenção), 29/75 atingem igualdade
+  ESTRITA de estado (messages+workspace byte-idênticos) em 1–4 turnos; os 2
+  que não coalescem (l_log_parser idx 10, g600 e mt6) são exatamente colisões
+  de reward — o caso que E-2 previu, agora medido e declarado no paper.
+  0 violações de determinismo de sufixo (após normalizar endereços ASLR e
+  nomes de sandbox que vazam no output do pytest).
+- W-3: "theorem" rebaixado (Prop.1 = "elementary algebra... value is the
+  correction rule"). W-5: \todo da T1 resolvido — research agent verificou
+  células contra fontes primárias: CHILL usa replay pareado OFFLINE p/ treinar
+  estimador amortizado (célula ✓^off), CAR mede interação step-step
+  intra-camada (célula --^s), fusão Co-Harness/HASE ok, HarnessCompass fora ok.
+  refs.bib: autores reais do CHILL preenchidos.
+- Compila limpo, 0 refs quebradas, 292 testes verdes.

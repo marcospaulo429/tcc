@@ -39,7 +39,8 @@ second model's null is itself explained by saturation (1 non-saturated
 point). This implies that single-layer credit double-counts shielded
 decisions --- not approximately but exactly: at screened points the
 single-layer harness credit equals the negated interaction,
-$C(H) = -I(H,M)$, and a coalescence argument shows why determinism makes
+$C(H) = -I(H,M)$, and a coalescence argument --- whose hypothesis we verify
+in the recorded traces --- shows why determinism makes
 the equality exact. We then train the harness layer with interaction-aware credit
 against outcome-only, single-layer, and untrained controls (dose-matched in
 total rollouts, 3 seeds, twice --- the second run with a pre-registered
@@ -122,11 +123,14 @@ regime-dependent (exact under slack, breaking at recurring points under
 pressure).
 \item \textbf{Anatomy of screening-off, with a formal core}: a
 double-counting identity ($C(H) = -I(H,M)$ exactly at screened points, with
-$C_{HM} - C_M$ as the correction rule) and a coalescence lemma explaining
-why screening-off is \emph{exact} under measured determinism; empirically, a
-structural component (the sampled $a'$ re-injects destroyed information,
-23/24 annotated points) and a closed-loop component (the live downstream
-harness re-triggers the intervened decision, 22/52 points).
+$C_{HM} - C_M$ as the correction rule), a coalescence lemma whose hypothesis
+we \emph{verify in the recorded traces} (73/75 screened points coalesce at
+trace level; the 2 exceptions are reward collisions, reported as such), and
+a pivotality argument that unifies the competence window, the mt4 collapse,
+and the 1.7B null; empirically, a structural component (the sampled $a'$
+re-injects destroyed information, 23/24 annotated points) and a closed-loop
+component (the live downstream harness re-triggers the intervened decision,
+22/52 points).
 \item \textbf{Construct validation by control tasks}: the method separates
 harmless from harmful harness decisions by construction (11/12), including
 one audited exception where a harness decision had a \emph{behavioral}, not
@@ -148,22 +152,30 @@ the failure in the training task distribution, not in credit quality.
 \section{Related Work}
 Counterfactual replay for agent credit is an active area, but every existing
 system we are aware of attributes within a single layer.
-CHILL-Harness~\cite{chill2026} intervenes on harness decisions and allocates
-replay budget adaptively, but never measures the model layer or the
+CHILL-Harness~\cite{chill2026} intervenes on harness decisions, using
+checkpointed paired replay \emph{offline} to train an amortized effect
+estimator (replay is disabled at decision time), but never measures the model
+layer or the
 interaction; our single-layer training arm (\S\ref{sec:training}) is an
 explicit reproduction of its principle in our environment, which turns the
 comparison into a result. CAR~\cite{car2026} formalizes per-step
-do-operations with Shapley attribution under a replay budget, within one
-decision stream. C3~\cite{c3v2} audits credit fidelity against exact replay
-ground truth (the same validation metric we adopt) but decomposes across
-\emph{agents}, not across the model/harness boundary inside one agent.
+do-operations with Shapley attribution under a replay budget --- including
+interaction \emph{between steps} --- but within one
+decision stream: it never crosses the model/harness boundary. C3~\cite{c3v2}
+audits credit fidelity against exact replay
+ground truth (the same validation metric we adopt) and adds an inter-agent
+influence diagnostic, but decomposes across
+\emph{agents}, not across the model/harness boundary inside one agent, and
+its influence measure is a diagnostic, not a training signal.
 A recent negative result~\cite{audit2026} shows that popular step-level
 credit signals fail to beat chance against replay ground truth; it sets the
 evidential bar our critic section inherits (dose-matching, pre-registration,
 heuristic baselines). On the training side, Co-Harness~\cite{coharness2026},
 HarnessCompass~\cite{harnesscompass2026} and HASE~\cite{hase2026} jointly
 optimize harness and weights, but without a per-decision causal signal ---
-they optimize the composition blindly. Agent Lightning~\cite{agentlightning}
+they optimize the composition blindly (HarnessCompass's ``cross-component
+interference'' is between components \emph{of the harness}, not causal
+model--harness interaction). Agent Lightning~\cite{agentlightning}
 provides rollout infrastructure for agent RL without addressing attribution.
 Table~\ref{tab:positioning} summarizes: no prior work measures $C(H)$, $C(M)$
 and $I(H,M)$ on the same trajectory, which is precisely where the
@@ -175,17 +187,21 @@ double-counting error lives.
  & counterfactual & measures & measures & $I(H,M)$ on same & trains \\
 Method & via replay & $C(H)$ & $C(M)$ & trajectory & with $I$ \\
 \midrule
-CHILL-Harness & \checkmark & \checkmark & -- & -- & -- \\
-CAR & \checkmark & -- & \checkmark & -- & -- \\
+CHILL-Harness & \checkmark$^{\mathrm{off}}$ & \checkmark & -- & -- & -- \\
+CAR & \checkmark & -- & \checkmark & --$^{\mathrm{s}}$ & -- \\
 C3 v2 & \checkmark & \multicolumn{2}{c}{(per agent)} & -- & -- \\
-HASE & -- & \checkmark & -- & -- & -- \\
+Co-Harness / HASE & -- & -- & -- & -- & --$^{\ast}$ \\
 \textbf{Ours} & \checkmark & \checkmark & \checkmark & \checkmark & tested$^{\dagger}$ \\
 \bottomrule
 \end{tabular}
-\caption{T1 --- positioning. $^{\dagger}$Tested with dose-matched controls
-and pre-registration; the outcome is an identified negative
-(\S\ref{sec:training}). \todo{verify cells against primary sources before
-submission}}
+\caption{T1 --- positioning. $^{\mathrm{off}}$Checkpointed paired replay used
+offline to train an amortized estimator; disabled at decision time.
+$^{\mathrm{s}}$CAR measures step--step interaction (Shapley) \emph{within}
+one layer, not across the model/harness boundary. $^{\ast}$Joint
+harness+weights training without
+per-decision causal measurement. $^{\dagger}$Tested with dose-matched
+controls and pre-registration; the outcome is an identified negative
+(\S\ref{sec:training}).}
 \label{tab:positioning}
 \end{table}
 
@@ -361,10 +377,11 @@ state); 9 also show the second mechanism and 1 shows neither. The second
 mechanism is checkable on all 52 shielded points: in \textbf{22/52} the
 \emph{live downstream harness} re-triggers summarization anyway, equalizing
 the branches. Section~\ref{sec:formal} makes this division precise: a
-coalescence lemma (a theorem under our determinism premises) guarantees that
-whenever the two branches reach the same state, the resulting equality is
-exact; both mechanisms are empirical coalescence-inducing events. We also
-found genuine
+coalescence lemma guarantees that whenever the two branches reach the same
+state, the resulting equality is exact --- and we verify the hypothesis
+directly in the recorded traces (50/52 shielded points coalesce; the 2
+exceptions are reward collisions, which we separate from true shielding). We
+also found genuine
 non-saturated synergy where the shield breaks
 (\texttt{l\_vending\_machine}: $C_H = C_M = -0.09$, $C_{HM} = 0$, so
 $I = +0.18$: either flip alone hurts, together they cancel).
@@ -388,7 +405,10 @@ harness action $h$ with alternative $h'$, model action $a$ with sampled
 alternative $a'$. Writing $R_H = R(\mathrm{do}(h'))$,
 $R_M = R(\mathrm{do}(a'))$, $R_{HM} = R(\mathrm{do}(h', a'))$ for the
 replayed rewards, the estimands are $C_H = R_0 - R_H$, $C_M = R_0 - R_M$,
-$C_{HM} = R_0 - R_{HM}$, and $I = C_{HM} - C_H - C_M$. \emph{Screening-off
+$C_{HM} = R_0 - R_{HM}$, and $I = C_{HM} - C_H - C_M$; throughout this
+section $R$ is the test-fraction reward (not $R_{\mathrm{eff}}$, whose token
+term accumulates over the differing prefixes), matching all measurements of
+\S\ref{sec:interaction}. \emph{Screening-off
 at the point} means $C_{HM} = C_M$.
 
 \begin{proposition}[Double-counting identity]
@@ -431,21 +451,38 @@ identical final rewards.
 The two empirical mechanisms of the anatomy are the two
 \emph{coalescence-inducing events} we observe in practice; the lemma's role
 is to guarantee that \emph{whenever} coalescence occurs, the resulting
-equality is exact rather than approximate. \emph{Re-triggering} (22/52):
-both branches executed the same $a'$, so environment states already agree;
-when the live harness in $B_M$ summarizes at step $t{+}1$, the deterministic
-summarizer maps both histories to summarized contexts that differ by at most
-a boundary message --- full coalescence is not automatic, but at each of
-these points the observed exact equality $R_M = R_{HM}$ certifies that it
-occurred. \emph{Re-injection} (23/24 annotated): $a'$ (typically a
-\texttt{write\_file} carrying the destroyed constants) equalizes the
-environment component $e_k$, and the residual context difference is confined
-to content the greedy continuation never conditions on --- checkable per
-point, but again not a theorem.
-The lemma nevertheless explains a striking feature of the data: measured
+equality is exact rather than approximate. Because reward equality does
+\emph{not} certify coalescence (with reward resolution $1/n_{\text{tests}}$,
+collisions are possible), we verified the lemma's hypothesis directly in the
+recorded branch traces of all 75 screened points, comparing per-turn states
+$(c_k, e_k)$ and per-turn behavior (action, observation), normalizing
+non-semantic identifiers that leak into test output (memory addresses,
+sandbox paths). The result: \textbf{73/75} screened points coalesce at the
+trace level --- identical (action, observation) suffixes down to termination.
+In 72 of the 73 the suffix already coincides at the intervened turn itself;
+there, since context operations never touch the environment and reward is a
+function of the final environment state, behavioral coalescence \emph{entails}
+$R_M = R_{HM}$. In \textbf{29/75} the full state $(c_k, e_k)$ becomes
+byte-identical within 1--4 turns of the intervention. Among the 52 shielded
+points, 50/52 coalesce; the \textbf{2 exceptions}
+(\texttt{l\_log\_parser} idx~10, in two configurations) are exactly the
+reward-collision case: $R_M = R_{HM}$ holds without trace coalescence, so
+the screening statistic counts them but the lemma does not explain them ---
+we flag them as reward collisions rather than coalescence-explained
+screening. No suffix violated
+determinism: whenever states matched at some turn, the branches were
+identical from that turn to termination, corroborating the premises at trace
+level. \emph{Re-triggering} (22/52): both branches executed the same $a'$,
+so environment states already agree; the live harness in $B_M$ summarizes at
+step $t{+}1$, and context coalescence follows. \emph{Re-injection} (23/24
+annotated): $a'$ (typically a \texttt{write\_file} carrying the destroyed
+constants) equalizes the environment component, and the residual context
+difference is confined to content the greedy continuation never conditions
+on. The lemma thus explains a striking feature of the data: measured
 screening-off consists of \emph{exact zeros}, not small values ---
-determinism converts coalescence into equality, and the measured $0.0$ floor
-makes equality observable.
+determinism converts coalescence into equality, the measured $0.0$ floor
+makes equality observable, and the coalescence itself is now measured
+rather than presumed.
 
 \begin{remark}[Pivotality and the competence window]
 \label{rem:pivot}
@@ -453,7 +490,8 @@ Call a decision point \emph{reward-pivotal} if at least one of the three
 interventions changes the reward. Non-pivotal points satisfy
 $C_H = C_M = C_{HM} = I = 0$ identically: nothing is detectable there, by
 construction rather than by noise. When the agent fails a task outright and
-no single flip rescues it, every point on that trajectory is non-pivotal.
+no intervention --- single or joint --- rescues it, every point on that
+trajectory is non-pivotal.
 This is the formal content of the competence window: reward saturation does
 not merely add variance --- it removes pivotal points, which is why the
 Qwen3-1.7B pressure regime (11/12 saturated) had essentially no power and
@@ -465,17 +503,21 @@ why the mt4 break rate collapses.
 In a regime where screening-off holds at all measured points (our slack
 regime, 57/57), the per-decision signal of a single-layer harness trainer is
 $-I$ at every shielded point: it consists entirely of credit for effects the
-model absorbs. Under pressure, the same signal is correct at broken points
-and wrong at screened ones; the corrected signal $C_{HM} - C_M$ of
-Proposition~\ref{prop:dc} is exact in both regimes.
+model absorbs. More generally, by Proposition~\ref{prop:dc} the single-layer
+signal errs by exactly $I$ at \emph{every} point where $I \neq 0$,
+regardless of regime --- at the broken point \texttt{l\_vending\_machine},
+$C_H = -0.09$ while the corrected signal is $+0.09$, an inverted sign. The
+corrected signal $C_{HM} - C_M$ is exact in both regimes.
 \end{corollary}
 
-We emphasize the epistemic status of each piece:
-Proposition~\ref{prop:dc} and Lemma~\ref{lem:coalesce} are theorems given
-the determinism premises, and those premises are themselves \emph{measured}
-(\S\ref{sec:floor}) rather than assumed; whether coalescence occurs at a
-given point, which mechanism induces it, and how often screening-off holds
-at all are empirical questions that the rest of this section answered.
+We emphasize the epistemic status of each piece.
+Proposition~\ref{prop:dc} is elementary algebra --- its value is not
+mathematical depth but the correction rule it licenses.
+Lemma~\ref{lem:coalesce} holds given the determinism premises, and both the
+premises (\S\ref{sec:floor}) and the lemma's hypothesis (this section) are
+\emph{measured} rather than assumed. Whether coalescence occurs at a given
+point, which mechanism induces it, and how often screening-off holds at all
+are empirical questions that the rest of this section answered.
 
 \subsection{Control tasks and the \texttt{c\_temp\_label} exception}
 On control tasks, where summaries destroy nothing by construction, the
