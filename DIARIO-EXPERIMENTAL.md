@@ -345,3 +345,27 @@
 - Verificado correto pelo revisor: simetria da contabilidade de tokens,
   forced_actions, reprodutibilidade do split, aritmética de λ*, empates exatos =
   identidade comportamental (prompt_tokens por task idênticos).
+
+### C1 COMPLETA (3 seeds × 4 braços) — GATE 3 FALHA; história muda (2026-08-22)
+- Held-out é BINÁRIO (greedy determinístico): keep-always → R=0.847/R_eff=0.237;
+  summarize-always → R=0.054/R_eff=−0.464. Atrator final por seed×braço:
+  outcome k/k/s, ch s/s/k, chm_cm k/s/s, zero k/k/k.
+- **GATE 3 pré-registrado FALHA:** chm_cm > zero é FALSO (colapsa 2/3); chm_cm vs ch
+  indistinguível (2/3 vs 2/3 colapsos, em seeds diferentes). A leitura da seed 1
+  ("single-layer nocivo, corrigido seguro") NÃO replicou — era ruído de seed.
+- Leitura honesta consolidada: REINFORCE (lr=0.5) numa paisagem de DOIS atratores
+  com ótimo trivial (keep) é instável sob QUALQUER um dos três sinais de crédito;
+  o único braço que nunca colapsa é o não-treinado (que já nasce no ótimo por
+  construção do tie-break). Nenhum sinal demonstra vantagem nem segurança
+  diferencial neste ambiente. Resultado NEGATIVO para o claim de treino no
+  ambiente atual — reportar como está (pré-registro obriga).
+- Sinal do C_H também instável entre seeds: frac positivos 0.66/0.63/0.35
+  (s3 majoritariamente negativo → convergiu keep). A "armadilha de assimetria"
+  da seed 1 não é determinística — depende da amostra inicial de episódios.
+- Implicações: (a) o resultado central do paper volta a ser a DECOMPOSIÇÃO +
+  screening-off dependente de regime (Fases A/B/D1), que está sólido; (b) C1 vira
+  seção de "treino é instável com ótimo trivial" + motivação para C1b (ambiente
+  com ótimo não-trivial, pré-registro novo) se houver tempo; (c) auditoria do
+  CRÍTICO 1 (audita_ch, rodando) decide se o viés positivo de C_H em s1/s2 é
+  artefato de mismatch de continuação — relevante para explicar a instabilidade.
+- Artefatos: experiments/results/2026-08-22_c1_summary.json (12 células).
