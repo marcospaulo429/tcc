@@ -564,3 +564,16 @@
 - **Estado do loop: 3 reviews consecutivos em 7.5; correções restantes são
   cosméticas (\todo autores, estilo ICLR oficial). Loop encerrado por
   convergência.**
+
+## 2026-08-23 — Frente teórica (pós-review 6)
+- Adicionada §"Screening-off, formally" (sec:formal) em main.tex: Prop. 1
+  (identidade de dupla contagem: C_HM − C_M = C_H + I sempre; sob screening,
+  C_H = −I exato; regra de correção = C_HM − C_M, o sinal do braço 3),
+  Lema 1 (coalescência: em agente determinístico, estados iguais em qualquer
+  passo ⇒ sufixos idênticos ⇒ C_HM = C_M com igualdade exata — explica os
+  zeros exatos), Remark (pivotalidade: pontos não-pivotais têm todos os
+  créditos ≡ 0; formaliza janela de competência e o nulo do 1.7B),
+  Corolário (sinal do braço single-layer em regime blindado é inteiramente −I).
+- Cuidado epistêmico: mecanismos (23/24, 22/52) são eventos indutores de
+  coalescência (empíricos); só o lema é teorema. Corrigido antes do reviewer.
+- Contribuições e abstract atualizados. Compila limpo, 0 refs quebradas.
