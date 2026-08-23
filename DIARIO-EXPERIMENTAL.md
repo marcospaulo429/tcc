@@ -390,3 +390,23 @@
 - Próximo: review ICLR simulado do pacote completo (pedido explícito do usuário),
   depois decidir C1b (agora com motivação forte: ótimo não-trivial JÁ EXISTE no
   held-out; generalização keep→thr600 é aprendível em princípio) vs D2c.
+
+### Review ICLR nº 2 (pacote completo) + C1b lançado (2026-08-22 noite)
+- Review 2 (subagente iclr): **6.5 borderline** (novidade 7, rigor 8, signif 5.5).
+  Veredito central: o negativo do C1 é MATA-PAPER na forma atual porque é
+  confundido por OTIMIZAÇÃO ("vocês testaram um otimizador quebrado, não
+  crédito") — o diagnóstico do bias não salva, só o C1b salva. Rota recomendada
+  com 1 semana de 4090: **C1b (3-4d) + D2c (1d)**; D2b vira limitação declarada.
+  Ambos os desfechos do C1b são publicáveis: braços aprendem thr-like → paper
+  entrega o título (7.5–8); ninguém difere → negativo IDENTIFICADO (~7).
+  W3 nova: sinergia genuína é n=1 → dose-resposta max_turns ∈ {4,8} (meio dia).
+  W4: reenquadrar critic como análise de estrutura + testar por estrato.
+  "Não atacar": fidelidade, controles c_*, auditoria 58/60, dose-matching, APC.
+- **Pré-registro 12 (C1b) escrito ANTES de rodar:** mesmíssimo protocolo do C1,
+  muda SÓ otimização: (a) centering fixo a priori (tokens/1000 − 0.6 [default da
+  família de harness], demais − 0.5 [ponto médio]); (b) lr 0.1; (c) clip norma 1.0.
+  Desfecho primário: algum braço com held-out R_eff > 0.30 em ≥2/3 seeds.
+  Implementação: center em rl/policy.py (CENTER_C1B), clip em train(), flag
+  --c1b. 292 testes verdes (2 novos: centering não toca bias; passo ≤ lr·clip).
+- **C1b chain LANÇADA** (experiments/c1b_chain.sh, 4 braços × 3 seeds, log
+  runs/c1b_chain.log). Depois: D2c (Qwen3-1.7B) e dose-resposta W3.

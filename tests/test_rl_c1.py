@@ -240,3 +240,29 @@ def test_train_arm_zero_freezes_theta_and_pays_no_replays(tmp_path):
     ref = train([SYNTH_TASK], llm2, arm="outcome", budget_calls=20, seed=3,
                 out_dir=tmp_path / "ref", lambda_cost=1.0)
     assert summary["episodes"] == ref["episodes"]
+
+
+def test_center_shifts_features_not_bias():
+    pol = LogisticContextPolicy(center=[0.0, 0.6, 0.5, 0.5, 0.5])
+    raw = LogisticContextPolicy()
+    m = _msgs()
+    f_raw, f_c = raw.features(m), pol.features(m)
+    assert f_c[0] == 1.0  # bias intocado
+    assert abs(f_c[1] - (f_raw[1] - 0.6)) < 1e-12
+    assert all(abs(f_c[i] - (f_raw[i] - 0.5)) < 1e-12 for i in (2, 3, 4))
+    assert "center" in pol.config() and pol.config()["center"][1] == 0.6
+
+
+def test_train_clip_norm_limits_update(tmp_path):
+    llm = _branching_training_llm()
+    summary = train([SYNTH_TASK], llm, arm="outcome", budget_calls=10, seed=4,
+                    out_dir=tmp_path / "train", lambda_cost=1.0,
+                    lr=0.1, clip_norm=1.0)
+    rows = [json.loads(line) for line in
+            (tmp_path / "train" / "train_log.jsonl").read_text().splitlines()]
+    prev = [0.0] * 5
+    for r in rows:
+        step = math.sqrt(sum((a - b) ** 2 for a, b in zip(r["theta"], prev)))
+        assert step <= 0.1 + 1e-9, f"update excedeu lr*clip: {step}"
+        prev = r["theta"]
+        assert r["grad_norm"] >= 0.0  # grad_norm logado é PRÉ-clip

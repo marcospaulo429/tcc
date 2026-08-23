@@ -228,7 +228,8 @@ def credit_for_point(traj: Trajectory, cp_decision, llm, policy_greedy, arm: str
 # -- treino / avaliação / calibração ------------------------------------------
 
 def train(tasks: list[dict], llm, arm: str, budget_calls: int, seed: int, out_dir,
-          lambda_cost: float = 1.0, k_credit: int = 2, lr: float = 0.5) -> dict:
+          lambda_cost: float = 1.0, k_credit: int = 2, lr: float = 0.5,
+          clip_norm: float = 0.0, center: list[float] | None = None) -> dict:
     if arm not in ("outcome", "ch", "chm_cm", "zero"):
         raise ValueError(f"arm desconhecido: {arm}")
     out_dir = Path(out_dir)
@@ -241,7 +242,8 @@ def train(tasks: list[dict], llm, arm: str, budget_calls: int, seed: int, out_di
     while llm.call_count < budget_calls:
         task = tasks[episode_idx % len(tasks)]
         episode_seed = seed * 100003 + episode_idx
-        policy = LogisticContextPolicy(theta=theta, rng_seed=episode_seed, greedy=False)
+        policy = LogisticContextPolicy(theta=theta, rng_seed=episode_seed,
+                                       greedy=False, center=center)
         ep = collect_episode(task, llm, policy, out_dir / "episodes",
                              episode_seed, lambda_cost)
         grad_sum = [0.0] * N_FEATURES
@@ -259,33 +261,39 @@ def train(tasks: list[dict], llm, arm: str, budget_calls: int, seed: int, out_di
             pts = ep["cp_points"]
             ep_rng = random.Random(seed * 7919 + episode_idx)  # rng derivado de seed+episódio
             sampled = ep_rng.sample(pts, min(k_credit, len(pts))) if pts else []
-            greedy = LogisticContextPolicy(theta=theta, greedy=True)
+            greedy = LogisticContextPolicy(theta=theta, greedy=True, center=center)
             for pt in sampled:
                 c = credit_for_point(traj, traj.decisions[pt["index"]], llm, greedy,
                                      arm, out_dir / "replays", lambda_cost)
                 credits.append(c)
                 g = policy.grad_logp(pt["phi"], pt["action"])
                 grad_sum = [s + c["credit"] * gi for s, gi in zip(grad_sum, g)]
+        gnorm = math.sqrt(sum(g * g for g in grad_sum))
+        if clip_norm > 0 and gnorm > clip_norm:
+            grad_sum = [g * clip_norm / gnorm for g in grad_sum]
         theta = [t + lr * gi for t, gi in zip(theta, grad_sum)]
         _append_flush(log_path, {
             "episode_idx": episode_idx, "task_id": task["task_id"],
             "seed": episode_seed, "R": ep["R"], "R_eff": ep["R_eff"],
             "calls_cum": llm.call_count, "theta": theta,
-            "grad_norm": math.sqrt(sum(g * g for g in grad_sum)),
+            "grad_norm": gnorm,
             "credits": credits, "arm": arm})
         episode_idx += 1
     return {"arm": arm, "seed": seed, "lambda_cost": lambda_cost,
             "episodes": episode_idx, "theta": theta,
+            "lr": lr, "clip_norm": clip_norm,
+            "center": list(center) if center is not None else None,
             "llm_calls_total": llm.call_count, "budget_calls": budget_calls,
             "log_path": str(log_path)}
 
 
 def evaluate(tasks: list[dict], llm, policy_theta: list[float], seed: int, out_dir,
-             lambda_cost: float = 1.0) -> dict:
+             lambda_cost: float = 1.0, center: list[float] | None = None) -> dict:
     llm = _ensure_counting(llm)
     per_task = []
     for i, task in enumerate(tasks):
-        policy = LogisticContextPolicy(theta=policy_theta, rng_seed=seed, greedy=True)
+        policy = LogisticContextPolicy(theta=policy_theta, rng_seed=seed,
+                                       greedy=True, center=center)
         ep = collect_episode(task, llm, policy, Path(out_dir) / "eval",
                              seed * 100003 + i, lambda_cost)
         per_task.append({"task_id": task["task_id"], "R": ep["R"], "R_eff": ep["R_eff"],
@@ -348,7 +356,16 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--out", required=True)
     ap.add_argument("--lambda-cost", type=float, default=1.0)
+    ap.add_argument("--lr", type=float, default=0.5)
+    ap.add_argument("--clip-norm", type=float, default=0.0)
+    ap.add_argument("--c1b", action="store_true",
+                    help="pré-registro 12: centering fixo + lr 0.1 + clip 1.0")
     args = ap.parse_args()
+    center = None
+    if args.c1b:
+        from rl.policy import CENTER_C1B
+        center = CENTER_C1B
+        args.lr, args.clip_norm = 0.1, 1.0
 
     from agent.llm import LLMClient  # lazy: testes nunca importam o cliente de rede
     llm = CountingLLM(LLMClient())
@@ -363,9 +380,10 @@ def main() -> None:
         return
 
     summary = train(train_tasks, llm, args.arm, args.budget_calls, args.seed, out,
-                    lambda_cost=args.lambda_cost)
+                    lambda_cost=args.lambda_cost, lr=args.lr,
+                    clip_norm=args.clip_norm, center=center)
     heldout = evaluate(heldout_tasks, llm, summary["theta"], args.seed, out,
-                       lambda_cost=args.lambda_cost)
+                       lambda_cost=args.lambda_cost, center=center)
     summary["heldout"] = heldout
     out.mkdir(parents=True, exist_ok=True)
     (out / "summary.json").write_text(
