@@ -410,3 +410,28 @@
   --c1b. 292 testes verdes (2 novos: centering não toca bias; passo ≤ lr·clip).
 - **C1b chain LANÇADA** (experiments/c1b_chain.sh, 4 braços × 3 seeds, log
   runs/c1b_chain.log). Depois: D2c (Qwen3-1.7B) e dose-resposta W3.
+
+### C1b COMPLETA — negativo IDENTIFICADO (2026-08-23)
+- Desfecho primário (pré-registro 12) FALHA: nenhuma célula > 0.30; todas em
+  0.237 (keep) ou −0.464 (colapso). Ninguém aprendeu o limiar que existe
+  (thr600 = 0.398 no held-out).
+- Mas o negativo agora é IDENTIFICADO (não mais confundido por otimização):
+  (a) otimização sã e estável — outcome 3/3 keep com θ na DIREÇÃO certa
+  (bias<0, peso tokens>0; crossover implícito 2.5k/5.8k/4.1k tokens — direção
+  correta, magnitude insuficiente: os episódios raramente visitam estados >2.5k
+  tokens, então não há gradiente além do crossover observado);
+  (b) colapsos: outcome 0/3, ch 1/3, chm_cm 1/3 (ambos na s2), zero 0/3 —
+  braços de crédito seguem MENOS estáveis que outcome mesmo com otimização sã
+  (evidência fraca, n=3, mas consistente com C1);
+  (c) frac créditos+ do ch normalizou p/ ~0.5 (0.48/0.56/0.44) sob a nova
+  dinâmica — o viés extremo do C1 (0.66) era dependente da trajetória de θ.
+- Leitura p/ o paper (desfecho b do review 2): "mesmo com otimização sã,
+  REINFORCE nesta classe de política não descobre o comportamento de limiar
+  aprendível em princípio; nenhum sinal de crédito muda isso; sinais de crédito
+  single-layer e corrigido adicionam risco de colapso (1/3 vs 0/3)". O gargalo
+  final é EXPLORAÇÃO (estados informativos raros), não crédito nem otimização —
+  cadeia diagnóstica completa em dois atos, ambos pré-registrados.
+- Artefato: experiments/results/2026-08-23_c1b_summary.json. GATE 3 fechado
+  em definitivo (negativo em dois estágios, identificado).
+- Próximo: dose-resposta W3 (max_turns ∈ {4,8}, 4B ainda carregado) → D2c
+  (Qwen3-1.7B, troca de modelo no vLLM) → W4 critic por estrato (CPU).
