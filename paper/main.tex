@@ -33,10 +33,13 @@ configurations); under budget pressure, screening-off breaks (8/65 across
 three pressure levels; $p=0.005$ point-level, $p=0.125$ task-clustered ---
 we report both) at \emph{recurring} decision points, with a non-monotonic
 dependence on pressure intensity partially mediated by reward saturation.
-The noise floor and the slack regime replicate on a second model
-(Qwen3-1.7B); the pressure regime is established on one model --- the
-second model's null is itself explained by saturation (1 non-saturated
-point). This implies that single-layer credit double-counts shielded
+The noise floor and the slack regime replicate on two additional models
+(Qwen3-1.7B and Qwen3-8B; 1{,}108 null replays on the auxiliary models,
+2{,}739 in total, all exact), and the pressure
+regime replicates directionally on Qwen3-8B (a non-saturated synergy break,
+$I=+0.38$); reward saturation dominates both auxiliary models, in opposite
+directions --- the competence window operating as predicted.
+This implies that single-layer credit double-counts shielded
 decisions --- not approximately but exactly: at screened points the
 single-layer harness credit equals the negated interaction,
 $C(H) = -I(H,M)$, and a coalescence argument --- whose occurrence we verify
@@ -127,7 +130,8 @@ $C_{HM} - C_M$ as the correction rule), a coalescence lemma and corollary
 whose occurrence we \emph{verify in the recorded traces} (72/75 screened
 points explained; 3 residuals, including 2 reward collisions, declared), and
 a pivotality argument that unifies the competence window, the mt4 collapse,
-and the 1.7B null; empirically, a structural component (the sampled $a'$
+and the saturation-dominated nulls of both auxiliary models (1.7B below the
+window, 8B above it); empirically, a structural component (the sampled $a'$
 re-injects destroyed information, 23/24 annotated points) and a closed-loop
 component (the live downstream harness re-triggers the intervened decision,
 22/52 points).
@@ -260,8 +264,9 @@ equality: in 3 null replays (all in one configuration) the replayed
 trajectory took one extra retry while reproducing $R$ exactly, and we report
 this rather than hide it.
 Across seven dedicated null-replay runs of Qwen3-4B (1{,}230 nulls), the
-nulls attached to every interaction run (401 more on Qwen3-4B), and two
-configurations of Qwen3-1.7B (64 nulls), \textbf{every one of 1{,}695 null
+nulls attached to every interaction run (401 more on Qwen3-4B), two
+configurations of Qwen3-1.7B (64 nulls), and three configurations of
+Qwen3-8B (810 dedicated + 234 attached), \textbf{every one of 2{,}739 null
 replays reproduced $R$ exactly}: the floor is $0.0$ in all
 configurations
 (Figure~\ref{fig:floor}a). This is a measurement under explicit premises ---
@@ -283,7 +288,8 @@ default vLLM settings inherits this silent failure.
 \includegraphics[width=\linewidth]{figures/f1_noise_floor.pdf}
 \caption{\textbf{F1 --- Measured noise floor.} (a) Dedicated null-replay
 runs (Qwen3-4B blue, Qwen3-1.7B purple); together with nulls attached to
-interaction runs, all 1{,}695 null replays are exact, floor $=0.0$. (b) With
+interaction runs and the Qwen3-8B replication, all 2{,}739 null replays are
+exact, floor $=0.0$. (b) With
 vLLM automatic prefix caching
 on, the floor rises to $0.417$ (7/270 inexact): greedy determinism breaks
 silently.}
@@ -672,14 +678,23 @@ GPU-days); we declare it rather than claim it. We position this as a methods
 paper: the transferable artifact is the recorder/replay/forced-queue
 infrastructure, the APC finding, and the measurement protocol.
 
-\paragraph{One model powers the pressure regime.} The floor and slack regime
-replicate on Qwen3-1.7B; the pressure-regime break rate is established on
-Qwen3-4B only. The 1.7B null (0/12) is itself explained by the mediator we
-identified: 11/12 of its pressure points are reward-saturated, leaving one
-informative point --- zero power (under the 4B break rate,
-$P(\text{0 breaks}) \approx 0.21$). This is the competence window operating
-as predicted, but a second \emph{powered} model is needed to call the
-pressure regime general.
+\paragraph{The pressure-regime break rate is powered on one model.} The floor
+and slack regime replicate on Qwen3-1.7B and Qwen3-8B (pre-registered as D2c
+and D2d before running): the 8B contributes 810 dedicated and 234 attached
+null replays, all exact, and 0 non-saturated breaks in slack. Under pressure
+the 8B shows a genuine non-saturated break at \texttt{l\_door\_controller}
+($C_{HM}=0.23$ vs.\ $C_M=-0.46$, $I=+0.38$ --- a synergy, not a shield), so
+the qualitative claim (breaks exist under pressure, not under slack)
+replicates directionally on a powered model. What does \emph{not} transfer is
+the break \emph{rate}: reward saturation dominates both auxiliary models in
+opposite directions --- 11/12 of the 1.7B's pressure points are saturated
+because the model is too weak (it fails at both flips), 90/97 of the 8B's
+points are saturated because it is too strong for this task pool (it succeeds
+through both flips; its pre-registered escalation to mt4 still yielded only
+2 non-saturated confirmatory points). This is the competence window operating
+as predicted by the pivotality remark, measured now at three model scales;
+but estimating the break rate on a second powered model requires a task pool
+curated to that model's competence, which we flag as the remaining step.
 
 \paragraph{Clustered inference.} Points within a task are not independent.
 At the task level the pressure-vs-slack contrast is 3 tasks vs.\ 0 (sign
@@ -742,7 +757,7 @@ failed. Failed predictions are reported in the main text where they occur.
 \toprule
 \# & Pre-registered prediction / rule & Outcome & Status \\
 \midrule
-1 & Noise floor per config $=\max|\Delta R|$ over nulls & $0.0$ in 7+2 configs, 2 models & held \\
+1 & Noise floor per config $=\max|\Delta R|$ over nulls & $0.0$ in 7+2+3 configs, 3 models & held \\
 2 & Phase-A yield / stopping rule & followed as written & held \\
 3 & Critic evaluation statistic (task-clustered Spearman) & mixed result reported as-is & held \\
 4 & Pre/post feature split for critic & followed & held \\
@@ -756,6 +771,7 @@ failed. Failed predictions are reported in the main text where they occur.
 12 & C1b primary outcome: held-out $R_{\text{eff}}>0.30$, $\geq$2/3 seeds & no arm reached it & \textbf{failed} \\
 13 & Dose-response: monotonic break rate in pressure & inverted U ($p=0.38$) & \textbf{failed} \\
 14 & D2c replication: floor, slack, pressure on Qwen3-1.7B & floor+slack replicate; pressure inconclusive & partial \\
+15 & D2d replication: floor, slack, pressure on Qwen3-8B (incl.\ mt4 escalation rule) & floor+slack replicate; 1 non-saturated pressure break & held \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
