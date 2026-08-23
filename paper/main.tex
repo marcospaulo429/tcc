@@ -24,12 +24,15 @@ harness decision ($C_{HM}=C_M$, 57/57 points); under budget pressure
 synergy appears. This implies that single-layer credit double-counts shielded
 decisions. We then train the harness layer with interaction-aware credit
 against outcome-only, single-layer, and untrained controls (dose-matched in
-total rollouts, 3 seeds): in an environment whose cost-optimal policy is
-trivial, \emph{all} credit signals are equally unstable --- REINFORCE falls
-into one of two policy attractors depending on seed, and no signal confers a
-differential advantage or safety. We report this pre-registered negative
-result and its diagnosis (bimodal attractor landscape with trivial optimum)
-as a design lesson for cross-layer training benchmarks.
+total rollouts, 3 seeds, twice --- the second run with a pre-registered
+optimization fix): no credit signal learns the threshold policy that
+provably exists in the environment (held-out $R_\text{eff}$ 0.398 vs.\ 0.237
+for the best fixed policy), and credit-driven arms add collapse risk that the
+outcome-only arm avoids. A pre-registered audit (60 points, two-greedy-replay
+recomputation, 58/60 sign agreement) rules out the estimator as the cause: the
+binding constraint is \emph{exploration}, not credit quality. We report this
+two-stage identified negative result as a design lesson for cross-layer
+training benchmarks.
 \end{abstract}
 
 \section{Introduction}
@@ -55,12 +58,16 @@ interaction-aware credit vs.\ outcome-only, single-layer credit (a
 reproduction of the CHILL-Harness principle in our environment), and a
 zero-credit masking control (which, under our greedy tie-break at $\theta=0$,
 is de facto an untrained keep-always policy --- we state this explicitly),
-dose-matched in total rollouts --- whose honest outcome is \emph{negative}:
-with a trivial cost-optimum, every trained arm collapses into one of two
-attractors seed-dependently (outcome k/k/s, single-layer s/s/k,
-interaction-corrected k/s/s across 3 seeds), so credit quality is not the
-binding constraint; environment geometry is. \todo{integrar auditoria do
-estimador (mismatch de continuação) quando audita\_ch fechar}
+dose-matched in total rollouts --- whose honest outcome is a \emph{two-stage
+identified negative}: (act 1) with raw features and high learning rate, every
+trained arm collapses seed-dependently into one of two policy attractors;
+(act 2) with a pre-registered optimization fix (centered features, lower
+learning rate, gradient clipping), training is stable and moves in the right
+direction, yet no arm discovers the threshold policy that provably exists on
+held-out tasks --- and credit-driven arms retain collapse risk (1/3 seeds)
+that outcome-only avoids (0/3). A pre-registered audit (58/60 sign agreement
+between logged credits and two-greedy-replay recomputation) rules out the
+estimator: exploration, not credit quality, is the binding constraint.
 
 \section{Related Work}
 % CHILL-Harness (2607.25825): counterfactual só na camada harness — nosso braço 2 é
@@ -117,10 +124,15 @@ HASE & -- & \checkmark & -- & -- & -- \\
 % comportamental (o resumo muda o comportamento subsequente do modelo), não informacional.
 % Isso é um resultado sobre o que C(H) mede, não uma falha do controle.
 
-\section{Predicting Credit: Critic vs.\ Dose-Matched Baselines (F4)}
-% classificador |C|>0 + regressor condicional; split por task; bootstrap por task;
-% precision@10 fixado a priori; baselines: logprob, posição, LLM-judge
-\todo{GATE 2 decide: contribuição ou resultado negativo honesto}
+\section{The Structure of Harness Credit (F4)}
+% REENQUADRADA (GATE 2 + W4 review 2): não é mais "critic como contribuição".
+% Resultado: critic ≈ heurísticas triviais em ranking (0.718 vs |ctx| 0.796) e
+% POR ESTRATO não ganha em nenhum (L empate 0.747/0.741; V2 heurística ganha
+% 0.693/0.796; S satura AUROC 1.0). Leitura: C(H) é majoritariamente função de
+% tamanho de contexto + posição — consistente com o mecanismo de destruição de
+% informação; a limitação I2 vira achado sobre a estrutura do sinal. Detecção
+% (|C|>0): gbm AUROC 0.846 vs 0.735/0.785, ICs sobrepostos — vantagem modesta.
+% Artefatos: runs/critic_report.json, results/2026-08-23_critic_por_estrato.json.
 
 \section{Training with Cross-Layer Credit (F5)}
 % C1, 4 braços dose-matched POR ROLLOUT TOTAL (episódios + replays de crédito):
@@ -129,7 +141,16 @@ HASE & -- & \checkmark & -- & -- & -- \\
 % predição pré-registrada: C(H) puro supercredita decisões blindadas; braço 3 só conta
 % como contribuição se vencer o braço 2 E o braço 4. Reportar grad_norm por braço
 % (contra a explicação "variância menor, não crédito").
-\todo{GATE 3 decide o título}
+% DESFECHO FINAL (GATE 3 + pré-registros 11/12): negativo em DOIS ATOS.
+% Ato 1 (C1, lr 0.5, features cruas): held-out binário (keep 0.237 / summ −0.464);
+%   atratores seed-dependentes outcome k/k/s, ch s/s/k, chm_cm k/s/s, zero k/k/k.
+% Auditoria (pré-reg 11): 58/60 concordância, 0 flips +→− — estimador NÃO é a causa.
+% Ato 2 (C1b, pré-reg 12: centering+lr 0.1+clip 1.0): otimização sã, direção certa
+%   (bias<0, peso tokens>0, crossover 2.5–5.8k), mas ninguém atinge thr600 (0.398
+%   no held-out); colapsos: ch 1/3, chm_cm 1/3, outcome/zero 0/3.
+% Diagnóstico final: EXPLORAÇÃO é o gargalo (estados >2.5k tokens raros);
+%   crédito single-layer e corrigido adicionam risco de colapso sem ganho.
+% Título da seção/paper ajustar: medição é a contribuição; treino é lição de desenho.
 
 \section{Threats to Validity}
 % I1/I2; saturação endógena; entropia da política (a' inamostrável em estados de
