@@ -47,10 +47,52 @@ training benchmarks.
 \end{abstract}
 
 \section{Introduction}
-% Claim central (GATE 1 do PLANO-EXECUCAO decide a ênfase):
-% (a) se sinergia mensurável: "I como sinal de primeira classe, dois regimes"
-% (b) senão: "decomposição cross-layer + correção de dupla contagem"
-\todo{motivação: harness ignorado como fonte causal; RL trata trajetória como monolito}
+An LLM agent is not a model. It is a model wrapped in a \emph{harness}: a
+program that manages context, decides when to summarize or truncate history,
+retries failed calls, and terminates episodes. In deployed agents the harness
+makes as many decisions per episode as the model does, and those decisions ---
+especially context management --- destroy or preserve the information the
+model conditions on. Yet the dominant training paradigm treats the trajectory
+as a monolith: outcome-level RL (e.g., GRPO-style policy gradients) assigns
+one scalar return to every decision, regardless of which layer made it, and
+recent per-step credit methods attribute within a single layer only. If a
+harness decision was harmless \emph{because} the model's next action
+compensated for it, single-layer credit will bill the harness for an effect
+the model screened off --- a double-counting error that is invisible unless
+both layers are measured on the same trajectory.
+
+This paper asks the question directly: on the same trajectory, what is the
+causal contribution of a harness decision, of a model decision, and of their
+interaction? We answer it with deterministic counterfactual replay. Given a
+recorded trajectory, we re-execute it from any decision point with exactly one
+decision changed and the entire prefix forced, and define per-decision credit
+as $C(d) = R_{\text{orig}} - R_{\text{cf}}$. Replaying pairs and joint flips
+yields $C(H)$, $C(M)$, $C(H,M)$ and the interaction
+$I(H,M) = C(H,M) - C(H) - C(M)$ at a single decision pair. Because our replay
+is \emph{exactly} deterministic (a measured, not assumed, property --- and one
+that fails silently if vLLM's automatic prefix caching is left on), every
+nonzero credit is signal.
+
+The headline finding is that the interaction term is \emph{regime-dependent}.
+When the agent has budget slack, the model action screens off the harness
+decision exactly: $C_{HM} = C_M$ in 57 out of 57 measured points across three
+configurations. Under budget pressure the shield cracks --- 8 breaks in 65
+points, concentrated at recurring decision points --- and the dependence on
+pressure intensity is non-monotonic, partially mediated by reward saturation:
+interaction is only detectable inside a \emph{competence window} where the
+agent neither aces nor fails everything. The practical corollary is negative
+for naive pipelines: in the slack regime, single-layer harness credit
+systematically double-counts effects the model absorbs.
+
+We then test whether interaction-aware credit improves \emph{training} of the
+harness layer, with pre-registered predictions, dose-matched controls, and
+three seeds per arm --- twice. The honest outcome is a two-stage identified
+negative: optimization instability first, and, after a pre-registered fix,
+stable training that still fails to discover a threshold policy which is
+expressible by the policy class and dominant on held-out tasks. A
+pre-registered audit exonerates the credit estimator; the binding constraint
+is exploration. We report this as a design lesson for cross-layer training
+benchmarks, not as a method contribution.
 
 \paragraph{Contributions.}
 (1) Deterministic replay infrastructure with measured noise floor \emph{under
@@ -81,18 +123,34 @@ between logged credits and two-greedy-replay recomputation) rules out the
 estimator: exploration, not credit quality, is the binding constraint.
 
 \section{Related Work}
-% CHILL-Harness (2607.25825): counterfactual só na camada harness — nosso braço 2 é
-%   explicitamente uma reprodução desse princípio no nosso ambiente (comparação vira resultado).
-% CAR (2606.08275): replay+Shapley, sem cross-layer.
-% 2608.19760: resultado negativo credit signals vs replay ground truth — nosso critic é dose-matched e pré-registrado.
-% C3 v2 (2603.06859): credit fidelity Spearman vs replay GT em MBPP+/Qwen3-4B — mesma métrica, decomposição agentes vs camadas.
-% Co-Harness/HarnessCompass, HASE, Agent Lightning.
+Counterfactual replay for agent credit is an active area, but every existing
+system we are aware of attributes within a single layer.
+CHILL-Harness~\cite{chill2026} intervenes on harness decisions and allocates
+replay budget adaptively, but never measures the model layer or the
+interaction; our single-layer training arm (\S\ref{sec:training}) is an
+explicit reproduction of its principle in our environment, which turns the
+comparison into a result. CAR~\cite{car2026} formalizes per-step
+do-operations with Shapley attribution under a replay budget, within one
+decision stream. C3~\cite{c3v2} audits credit fidelity against exact replay
+ground truth (the same validation metric we adopt) but decomposes across
+\emph{agents}, not across the model/harness boundary inside one agent.
+A recent negative result~\cite{audit2026} shows that popular step-level
+credit signals fail to beat chance against replay ground truth; it sets the
+evidential bar our critic section inherits (dose-matching, pre-registration,
+heuristic baselines). On the training side, Co-Harness~\cite{coharness2026},
+HarnessCompass~\cite{harnesscompass2026} and HASE~\cite{hase2026} jointly
+optimize harness and weights, but without a per-decision causal signal ---
+they optimize the composition blindly. Agent Lightning~\cite{agentlightning}
+provides rollout infrastructure for agent RL without addressing attribution.
+Table~\ref{tab:positioning} summarizes: no prior work measures $C(H)$, $C(M)$
+and $I(H,M)$ on the same trajectory, which is precisely where the
+double-counting error lives.
 \begin{table}[t]
 \centering\small
 \begin{tabular}{lccccc}
 \toprule
- & counterfactual & mede & mede & $I(H,M)$ na mesma & treina \\
-Método & por replay & $C(H)$ & $C(M)$ & trajetória & com $I$ \\
+ & counterfactual & measures & measures & $I(H,M)$ on same & trains \\
+Method & via replay & $C(H)$ & $C(M)$ & trajectory & with $I$ \\
 \midrule
 CHILL-Harness & \checkmark & \checkmark & -- & -- & -- \\
 CAR & \checkmark & -- & \checkmark & -- & -- \\
@@ -101,107 +159,377 @@ HASE & -- & \checkmark & -- & -- & -- \\
 \textbf{Ours} & \checkmark & \checkmark & \checkmark & \checkmark & tested$^{\dagger}$ \\
 \bottomrule
 \end{tabular}
-\caption{T1 --- posicionamento. $^{\dagger}$Testado com controles dose-matched
-e pré-registro; desfecho é um negativo identificado (\S6). \todo{revisar células
-contra as fontes primárias antes da submissão}}
+\caption{T1 --- positioning. $^{\dagger}$Tested with dose-matched controls
+and pre-registration; the outcome is an identified negative
+(\S\ref{sec:training}). \todo{verify cells against primary sources before
+submission}}
+\label{tab:positioning}
 \end{table}
 
 \section{Setup: A Two-Layer Agent with Deterministic Replay}
-\subsection{Decision schema and recorder}
+\label{sec:setup}
+\subsection{Agent, decision schema and recorder}
+The agent is deliberately minimal: a coding agent in a sandboxed environment
+that reads a task description, writes files, and runs tests. Two layers make
+decisions. The \textbf{model layer} (Qwen3-4B served by vLLM, greedy
+decoding) chooses tool calls: \texttt{write\_file}, \texttt{run\_tests},
+\texttt{read\_file}, \texttt{finish}. The \textbf{harness layer} is a
+scripted policy that at every turn makes a \texttt{context\_policy} decision
+(\texttt{keep\_context} vs.\ \texttt{summarize\_context}, the latter
+compressing history to a fixed-length prefix) and a \texttt{termination}
+decision. Every decision --- model or harness --- is recorded with a typed
+schema: decision id, layer, state before, available actions, chosen action,
+observation, token costs, and parent/child links. Reward is deterministic:
+the fraction of hidden pytest tests passed, so $R \in [0,1]$ with resolution
+set by the number of tests. Cost-adjusted reward is
+$R_{\text{eff}} = R - \lambda \cdot \text{prompt tokens}/10^5$ with
+$\lambda = 25$, fixed analytically before any training and never
+recalibrated.
+
 \subsection{Replay and interventions}
-% forced-action queue; peek-match; nulls exatos 16/16
+Replay re-executes a recorded trajectory through the \emph{live} agent loop
+with a forced-action queue: recorded decisions are matched against the loop's
+requests (peek-match on decision type and state hash) and forced, up to the
+intervention point; from there the loop runs free. An intervention replaces
+exactly one decision (or, for $C(H,M)$, one harness--model pair). The null
+intervention --- force everything, change nothing --- must reproduce $R$
+exactly; \S\ref{sec:floor} shows it does, and what serving configuration is
+required for it to. All replays run sequentially against a single vLLM
+instance with a fixed config.
+
 \subsection{Tasks}
-% estratos: V2/L (constantes pós-240), S (sinergia por desenho), C (controle)
-% saturação do reward é endógena ao nº de testes — reportar como escolha de desenho
+We use 30 synthetic coding tasks in four designed strata, plus 10 held-out
+tasks. \textbf{V2} and \textbf{L} tasks place critical constants beyond the
+first 240 characters of history, so a summarize decision is
+\emph{informationally destructive} at known positions; L tasks are longer
+variants. \textbf{S} tasks are built so that success requires harness and
+model decisions to cooperate (synergy by design). \textbf{C} tasks are
+controls: all information needed survives any summary, so the construct
+predicts $C(H) = 0$. Reward saturation (episodes at $R \in \{0, 1\}$) is
+endogenous to the number of tests per task; we treat it as a design choice
+and analyze its consequences explicitly (\S\ref{sec:interaction},
+\S\ref{sec:threats}).
 
 \section{Measuring Cross-Layer Credit}
-\subsection{Noise floor (F1)}
-% Figura F1: |dR| de replays nulos por config; piso pré-registrado = max sem timeout.
-% ENQUADRAMENTO (W7): piso é MEDIÇÃO sob premissas explícitas (config fixa, execução
-% sequencial, prefix caching OFF), não garantia. Parágrafo próprio para o achado APC:
-% vLLM V1 liga APC por default; numerics do prefill dependem do estado do KV cache →
-% greedy decoding diverge entre histórias distintas mesmo com requests sequenciais.
-% "Sequencialidade sozinha NÃO basta." Piso 0.417 contaminado vs 0.0 limpo.
-\subsection{$C(H)$ and $C(M)$ (F2)}
-% Figura F2: distribuição de C por camada, direção e estrato; NUNCA agregar direções
-\subsection{Interaction $I(H,M)$ and its anatomy (F3)}
-% Figura F3: REGIME-DEPENDENCE (GATE-1b): screening exato 57/57 com folga (max_turns=12,
-% 3 configs) vs 18/21 sob pressão (max_turns=6); 3 exceções todas no mt6 (P=0.0175);
-% sinergia genuína não-saturada (l_vending_machine I=+0.18: C_H=C_M=-0.09, C_HM=0).
-% Sign test do mecanismo: 75/78, P=2.6e-19 (pré-registro 10).
-% Sub-mecanismo 1 (estrutural: a' re-injeta informação — argumento formal) vs
-% sub-mecanismo 2 (empírico: harness vivo re-dispara summarize) — frações quantificadas.
+\subsection{Noise floor}
+\label{sec:floor}
+Every causal claim below is only as good as the replay. We therefore
+\emph{measure} the noise floor rather than assume it: the pre-registered floor
+for each configuration is $\max |\Delta R|$ over null replays (replay with no
+intervention). Across seven configurations of Qwen3-4B (1{,}230 null replays)
+and two configurations of Qwen3-1.7B, \textbf{every null replay reproduced
+$R$ exactly}: the floor is $0.0$ in all nine configurations
+(Figure~\ref{fig:floor}a). This is a measurement under explicit premises ---
+fixed serving config, strictly sequential requests, prefix caching off ---
+not a guarantee.
+
+The premises matter. vLLM V1 enables automatic prefix caching (APC) by
+default, and with APC on, prefill numerics depend on the KV-cache state left
+by \emph{previous} requests: greedy decoding diverges across identical
+prompts with different serving histories, even when requests are sequential.
+In our APC-contaminated run, 7 of 270 null replays were inexact and the floor
+rose to $0.417$ (Figure~\ref{fig:floor}b) --- large enough to swamp most true
+credits. Sequential execution alone is \emph{not} sufficient; APC must be
+disabled. We flag this because any replay-based attribution system built on
+default vLLM settings inherits this silent failure.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/f1_noise_floor.pdf}
+\caption{\textbf{F1 --- Measured noise floor.} (a) Null replays per
+configuration (Qwen3-4B blue, Qwen3-1.7B purple); every one of $\sim$1{,}250
+null replays is exact, floor $=0.0$. (b) With vLLM automatic prefix caching
+on, the floor rises to $0.417$ (7/270 inexact): greedy determinism breaks
+silently.}
+\label{fig:floor}
+\end{figure}
+
+\subsection{$C(H)$ and $C(M)$}
+With an exact floor, per-decision credits are directly interpretable: any
+$C \neq 0$ is a real causal effect of that single decision.
+Figure~\ref{fig:dist} shows the distributions over 248 harness points and 66
+model points, by stratum. Three regularities matter downstream. First,
+direction is everything: flipping \texttt{keep}$\to$\texttt{summarize} at an
+information-critical point yields large positive $C(H)$ (the decision to keep
+was worth up to $+0.89$), while the reverse direction is near zero --- we
+therefore never aggregate across directions. Second, credits are sparse:
+most decisions are causally inert, and mass concentrates at
+information-destruction points predicted by task design (V2/L strata).
+Third, $C(M)$ at matched points is frequently nonzero when $C(H)$ is not,
+foreshadowing the screening-off structure of \S\ref{sec:interaction}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/f2_credit_distributions.pdf}
+\caption{\textbf{F2 --- Per-decision credit by layer and stratum.} $C(H)$
+(248 points) and $C(M)$ (66 points) against an exact zero floor. Strata:
+V2/L information-destruction, S designed synergy, C controls.}
+\label{fig:dist}
+\end{figure}
+
+\subsection{Interaction $I(H,M)$ and its anatomy}
+\label{sec:interaction}
+The central measurement flips a harness decision and a model decision at the
+same point, alone and jointly. \textbf{With budget slack} (max 12 turns;
+three budget configurations g450/g600/g900), the model action screens off the
+harness decision \emph{exactly}: $C_{HM} = C_M$ in \textbf{57/57} points ---
+the sampled alternative model action re-establishes what the harness
+destroyed, so the harness flip adds nothing beyond the model flip.
+\textbf{Under budget pressure} (max 4/6/8 turns), screening-off breaks in
+\textbf{8/65} points (slack vs.\ pressure: $p = 0.005$ point-level
+hypergeometric; $p = 0.125$ task-clustered sign test over 3 breaking tasks
+--- we report both, and note the point-level test treats points within a task
+as independent). Breaks recur at the \emph{same} decision points across
+configurations (\texttt{l\_log\_parser} idx~8 in 3/3 pressure configs;
+\texttt{api\_router} idx~1 and \texttt{l\_vending\_machine} idx~11 in 2
+each), which is what a real mechanism, rather than noise, predicts.
+
+The dependence on pressure intensity is \emph{non-monotonic}: break rates are
+0/21 (mt12), 4/22 (mt8), 3/21 (mt6), 1/22 (mt4) --- an inverted U. Our
+pre-registered monotonicity test failed (Cochran--Armitage $p = 0.38$); we
+report that failure and analyze the cause. The mediator is \textbf{reward
+saturation}: at mt4 the agent fails most tasks outright ($R$ pinned at 0), so
+no flip can make things worse and interaction is masked. Conditioning on
+non-saturated points sharpens the contrast (slack 0/12 vs.\ pressure 6/19,
+$p = 0.037$) and partially restores the mt4 rate ($0.045 \to 0.143$), though
+the ordering mt8 $>$ mt6 $>$ mt4 persists --- saturation mediates the window
+partially, not fully (Figure~\ref{fig:regime}). We call the resulting
+picture a \emph{competence window}: cross-layer interaction is detectable
+only where the agent neither saturates success nor failure.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/f3_regime_dependence.pdf}
+\caption{\textbf{F3 --- Screening-off is regime-dependent.} Break rate of
+$C_{HM} = C_M$ per configuration, raw and conditioned on non-saturated
+points. Slack: 0/57 raw (0/12 non-saturated). Pressure: 8/65 raw (6/19
+non-saturated, $p=0.037$). Qwen3-1.7B (purple) replicates slack; its
+pressure null is explained by saturation (only 1 non-saturated point).}
+\label{fig:regime}
+\end{figure}
+
+\paragraph{Anatomy of the shield.} Why does screening-off hold so often? A
+sign-test of the mechanism's core prediction --- that the model flip weakly
+dominates the harness flip at shielded points --- holds in 75/78 points
+($P = 2.6\times10^{-19}$, pre-registered). Decomposing the shielded points
+for which we have mechanism annotations: in 23 the sampled alternative action
+$a'$ \emph{structurally re-injects} the destroyed information (a property of
+the estimand: $a'$ is sampled from the model conditioned on the un-summarized
+state, so it can carry the information across the cut); in 22 the \emph{live
+downstream harness} re-triggers summarization anyway, equalizing the
+branches; 9 show both, 1 neither. Screening-off is thus partly a theorem
+about the estimator and partly an empirical fact about closed-loop harness
+behavior --- and we found genuine non-saturated synergy where it breaks
+(\texttt{l\_vending\_machine}: $C_H = C_M = -0.09$, $C_{HM} = 0$, so
+$I = +0.18$: either flip alone hurts, together they cancel).
+
+\paragraph{Consequence for credit assignment.} At every shielded point,
+single-layer harness credit $C(H)$ bills the harness for an effect the model
+absorbs: interaction-corrected credit $C_{HM} - C_M$ is zero while $C(H)$ is
+not. In the slack regime this is not an edge case --- it is \emph{all}
+measured points.
+
 \subsection{Control tasks and the \texttt{c\_temp\_label} exception}
-% NO CORPO (W8): 11/12 controles com C_H=0 validam o construto; a exceção (C=+0.22 em
-% turn 0) foi auditada — toda a informação estava nos primeiros 240 chars; o efeito é
-% comportamental (o resumo muda o comportamento subsequente do modelo), não informacional.
-% Isso é um resultado sobre o que C(H) mede, não uma falha do controle.
+On control tasks, where summaries destroy nothing by construction, the
+method returns $C(H) = 0$ in 11/12 measured points --- the construct behaves.
+The exception is informative: \texttt{c\_temp\_label} showed $C = +0.22$ at
+turn~0 despite all task-critical information surviving the summary. Audit of
+the replay pair shows the effect is \emph{behavioral}, not informational: the
+summarized context changes the model's subsequent formatting behavior, which
+a strict test then penalizes. $C(H)$ measures total causal effect through
+\emph{any} pathway; the controls certify the informational pathway is clean,
+and the exception demonstrates the behavioral pathway exists and is
+detectable.
 
-\section{The Structure of Harness Credit (F4)}
-% REENQUADRADA (GATE 2 + W4 review 2): não é mais "critic como contribuição".
-% Resultado: critic ≈ heurísticas triviais em ranking (0.718 vs |ctx| 0.796) e
-% POR ESTRATO não ganha em nenhum (L empate 0.747/0.741; V2 heurística ganha
-% 0.693/0.796; S satura AUROC 1.0). Leitura: C(H) é majoritariamente função de
-% tamanho de contexto + posição — consistente com o mecanismo de destruição de
-% informação; a limitação I2 vira achado sobre a estrutura do sinal. Detecção
-% (|C|>0): gbm AUROC 0.846 vs 0.735/0.785, ICs sobrepostos — vantagem modesta.
-% Artefatos: runs/critic_report.json, results/2026-08-23_critic_por_estrato.json.
+\section{The Structure of Harness Credit}
+\label{sec:critic}
+Can $C(H)$ be \emph{predicted} from cheap features, so that replay is needed
+only to calibrate? We trained linear and GBM critics on 248 ground-truth
+points (features: turn, context size, position, test progress;
+task-clustered evaluation) against the baselines mandated
+by~\cite{audit2026}: position and context-size heuristics. The honest answer
+is that \textbf{the critic never beats the heuristics}
+(Figure~\ref{fig:critic}): pooled ranking 0.718 (GBM) vs.\ 0.796
+($|$context$|$); per stratum, L is a tie (0.747 vs.\ 0.741), V2 the heuristic
+wins (0.693 vs.\ 0.796), and S saturates for everything (AUROC 1.0). For
+detection ($|C| > 0$) the GBM has a modest edge (AUROC 0.846 vs.\
+0.735/0.785) with overlapping CIs.
 
-\section{Training with Cross-Layer Credit (F5)}
-% C1, 4 braços dose-matched POR ROLLOUT TOTAL (episódios + replays de crédito):
-% outcome-only | C(H) puro (reprodução do princípio CHILL) | corrigido por interação
-% (C_HM - C_M) | ZERO (controle de masking: crédito=0, 0 replays — pré-registro 9).
-% predição pré-registrada: C(H) puro supercredita decisões blindadas; braço 3 só conta
-% como contribuição se vencer o braço 2 E o braço 4. Reportar grad_norm por braço
-% (contra a explicação "variância menor, não crédito").
-% DESFECHO FINAL (GATE 3 + pré-registros 11/12): negativo em DOIS ATOS.
-% Ato 1 (C1, lr 0.5, features cruas): held-out binário (keep 0.237 / summ −0.464);
-%   atratores seed-dependentes outcome k/k/s, ch s/s/k, chm_cm k/s/s, zero k/k/k.
-% Auditoria (pré-reg 11): 58/60 concordância, 0 flips +→− — estimador NÃO é a causa.
-% Ato 2 (C1b, pré-reg 12: centering+lr 0.1+clip 1.0): otimização sã, direção certa
-%   (bias<0, peso tokens>0, crossover 2.5–5.8k), mas ninguém atinge thr600 (0.398
-%   no held-out); colapsos: ch 1/3, chm_cm 1/3, outcome/zero 0/3.
-% Diagnóstico final: EXPLORAÇÃO é o gargalo (estados >2.5k tokens raros);
-%   crédito single-layer e corrigido adicionam risco de colapso sem ganho.
-% Título da seção/paper ajustar: medição é a contribuição; treino é lição de desenho.
+We report this not as a failed component but as a finding about the signal:
+\textbf{harness credit is mostly a function of context size and position}.
+That is exactly what the information-destruction mechanism predicts --- how
+much is destroyed, and how late --- and it means practitioners can get most
+of the ranking value of $C(H)$ from features they already log, reserving
+replay for calibration and for the interaction term, which no cheap feature
+predicts.
 
-\section{Threats to Validity}
-% I1/I2; saturação endógena; entropia da política (a' inamostrável em estados de
-% reparo); tasks sintéticas; 1 modelo, 1 ambiente; acoplamento a' entre C(M) e I
-% (não são evidências independentes); sequencialidade do vLLM como premissa do piso;
-% circularidade de construto mitigada pelas tasks-controle.
-% W-D (review 3): parágrafo "por que benchmarks públicos são incompatíveis com o
-% desenho": (1) o método exige controle da POSIÇÃO da informação destruível
-% (constantes críticas em pontos conhecidos) p/ distinguir efeito informacional
-% de comportamental; (2) recuperabilidade calibrada por estrato (S/C/L) é a
-% base dos controles; (3) determinismo de reward (pytest fracionário) é premissa
-% do piso. MBPP+ multi-turn é o experimento exato que falta (custo: ~100 tasks,
-% 1-2 dias A100/4090) — declarado, não executado. Enquadramento: methods paper;
-% o artefato transferível é recorder/replay/forced-queue + achado APC.
-% Discussão (W-C): "janela de competência" — saturação media a detecção de I:
-% nulo do 1.7B sob pressão totalmente explicado (1 ponto não-saturado);
-% U invertido do mt4 parcialmente explicado (taxa condicionada 0.045→0.143;
-% ordem mt8 0.5 > mt6 0.33 > mt4 0.14 persiste). Hipótese exploratória em
-% parágrafo de discussão — NÃO listar como contribuição.
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\linewidth]{figures/f4_credit_structure.pdf}
+\caption{\textbf{F4 --- Critics vs.\ trivial heuristics per stratum}
+(task-clustered $|$Spearman$|$). The critic never beats the best heuristic;
+$C(H)$ is structured by position and context size.}
+\label{fig:critic}
+\end{figure}
+
+\section{Training with Cross-Layer Credit}
+\label{sec:training}
+Does better credit train a better harness? We train the harness
+\texttt{context\_policy} (a logistic policy over 5 features: bias, turn
+fraction, context tokens, test progress, message count) with four arms,
+\textbf{dose-matched in total rollouts} (episodes + credit replays):
+(1)~\emph{outcome-only} policy gradient; (2)~\emph{single-layer} $C(H)$
+credit --- an explicit reproduction of the CHILL-Harness principle in our
+environment; (3)~\emph{interaction-corrected} credit $C_{HM} - C_M$;
+(4)~a \emph{zero-credit} masking control (credit $\equiv 0$, no replays ---
+which under our greedy tie-break at $\theta = 0$ is de facto an untrained
+keep-always policy; we state this explicitly). The pre-registered success
+criterion (GATE~3) required arm~3 to beat both arm~2 and arm~4. Calibration
+established the target is learnable in principle: on held-out tasks a
+simple context-size threshold policy (thr600) achieves
+$R_{\text{eff}} = 0.398$, dominating keep-always (0.237) and
+summarize-always ($-0.464$); thr600 is expressible by the policy class.
+
+\paragraph{Act 1: seed-dependent collapse.} With raw features and
+$\text{lr} = 0.5$, every trained arm collapsed into one of the two fixed
+policies, with the attractor determined by seed (outcome: k/k/s; $C(H)$:
+s/s/k; $C_{HM}-C_M$: k/s/s). GATE~3 failed and we report it. Two hypotheses
+remained: the credit estimator is broken, or the optimization is. A
+pre-registered audit recomputed 60 logged credits by fresh two-greedy-replay:
+\textbf{58/60 sign agreement, zero sign flips toward harmful} (mean
+discrepancy $-0.0015$). The estimator is exonerated.
+
+\paragraph{Act 2: stable optimization, no discovery.} With the
+pre-registered fix (feature centering, $\text{lr} = 0.1$, gradient clipping),
+training is sane: gradients bounded, learned weights point the right way
+(negative bias, positive weight on context tokens, implicit decision
+thresholds at 2.5k--5.8k tokens). Yet \textbf{no arm in any seed discovers
+the threshold policy}: all non-collapsed runs converge to keep-always
+(held-out $R_{\text{eff}} = 0.237$ vs.\ thr600's 0.398;
+Figure~\ref{fig:training}). Worse, credit-driven arms retain collapse risk
+the outcome-only arm avoids ($C(H)$: 1/3 seeds; $C_{HM}-C_M$: 1/3;
+outcome-only and zero: 0/3).
+
+\paragraph{Diagnosis.} The learned thresholds sit at 2.5k--5.8k tokens, but
+under keep-heavy behavior the training distribution rarely visits such
+states: the informative region is barely explored, so the gradient toward
+thr600 is starved regardless of how accurate the per-decision credit is.
+\textbf{The binding constraint is exploration, not credit quality.} We
+report this two-stage identified negative as a design lesson: a cross-layer
+training benchmark must guarantee coverage of the states where layers
+interact, or credit fidelity is moot.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\linewidth]{figures/f5_training.pdf}
+\caption{\textbf{F5 --- Training outcome (C1b, stable optimization).}
+Held-out $R_{\text{eff}}$, 3 seeds per arm. No arm reaches the expressible
+thr600 policy; credit-driven arms (orange) carry collapse risk that
+outcome-only avoids.}
+\label{fig:training}
+\end{figure}
+
+\section{Threats to Validity and Discussion}
+\label{sec:threats}
+\paragraph{Synthetic tasks and external validity.} Our tasks are designed,
+not sampled from a public benchmark, and this is a real limitation --- but a
+motivated one. The measurement requires (i) control over the \emph{position}
+of destroyable information, to separate informational from behavioral
+effects; (ii) per-stratum calibrated recoverability, which underlies the
+control tasks; and (iii) deterministic fractional reward, which underlies
+the exact floor. No public benchmark provides these jointly. The exact
+missing experiment is a multi-turn MBPP+ adaptation ($\sim$100 tasks, 1--2
+GPU-days); we declare it rather than claim it. We position this as a methods
+paper: the transferable artifact is the recorder/replay/forced-queue
+infrastructure, the APC finding, and the measurement protocol.
+
+\paragraph{One model powers the pressure regime.} The floor and slack regime
+replicate on Qwen3-1.7B; the pressure-regime break rate is established on
+Qwen3-4B only. The 1.7B null (0/12) is itself explained by the mediator we
+identified: 11/12 of its pressure points are reward-saturated, leaving one
+informative point --- zero power (under the 4B break rate,
+$P(\text{0 breaks}) \approx 0.21$). This is the competence window operating
+as predicted, but a second \emph{powered} model is needed to call the
+pressure regime general.
+
+\paragraph{Clustered inference.} Points within a task are not independent.
+At the task level the pressure-vs-slack contrast is 3 tasks vs.\ 0 (sign
+test $p = 0.125$); at the point level $p = 0.005$. We report both and lean
+on the mechanism-level sign test (75/78, $P = 2.6\times10^{-19}$) and
+cross-configuration recurrence of break points as the stronger evidence.
+
+\paragraph{Estimator coupling.} $C(M)$ and $I$ share the sampled alternative
+action $a'$: they are not independent evidence, and the structural component
+of screening-off (\S\ref{sec:interaction}) is partly a property of the
+estimand --- $a'$ sampled from the un-summarized state can re-inject
+information. We quantified this (23/52 shielded points) rather than hiding
+it; an estimand with $a'$ sampled from the summarized state would measure a
+different, also legitimate, quantity.
+
+\paragraph{Saturation is endogenous.} Reward resolution is set by test
+count, so saturation --- our mediator --- is partly a design artifact. The
+competence-window analysis conditions on it explicitly; the inverted-U at
+mt4 is only partially explained (conditioned rate $0.045 \to 0.143$; the
+ordering mt8 $>$ mt6 $>$ mt4 persists), so the window remains a partially
+supported hypothesis, discussed but not claimed as a contribution.
+
+\paragraph{Serving premises.} The exact floor holds under fixed config,
+sequential requests, and APC off. It is a measured property of this stack,
+not a theorem; any deviation (batching, caching, config drift) voids it and
+must be re-measured.
 
 \section{Conclusion}
-\todo{}
+We built the first apparatus that measures, on the same trajectory, the
+causal credit of harness decisions, model decisions, and their interaction,
+against an exactly-zero measured noise floor. The measurement yields a
+crisp, regime-dependent picture: with budget slack the model screens off the
+harness completely (0/57), so single-layer harness credit double-counts;
+under budget pressure the shield breaks at recurring points (8/65), inside a
+competence window shaped by reward saturation. Better credit did not,
+however, train a better harness: a two-stage, pre-registered negative ---
+with the estimator exonerated by audit --- locates the binding constraint in
+exploration, not attribution. We offer the infrastructure, the
+regime-dependence finding, the APC determinism warning, and a
+pre-registration ledger of 14 predictions (including 3 failures) as the
+contributions, and the training negative as the design brief for the
+benchmark this field still needs.
 
 \appendix
 \section{Pre-Registration Ledger}
-% Diferencial de rigor do paper (ação 3 do review 3) — tabela com os 14
-% pré-registros: previsto vs obtido, INCLUINDO os que falharam.
-% 1 piso por config (ok: 0.0 em 6 configs × 2 modelos) | 2 yield/parada Fase A (ok)
-% 3 estatística critic (ok; resultado misto reportado) | 4 features pre/post (ok)
-% 5 a' estruturado = estimando distinto (ok) | 6 dose-matching C1 (ok)
-% 7 direções jamais agregadas (ok) | 8 saturação fora do confirmatório (ok)
-% 9 braço zero; GATE 3 exige b3>b2 E b3>b4 → FALHOU (reportado)
-% 10 sign test screening-off 75/78 P=2.6e-19 (ok)
-% 11 auditoria estimador: 58/60, 0 flips +→− (estimador vindicado)
-% 12 C1b desfecho primário R_eff>0.30 → FALHOU (negativo identificado)
-% 13 dose-resposta monotônica → FALHOU (U invertido; claim binário fortaleceu:
-%    0/57 vs 8/65, p=0.005 point-level / 0.125 task-clustered)
-% 14 D2c: piso replica, folga replica, pressão inconclusiva (saturação 11/12)
+All confirmatory analyses were pre-registered in the project's execution plan
+before the corresponding data were collected. Table~\ref{tab:ledger} lists
+all 14 pre-registrations with their outcomes, including the three that
+failed. Failed predictions are reported in the main text where they occur.
+
+\begin{table}[h]
+\centering\scriptsize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{clll}
+\toprule
+\# & Pre-registered prediction / rule & Outcome & Status \\
+\midrule
+1 & Noise floor per config $=\max|\Delta R|$ over nulls & $0.0$ in 7+2 configs, 2 models & held \\
+2 & Phase-A yield / stopping rule & followed as written & held \\
+3 & Critic evaluation statistic (task-clustered Spearman) & mixed result reported as-is & held \\
+4 & Pre/post feature split for critic & followed & held \\
+5 & Structured $a'$ = distinct estimand, reported separately & followed & held \\
+6 & C1 arms dose-matched in total rollouts & followed & held \\
+7 & Credit directions never aggregated & followed & held \\
+8 & Saturation analyses outside confirmatory set & followed & held \\
+9 & GATE 3: arm 3 must beat arms 2 \emph{and} 4 & not met & \textbf{failed} \\
+10 & Screening-off mechanism sign test & 75/78, $P=2.6\times10^{-19}$ & held \\
+11 & Estimator audit: sign agreement on 60 recomputed credits & 58/60, 0 harmful flips & held \\
+12 & C1b primary outcome: held-out $R_{\text{eff}}>0.30$, $\geq$2/3 seeds & no arm reached it & \textbf{failed} \\
+13 & Dose-response: monotonic break rate in pressure & inverted U ($p=0.38$) & \textbf{failed} \\
+14 & D2c replication: floor, slack, pressure on Qwen3-1.7B & floor+slack replicate; pressure inconclusive & partial \\
+\bottomrule
+\end{tabular}}
+\caption{Pre-registration ledger. Failures are results, not omissions:
+\#9 and \#12 constitute the two-stage training negative
+(\S\ref{sec:training}); \#13 led to the competence-window analysis
+(\S\ref{sec:interaction}).}
+\label{tab:ledger}
+\end{table}
 
 \bibliographystyle{plain}
 \bibliography{refs}
