@@ -524,3 +524,22 @@
 - Contribuições viraram lista enumerada; T1 100% inglês; ledger com resizebox.
 - Artefato: experiments/results/2026-08-23_w5_w6_review4.json.
 - Paper compila limpo (tectonic), 0 citações não resolvidas, 292 testes ok.
+
+### Review ICLR nº 5 (verificação) + reenquadramento coverage (2026-08-23)
+- **Review 5: 7.5/10, accept (lean).** Todas as 7 correções do review 4
+  verificadas contra artefatos. Novidade 7, rigor 8.5, significance 6.5,
+  clarity 8.
+- **W-NOVA corrigida: "exploration" → "training-distribution state coverage".**
+  O dado do W6 prova INALCANÇABILIDADE, não sub-exploração: o braço zero
+  (keep-always de facto, 1910 episódios) capa em 1532 tokens — nenhuma política
+  de contexto alcança ≥2500 tokens nas 20 tasks de treino; thr600 só paga em
+  tasks held-out (l_vending_machine 5933 tokens). Reenquadrado em abstract,
+  contribuições, §Training/Diagnosis e conclusão, com a defesa explícita:
+  split alfabético fixado ANTES de conhecermos o gap.
+- **P1 corrigido:** conjuntos 78/75/52 definidos — 78 pontos I (57 folga +
+  21 mt6), 75/78 screening exato (o sign test do pré-reg 10 É essa contagem
+  contra nulo 50/50; minha prosa duplicava o fato em dois claims), 52
+  blindados (C_H≠0 apagado pelo flip conjunto), 24 anotados.
+- **P2 corrigido:** AUROC 0.785 declarado como heurística |ctx| com sinal
+  invertido.
+- Paper compila limpo, 0 citações não resolvidas.
