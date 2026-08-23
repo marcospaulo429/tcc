@@ -614,3 +614,18 @@
   reward + 1 ponto saturado com coalescência em profundidade 3, consistente
   mas não coberto). Abstract/contribuições: "hypothesis we verify" →
   "occurrence we verify".
+
+## 2026-08-23 — D2d (pré-registro 15): replicação Qwen3-8B
+- Cadeia q8_g600 (mt12) + q8_mt6 (mt6) + escalada q8_mt4 (disparou: <5
+  não-saturados conf no mt6). Piso 0.0 e nulos exatos nas 3 configs (a ✓).
+- Folga (q8_g600): 0 quebras não-saturadas (b ✓), MAS saturação endógena
+  domina: 27/28 pontos saturados (8B resolve o pool no teto R=1.0) — evidência
+  fraca, reportada como saturation-limited.
+- Pressão (q8_mt6): 1 quebra não-saturada (l_door_controller cp_idx 3) > 0
+  (c ✓ marginal). q8_mt4: 0/2, consistente com U invertido do 4B (pré-reg 13).
+- Screening exato (todos os pontos): 23/28, 28/34, 28/35 por config; ponto
+  não-saturado screened com I=-0.6154 em q8_mt4 (C_H=+0.6154 = -I, Prop. 1).
+- Gradiente de competência 1.7B (nulo) → 4B (quebras sob pressão) → 8B
+  (saturação domina): consistente com o Remark de pivotalidade; sem pooling.
+- Yields 8B maiores (28/34/35 cf vs 21 no 4B g600). Análise em
+  experiments/results/2026-08-23_replicacao.json.

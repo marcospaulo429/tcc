@@ -136,5 +136,103 @@
     0.0
    ]
   }
+ },
+ {
+  "tag": "q8_g600",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 28,
+  "all": {
+   "n": 28,
+   "n_screened_exact": 23,
+   "n_saturated": 27,
+   "n_nonsat": 1,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    0.0
+   ]
+  },
+  "conf": {
+   "n": 27,
+   "n_screened_exact": 22,
+   "n_saturated": 27,
+   "n_nonsat": 0,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": []
+  }
+ },
+ {
+  "tag": "q8_mt6",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 34,
+  "all": {
+   "n": 34,
+   "n_screened_exact": 28,
+   "n_saturated": 31,
+   "n_nonsat": 3,
+   "n_breaks_nonsat": 1,
+   "break_tasks": [
+    [
+     "l_door_controller",
+     3
+    ]
+   ],
+   "I_nonsat": [
+    -0.2308,
+    0.0,
+    0.3846
+   ]
+  },
+  "conf": {
+   "n": 31,
+   "n_screened_exact": 25,
+   "n_saturated": 29,
+   "n_nonsat": 2,
+   "n_breaks_nonsat": 1,
+   "break_tasks": [
+    [
+     "l_door_controller",
+     3
+    ]
+   ],
+   "I_nonsat": [
+    -0.2308,
+    0.3846
+   ]
+  }
+ },
+ {
+  "tag": "q8_mt4",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 35,
+  "all": {
+   "n": 35,
+   "n_screened_exact": 28,
+   "n_saturated": 32,
+   "n_nonsat": 3,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    -0.6154,
+    -0.0769,
+    0.0
+   ]
+  },
+  "conf": {
+   "n": 33,
+   "n_screened_exact": 26,
+   "n_saturated": 31,
+   "n_nonsat": 2,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    -0.6154,
+    -0.0769
+   ]
+  }
  }
 ]
