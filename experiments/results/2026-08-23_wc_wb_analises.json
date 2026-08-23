@@ -1,0 +1,90 @@
+{
+  "data": "2026-08-23",
+  "analise": "W-C/W-B do review 3",
+  "por_config": {
+    "g600(mt12)": {
+      "n": 21,
+      "quebras": 0,
+      "n_nonsat": 5,
+      "quebras_nonsat": 0,
+      "taxa_bruta": 0.0,
+      "taxa_nonsat": 0.0
+    },
+    "g450": {
+      "n": 17,
+      "quebras": 0,
+      "n_nonsat": 2,
+      "quebras_nonsat": 0,
+      "taxa_bruta": 0.0,
+      "taxa_nonsat": 0.0
+    },
+    "g900": {
+      "n": 19,
+      "quebras": 0,
+      "n_nonsat": 5,
+      "quebras_nonsat": 0,
+      "taxa_bruta": 0.0,
+      "taxa_nonsat": 0.0
+    },
+    "mt8": {
+      "n": 22,
+      "quebras": 4,
+      "n_nonsat": 6,
+      "quebras_nonsat": 3,
+      "taxa_bruta": 0.182,
+      "taxa_nonsat": 0.5
+    },
+    "mt6": {
+      "n": 21,
+      "quebras": 3,
+      "n_nonsat": 6,
+      "quebras_nonsat": 2,
+      "taxa_bruta": 0.143,
+      "taxa_nonsat": 0.333
+    },
+    "mt4": {
+      "n": 22,
+      "quebras": 1,
+      "n_nonsat": 7,
+      "quebras_nonsat": 1,
+      "taxa_bruta": 0.045,
+      "taxa_nonsat": 0.143
+    },
+    "q17_g600": {
+      "n": 11,
+      "quebras": 0,
+      "n_nonsat": 1,
+      "quebras_nonsat": 0,
+      "taxa_bruta": 0.0,
+      "taxa_nonsat": 0.0
+    },
+    "q17_mt6": {
+      "n": 12,
+      "quebras": 0,
+      "n_nonsat": 1,
+      "quebras_nonsat": 0,
+      "taxa_bruta": 0.0,
+      "taxa_nonsat": 0.0
+    }
+  },
+  "contraste_condicionado_nonsat": {
+    "folga": "0/12",
+    "pressao": "6/19",
+    "p_hipergeom": 0.03685006132169647
+  },
+  "inferencia_clusterizada_task": {
+    "tasks_quebra_pressao": [
+      "l_log_parser",
+      "l_vending_machine",
+      "api_router"
+    ],
+    "tasks_quebra_folga": [],
+    "sign_test_unilateral": 0.125,
+    "leitura": "honesta: no nível de cluster a evidência é fraca (n=3 tasks, p=0.125); o claim binário reporta ambos os níveis e apoia-se também no sign test global 75/78"
+  },
+  "janela_de_competencia": {
+    "d2c_explicado": "q17_mt6 tinha 1 ponto não-saturado (0 poder) — o nulo do 1.7B é consequência direta da saturação, mecanismo demonstrado nos dados",
+    "u_invertido_parcial": "condicionar reduz o U (mt4 0.045→0.143) mas não o elimina (mt8 0.5 > mt6 0.33 > mt4 0.14); saturação MEDEIA PARCIALMENTE",
+    "veredito": "janela de competência = mecanismo demonstrado p/ D2c; hipótese parcial p/ mt4 — discussão, não contribuição"
+  }
+}

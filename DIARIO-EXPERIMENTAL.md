@@ -483,3 +483,23 @@
   fracasso generalizado). Vira parágrafo de discussão, não limitação solta.
 - vLLM restaurado para Qwen3-4B automaticamente (verificado).
 - Artefato: experiments/results/2026-08-23_d2c_replicacao.json.
+
+### Review ICLR nº 3 (pacote final) + análises W-B/W-C + fase E iniciada (2026-08-23)
+- **Review 3: 7/10, borderline lean accept** (rigor 9!). Único MATA-PAPER restante
+  era ESCRITA: título/abstract vendiam "Training with" que o paper não entrega.
+- **W-C (análise decisiva, CPU): janela de competência parcialmente demonstrada.**
+  Condicionando à não-saturação: folga 0/12 vs pressão 6/19 (p=0.037); o nulo do
+  1.7B fica TOTALMENTE explicado (q17_mt6 tinha 1 ponto não-saturado — zero
+  poder); o U invertido do mt4 é parcialmente mediado por saturação (taxa
+  condicionada 0.045→0.143; ordem mt8 0.5 > mt6 0.33 > mt4 0.14 persiste).
+  Veredito: mecanismo demonstrado p/ D2c, hipótese parcial p/ mt4 — discussão.
+- **W-B: inferência clusterizada por task é fraca e reportamos ambas:** 3 tasks
+  quebram sob pressão vs 0 na folga, sign test p=0.125; point-level p=0.005.
+  Artefato: experiments/results/2026-08-23_wc_wb_analises.json.
+- **Fase E executada no tex:** título novo ("When the Model Screens Off the
+  Harness: Per-Decision Cross-Layer Causal Credit in LLM Agents"); abstract com
+  ambos os p-valores, qualificador de modelo único e sem "provably"; T1 célula
+  "treina com I" → "tested† (identified negative)"; apêndice "Pre-Registration
+  Ledger" (14 pré-registros, incluindo os 3 que falharam); W-D (incompatibilidade
+  com benchmarks públicos + enquadramento methods paper) esboçado em Threats.
+- Restante da fase E: prosa das seções, figuras F1–F5, refs.bib, ledger em tabela.

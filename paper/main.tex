@@ -4,8 +4,12 @@
 \usepackage{amsmath,amssymb,booktabs,graphicx,hyperref,xcolor}
 \newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
 
-\title{Cross-Layer Credit Assignment in LLM Agents:\\
-Measuring and Training with Harness--Model Interaction}
+\title{When the Model Screens Off the Harness:\\
+Per-Decision Cross-Layer Causal Credit in LLM Agents}
+% subtítulo operacional (abstract): deterministic replay, regime-dependent
+% interaction, and why better credit did not fix training.
+% Título anterior ("Measuring and Training with...") vendia treino que o paper
+% não entrega — W-A do review 3 (bait-and-switch → reject).
 \author{\todo{autores}}
 
 \begin{document}
@@ -21,14 +25,19 @@ C(M)$ are identifiable on the same trajectory. Interaction is
 \emph{regime-dependent}: with budget slack, the model action screens off the
 harness decision ($C_{HM}=C_M$, 0 breaks in 57 points across three
 configurations); under budget pressure, screening-off breaks (8/65 across
-three pressure levels, $p=0.005$) at \emph{recurring} decision points, with a
-non-monotonic dependence on pressure intensity. This implies that
-single-layer credit double-counts shielded
+three pressure levels; $p=0.005$ point-level, $p=0.125$ task-clustered ---
+we report both) at \emph{recurring} decision points, with a non-monotonic
+dependence on pressure intensity partially mediated by reward saturation.
+The noise floor and the slack regime replicate on a second model
+(Qwen3-1.7B); the pressure regime is established on one model --- the
+second model's null is itself explained by saturation (1 non-saturated
+point). This implies that single-layer credit double-counts shielded
 decisions. We then train the harness layer with interaction-aware credit
 against outcome-only, single-layer, and untrained controls (dose-matched in
 total rollouts, 3 seeds, twice --- the second run with a pre-registered
-optimization fix): no credit signal learns the threshold policy that
-provably exists in the environment (held-out $R_\text{eff}$ 0.398 vs.\ 0.237
+optimization fix): no credit signal learns the threshold policy that is
+expressible by the policy class and dominant on held-out tasks (held-out
+$R_\text{eff}$ 0.398 vs.\ 0.237
 for the best fixed policy), and credit-driven arms add collapse risk that the
 outcome-only arm avoids. A pre-registered audit (60 points, two-greedy-replay
 recomputation, 58/60 sign agreement) rules out the estimator as the cause: the
@@ -89,10 +98,12 @@ CHILL-Harness & \checkmark & \checkmark & -- & -- & -- \\
 CAR & \checkmark & -- & \checkmark & -- & -- \\
 C3 v2 & \checkmark & \multicolumn{2}{c}{(por agente)} & -- & -- \\
 HASE & -- & \checkmark & -- & -- & -- \\
-\textbf{Ours} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
+\textbf{Ours} & \checkmark & \checkmark & \checkmark & \checkmark & tested$^{\dagger}$ \\
 \bottomrule
 \end{tabular}
-\caption{T1 --- posicionamento. \todo{revisar células contra as fontes primárias antes da submissão}}
+\caption{T1 --- posicionamento. $^{\dagger}$Testado com controles dose-matched
+e pré-registro; desfecho é um negativo identificado (\S6). \todo{revisar células
+contra as fontes primárias antes da submissão}}
 \end{table}
 
 \section{Setup: A Two-Layer Agent with Deterministic Replay}
@@ -159,9 +170,38 @@ HASE & -- & \checkmark & -- & -- & -- \\
 % reparo); tasks sintéticas; 1 modelo, 1 ambiente; acoplamento a' entre C(M) e I
 % (não são evidências independentes); sequencialidade do vLLM como premissa do piso;
 % circularidade de construto mitigada pelas tasks-controle.
+% W-D (review 3): parágrafo "por que benchmarks públicos são incompatíveis com o
+% desenho": (1) o método exige controle da POSIÇÃO da informação destruível
+% (constantes críticas em pontos conhecidos) p/ distinguir efeito informacional
+% de comportamental; (2) recuperabilidade calibrada por estrato (S/C/L) é a
+% base dos controles; (3) determinismo de reward (pytest fracionário) é premissa
+% do piso. MBPP+ multi-turn é o experimento exato que falta (custo: ~100 tasks,
+% 1-2 dias A100/4090) — declarado, não executado. Enquadramento: methods paper;
+% o artefato transferível é recorder/replay/forced-queue + achado APC.
+% Discussão (W-C): "janela de competência" — saturação media a detecção de I:
+% nulo do 1.7B sob pressão totalmente explicado (1 ponto não-saturado);
+% U invertido do mt4 parcialmente explicado (taxa condicionada 0.045→0.143;
+% ordem mt8 0.5 > mt6 0.33 > mt4 0.14 persiste). Hipótese exploratória em
+% parágrafo de discussão — NÃO listar como contribuição.
 
 \section{Conclusion}
 \todo{}
+
+\appendix
+\section{Pre-Registration Ledger}
+% Diferencial de rigor do paper (ação 3 do review 3) — tabela com os 14
+% pré-registros: previsto vs obtido, INCLUINDO os que falharam.
+% 1 piso por config (ok: 0.0 em 6 configs × 2 modelos) | 2 yield/parada Fase A (ok)
+% 3 estatística critic (ok; resultado misto reportado) | 4 features pre/post (ok)
+% 5 a' estruturado = estimando distinto (ok) | 6 dose-matching C1 (ok)
+% 7 direções jamais agregadas (ok) | 8 saturação fora do confirmatório (ok)
+% 9 braço zero; GATE 3 exige b3>b2 E b3>b4 → FALHOU (reportado)
+% 10 sign test screening-off 75/78 P=2.6e-19 (ok)
+% 11 auditoria estimador: 58/60, 0 flips +→− (estimador vindicado)
+% 12 C1b desfecho primário R_eff>0.30 → FALHOU (negativo identificado)
+% 13 dose-resposta monotônica → FALHOU (U invertido; claim binário fortaleceu:
+%    0/57 vs 8/65, p=0.005 point-level / 0.125 task-clustered)
+% 14 D2c: piso replica, folga replica, pressão inconclusiva (saturação 11/12)
 
 \bibliographystyle{plain}
 \bibliography{refs}
