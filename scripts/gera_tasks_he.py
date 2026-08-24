@@ -25,11 +25,38 @@ sys.path.insert(0, str(REPO))
 
 from environment.sandbox import Sandbox  # noqa: E402
 from scripts.gera_tasks_mbpp import (  # noqa: E402
-    MAX_ASSERTS, MIN_ASSERTS, _alarm_handler, _extract_signature, _MAX_REPR,
+    MAX_ASSERTS, MIN_ASSERTS, _alarm_handler, _MAX_REPR,
     _roundtrips, _timed_call, SEED,
 )
 
 POOL_SIZE = 60
+
+
+def _extract_signature_he(canonical: str, entry: str) -> str | None:
+    """Como _extract_signature, mas remove anotações (HumanEval usa typing
+    sem que o starter carregue os imports)."""
+    try:
+        tree = ast.parse(canonical)
+    except SyntaxError:
+        return None
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef) and node.name == entry:
+            for a in (node.args.args + node.args.posonlyargs
+                      + node.args.kwonlyargs):
+                a.annotation = None
+            if node.args.vararg:
+                node.args.vararg.annotation = None
+            if node.args.kwarg:
+                node.args.kwarg.annotation = None
+            clone = ast.FunctionDef(
+                name=node.name, args=node.args, body=[ast.Pass()],
+                decorator_list=[], returns=None, type_comment=None,
+            )
+            clone = ast.fix_missing_locations(
+                ast.Module(body=[clone], type_ignores=[]))
+            header = ast.unparse(clone).split("\n")[0]
+            return header if header.endswith(":") else None
+    return None
 
 
 def _description(canonical_full: str, entry: str) -> list[str]:
@@ -61,7 +88,7 @@ def _build_task(raw: dict) -> tuple[dict | None, str]:
     canonical = raw["prompt"] + raw["canonical_solution"]
     task_id = "he_" + raw["task_id"].split("/")[-1]
 
-    signature = _extract_signature(canonical, entry)
+    signature = _extract_signature_he(canonical, entry)
     if signature is None:
         return None, "sem_assinatura"
 
