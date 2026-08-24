@@ -48,7 +48,8 @@ def sanitize(action: dict) -> dict:
 def eligible_pairs(traj, max_per_traj: int):
     """Pares (context_policy, tool_call) do mesmo turno: flip não-vácuo E sem retry."""
     h = traj.config["harness"]
-    kw = {"keep_last": h.get("keep_last", 4), "task_chars": h.get("task_chars", 0)}
+    kw = {"keep_last": h.get("keep_last", 4), "task_chars": h.get("task_chars", 0),
+          "summarizer": h.get("summarizer", "rule")}
     retry_turns = {d.state_before["turn"] for d in traj.decisions
                    if d.decision_point == "retry"}
     tc_by_turn = {d.state_before["turn"]: d for d in traj.decisions

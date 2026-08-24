@@ -128,11 +128,13 @@ if __name__ == "__main__":
     ap.add_argument("--threshold", type=int, default=1200)
     ap.add_argument("--max-turns", type=int, default=6)
     ap.add_argument("--task-chars", type=int, default=240)
+    ap.add_argument("--summarizer", default="rule", choices=("rule", "llm"))
     args = ap.parse_args()
     out = Path(args.out)
     tasks = importlib.import_module(args.tasks_module).TASKS
     harness_kw = {"summarize_threshold_tokens": args.threshold,
-                  "max_turns": args.max_turns, "task_chars": args.task_chars}
+                  "max_turns": args.max_turns, "task_chars": args.task_chars,
+                  "summarizer": args.summarizer}
     llm = LLMClient(max_tokens=1200)
     run_baselines(out, llm, tasks, harness_kw)
     run_null_replays(out, llm, args.points, args.reps)

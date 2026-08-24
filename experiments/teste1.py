@@ -36,7 +36,8 @@ def eligible_points(traj, max_per_traj: int):
     """context_policy onde o flip NÃO é vácuo (summarize teria efeito real),
     avaliado com os parâmetros do harness DA trajetória."""
     h = traj.config["harness"]
-    kw = {"keep_last": h.get("keep_last", 4), "task_chars": h.get("task_chars", 0)}
+    kw = {"keep_last": h.get("keep_last", 4), "task_chars": h.get("task_chars", 0),
+          "summarizer": h.get("summarizer", "rule")}
     points = [d for d in traj.decisions
               if d.decision_point == "context_policy"
               and not summarize_is_vacuous(d.state_before["messages"], **kw)]

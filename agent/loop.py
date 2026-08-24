@@ -10,7 +10,7 @@ import time
 from environment.sandbox import Sandbox
 from trajectories.recorder import Recorder
 
-from .harness import Harness, estimate_tokens, summarize_messages
+from .harness import Harness, estimate_tokens
 
 SYSTEM_PROMPT = """Você é um agente de programação. Responda SEMPRE com um único objeto JSON, sem texto fora dele.
 Ações disponíveis:
@@ -92,8 +92,7 @@ class Episode:
         state = self._state_before(messages, turn)
         forced = self._consume_forced("context_policy")
         action = forced["action"] if forced else self.harness.decide_context_policy(messages)
-        new_messages = summarize_messages(messages, self.harness.keep_last,
-                                          self.harness.task_chars) \
+        new_messages = self.harness.summarize(messages, self.llm) \
             if action == "summarize_context" else list(messages)
         self._record("harness", "context_policy", state,
                      [{"action": "keep_context"}, {"action": "summarize_context"}],
