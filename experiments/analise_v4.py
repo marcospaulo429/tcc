@@ -13,9 +13,11 @@ import json
 from math import comb
 from pathlib import Path
 
-from environment.tasks_v4 import CRITICAL_CONSTANTS
+from environment.tasks_v4 import CRITICAL_CONSTANTS as _C4
+from environment.tasks_v5 import CRITICAL_CONSTANTS as _C5
 
-TAGS = {"slack": "v4cur_g600", "pressure": "v4cur_mt6"}
+CRITICAL_CONSTANTS = _C4 | _C5
+TAGS = {"slack": "v5cur_g600", "pressure": "v5cur_mt6"}
 
 
 def points(tag: str):
@@ -70,7 +72,7 @@ def main():
         "rate_pressure": k_p / n_p if n_p else None,
         "directional_holds": (k_p / n_p >= k_s / n_s) if n_s and n_p else None,
     }
-    path = Path("experiments/results/2026-08-23_v4_mecanismo.json")
+    path = Path("experiments/results/2026-08-23_v4b_mecanismo.json")
     path.write_text(json.dumps(out, indent=1))
     for regime in TAGS:
         o = out[regime]
