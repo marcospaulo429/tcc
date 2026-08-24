@@ -1,0 +1,357 @@
+{
+ "seed": 20260824,
+ "per_config": {
+  "g450": {
+   "n": 64,
+   "n_found": 17,
+   "discard_rate": 0.734,
+   "covariates": {
+    "turn": {
+     "mean_found": 0.82,
+     "mean_not_found": 4.04,
+     "cohen_d": -1.0,
+     "diff": -3.219,
+     "ci": [
+      -4.6,
+      -1.83
+     ]
+    },
+    "context_tokens": {
+     "mean_found": 359.41,
+     "mean_not_found": 510.34,
+     "cohen_d": -1.023,
+     "diff": -150.929,
+     "ci": [
+      -226.2,
+      -77.26
+     ]
+    },
+    "rel_pos": {
+     "mean_found": 0.17,
+     "mean_not_found": 0.73,
+     "cohen_d": -1.781,
+     "diff": -0.564,
+     "ci": [
+      -0.71,
+      -0.41
+     ]
+    }
+   }
+  },
+  "g600": {
+   "n": 61,
+   "n_found": 21,
+   "discard_rate": 0.656,
+   "covariates": {
+    "turn": {
+     "mean_found": 1.81,
+     "mean_not_found": 2.0,
+     "cohen_d": -0.088,
+     "diff": -0.19,
+     "ci": [
+      -1.13,
+      0.63
+     ]
+    },
+    "context_tokens": {
+     "mean_found": 443.48,
+     "mean_not_found": 504.23,
+     "cohen_d": -0.429,
+     "diff": -60.749,
+     "ci": [
+      -129.3,
+      -1.43
+     ]
+    },
+    "rel_pos": {
+     "mean_found": 0.33,
+     "mean_not_found": 0.73,
+     "cohen_d": -1.131,
+     "diff": -0.399,
+     "ci": [
+      -0.59,
+      -0.23
+     ]
+    }
+   }
+  },
+  "g900": {
+   "n": 61,
+   "n_found": 19,
+   "discard_rate": 0.689,
+   "covariates": {
+    "turn": {
+     "mean_found": 1.89,
+     "mean_not_found": 2.74,
+     "cohen_d": -0.324,
+     "diff": -0.843,
+     "ci": [
+      -1.91,
+      0.42
+     ]
+    },
+    "context_tokens": {
+     "mean_found": 459.0,
+     "mean_not_found": 560.71,
+     "cohen_d": -0.583,
+     "diff": -101.714,
+     "ci": [
+      -171.72,
+      -33.13
+     ]
+    },
+    "rel_pos": {
+     "mean_found": 0.33,
+     "mean_not_found": 0.76,
+     "cohen_d": -1.319,
+     "diff": -0.438,
+     "ci": [
+      -0.62,
+      -0.26
+     ]
+    }
+   }
+  },
+  "mt6": {
+   "n": 61,
+   "n_found": 21,
+   "discard_rate": 0.656,
+   "covariates": {
+    "turn": {
+     "mean_found": 1.29,
+     "mean_not_found": 1.8,
+     "cohen_d": -0.382,
+     "diff": -0.514,
+     "ci": [
+      -1.28,
+      0.18
+     ]
+    },
+    "context_tokens": {
+     "mean_found": 421.71,
+     "mean_not_found": 496.85,
+     "cohen_d": -0.657,
+     "diff": -75.136,
+     "ci": [
+      -145.76,
+      -10.21
+     ]
+    },
+    "rel_pos": {
+     "mean_found": 0.33,
+     "mean_not_found": 0.74,
+     "cohen_d": -1.162,
+     "diff": -0.407,
+     "ci": [
+      -0.61,
+      -0.23
+     ]
+    }
+   }
+  },
+  "q8_g600": {
+   "n": 78,
+   "n_found": 28,
+   "discard_rate": 0.641,
+   "covariates": {
+    "turn": {
+     "mean_found": 0.64,
+     "mean_not_found": 3.42,
+     "cohen_d": -1.019,
+     "diff": -2.777,
+     "ci": [
+      -3.8,
+      -1.7
+     ]
+    },
+    "context_tokens": {
+     "mean_found": 385.25,
+     "mean_not_found": 537.44,
+     "cohen_d": -1.144,
+     "diff": -152.19,
+     "ci": [
+      -214.84,
+      -91.26
+     ]
+    },
+    "rel_pos": {
+     "mean_found": 0.19,
+     "mean_not_found": 0.78,
+     "cohen_d": -1.898,
+     "diff": -0.591,
+     "ci": [
+      -0.72,
+      -0.46
+     ]
+    }
+   }
+  },
+  "q8_mt6": {
+   "n": 78,
+   "n_found": 34,
+   "discard_rate": 0.564,
+   "covariates": {
+    "turn": {
+     "mean_found": 0.65,
+     "mean_not_found": 2.11,
+     "cohen_d": -1.138,
+     "diff": -1.467,
+     "ci": [
+      -1.97,
+      -0.98
+     ]
+    },
+    "context_tokens": {
+     "mean_found": 402.97,
+     "mean_not_found": 517.68,
+     "cohen_d": -0.933,
+     "diff": -114.711,
+     "ci": [
+      -161.63,
+      -69.98
+     ]
+    },
+    "rel_pos": {
+     "mean_found": 0.22,
+     "mean_not_found": 0.8,
+     "cohen_d": -1.847,
+     "diff": -0.576,
+     "ci": [
+      -0.73,
+      -0.42
+     ]
+    }
+   }
+  },
+  "q8_mt4": {
+   "n": 78,
+   "n_found": 35,
+   "discard_rate": 0.551,
+   "covariates": {
+    "turn": {
+     "mean_found": 0.54,
+     "mean_not_found": 1.51,
+     "cohen_d": -1.096,
+     "diff": -0.969,
+     "ci": [
+      -1.24,
+      -0.69
+     ]
+    },
+    "context_tokens": {
+     "mean_found": 393.94,
+     "mean_not_found": 478.65,
+     "cohen_d": -0.876,
+     "diff": -84.708,
+     "ci": [
+      -122.39,
+      -49.14
+     ]
+    },
+    "rel_pos": {
+     "mean_found": 0.22,
+     "mean_not_found": 0.76,
+     "cohen_d": -1.569,
+     "diff": -0.538,
+     "ci": [
+      -0.69,
+      -0.4
+     ]
+    }
+   }
+  }
+ },
+ "pooled": {
+  "pool_matched_4B": {
+   "n": 122,
+   "n_found": 42,
+   "discard_rate": 0.656,
+   "covariates": {
+    "turn": {
+     "mean_found": 1.55,
+     "mean_not_found": 1.9,
+     "cohen_d": -0.197,
+     "diff": -0.352,
+     "ci": [
+      -1.17,
+      0.34
+     ]
+    },
+    "context_tokens": {
+     "mean_found": 432.6,
+     "mean_not_found": 500.54,
+     "cohen_d": -0.531,
+     "diff": -67.942,
+     "ci": [
+      -138.23,
+      -6.2
+     ]
+    },
+    "rel_pos": {
+     "mean_found": 0.33,
+     "mean_not_found": 0.73,
+     "cohen_d": -1.156,
+     "diff": -0.403,
+     "ci": [
+      -0.6,
+      -0.24
+     ]
+    }
+   }
+  },
+  "pool_matched_8B": {
+   "n": 156,
+   "n_found": 62,
+   "discard_rate": 0.603,
+   "covariates": {
+    "turn": {
+     "mean_found": 0.65,
+     "mean_not_found": 2.81,
+     "cohen_d": -0.993,
+     "diff": -2.163,
+     "ci": [
+      -2.91,
+      -1.4
+     ]
+    },
+    "context_tokens": {
+     "mean_found": 394.97,
+     "mean_not_found": 528.19,
+     "cohen_d": -1.044,
+     "diff": -133.224,
+     "ci": [
+      -183.4,
+      -84.82
+     ]
+    },
+    "rel_pos": {
+     "mean_found": 0.21,
+     "mean_not_found": 0.79,
+     "cohen_d": -1.876,
+     "diff": -0.582,
+     "ci": [
+      -0.72,
+      -0.44
+     ]
+    }
+   }
+  }
+ },
+ "retained_contrast": {
+  "turn": {
+   "mean_4B": 1.55,
+   "mean_8B": 0.65,
+   "cohen_d": 0.542
+  },
+  "context_tokens": {
+   "mean_4B": 432.6,
+   "mean_8B": 394.97,
+   "cohen_d": 0.309
+  },
+  "rel_pos": {
+   "mean_4B": 0.33,
+   "mean_8B": 0.21,
+   "cohen_d": 0.365
+  }
+ }
+}

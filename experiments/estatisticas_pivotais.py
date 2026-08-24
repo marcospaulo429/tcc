@@ -31,6 +31,14 @@ PAPER_REPLICATIONS = {
 }
 PAPER = {"pivotal": 56, "screened": 53, "uniq": 22, "uniq_screened": 19,
          "tasks": 16, "tasks_full": 13}
+# split discovery/confirmation (g600 antecede o commit do pré-registro 10)
+PAPER_SPLIT = {"discovery": (14, 14), "confirmation": (42, 39),
+               "strict_post": (30, 27)}
+SPLIT_SETS = {"discovery": ("g600",), "confirmation": ("g450", "g900", "mt6"),
+              "strict_post": ("g900", "mt6")}
+# Cochran-Armitage publicado (pré-reg 13): scores 0..3, unilateral crescente
+PAPER_CA = {"z": 0.3012, "p": 0.3816}
+DOSE = [("mt12", 21, 0), ("mt8", 22, 4), ("mt6", 21, 3), ("mt4", 22, 1)]
 BOOT_SEED = 20260824
 
 
@@ -66,6 +74,23 @@ def cluster_ci(piv: list[dict], n_boot: int = 10000) -> list[float]:
     return [rates[int(0.025 * n_boot)], rates[int(0.975 * n_boot)]]
 
 
+def cochran_armitage(dose) -> tuple[float, float]:
+    """CA unilateral (direção crescente), scores equiespaçados 0..len-1."""
+    from statistics import NormalDist
+    ns = [n for _, n, _ in dose]
+    ks = [k for _, _, k in dose]
+    scores = list(range(len(dose)))
+    N, K = sum(ns), sum(ks)
+    pbar = K / N
+    num = sum(k * s for k, s in zip(ks, scores)) - pbar * sum(
+        n * s for n, s in zip(ns, scores))
+    sbar = sum(n * s for n, s in zip(ns, scores)) / N
+    var = pbar * (1 - pbar) * sum(n * (s - sbar) ** 2
+                                  for n, s in zip(ns, scores))
+    z = num / var ** 0.5
+    return z, 1 - NormalDist().cdf(z)
+
+
 def main() -> int:
     piv = [r for c in CENSUS for r in pivotal(load(f"teste3_{c}"))]
     n_scr = sum(screened(r) for r in piv)
@@ -87,6 +112,18 @@ def main() -> int:
     ok = got == PAPER
     if not ok:
         print(f"DRIFT no census: esperado {PAPER}")
+    for nome, cfgs in SPLIT_SETS.items():
+        sp = [r for c in cfgs for r in pivotal(load(f"teste3_{c}"))]
+        ss = sum(screened(r) for r in sp)
+        match = (len(sp), ss) == PAPER_SPLIT[nome]
+        ok = ok and match
+        print(f"split {nome} ({'+'.join(cfgs)}): {ss}/{len(sp)} "
+              f"{'OK' if match else f'DRIFT (paper: {PAPER_SPLIT[nome]})'}")
+    z, p = cochran_armitage(DOSE)
+    ca_ok = abs(z - PAPER_CA["z"]) < 5e-4 and abs(p - PAPER_CA["p"]) < 5e-4
+    ok = ok and ca_ok
+    print(f"Cochran-Armitage (scores 0..3, unilateral crescente): "
+          f"z={z:.4f} p={p:.4f} {'OK' if ca_ok else 'DRIFT'}")
     for run, (p_piv, p_scr) in PAPER_REPLICATIONS.items():
         rp = pivotal(load(run))
         rs = sum(screened(r) for r in rp)

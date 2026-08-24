@@ -25,33 +25,23 @@ LLM agents interleave decisions from two layers: the \emph{model} (tool
 calls) and the \emph{harness} (context management, retries, termination).
 We present an apparatus that measures, on the same trajectory, the
 per-decision causal contributions $C(H)$, $C(M)$, and their interaction
-$I(H,M) = C(H,M) - C(H) - C(M)$, via deterministic counterfactual replay
-with a \emph{measured} noise floor: 7{,}685 null replays across three models
-(Qwen3-1.7B/4B/8B) and two environments are all exact, under explicit
-serving premises whose violation we also measure (vLLM automatic prefix
-caching silently breaks greedy determinism; an ASLR address leak caused the
-only 2 inexact nulls ever observed, root-caused and fixed). The central
-finding is exact \emph{screening-off}: with budget slack, the model action
-screens off the harness decision ($C_{HM} = C_M$; 0 breaks in 57 points;
-53/56 reward-pivotal points overall), so single-layer harness credit
-double-counts \emph{exactly} --- at screened points $C(H) = -I(H,M)$, with
-$C_{HM} - C_M$ as the one-extra-replay correction --- and the result is
-stable under pre-registered re-sampling of the alternative action: with
-$a'$ re-drawn under three disjoint seed schedules at every pivotal point,
-99/101 informative slack draws screen (CI95 $[0.94, 1.00]$) and the three
-pressure breaks persist in 9/9 redraws. Screening is not
-universal: it breaks at recurring, model-specific decision points --- under
-budget pressure for the 4B (a contrast that is suggestive at the task level,
-not confirmed: 3 breaking tasks, clustered $p=0.125$) and at a flat rate in
-both regimes for the 8B --- and pre-registered replications and a symmetric
-control show that \emph{whether} it holds is a property of the (model,
-harness, task) triple, not of the pipeline. Training the harness with
-interaction-corrected credit, dose-matched against outcome-only and
-single-layer arms, fails for an identified, pre-registered reason: the
-training task distribution offers no reward margin where candidate policies
-differ. We release the apparatus, a 21-item pre-registration ledger (4
-failures, 6 partials), and the negative result as a design brief for
-cross-layer training benchmarks.
+$I(H,M)$, via deterministic counterfactual replay with a \emph{measured}
+noise floor: 7{,}685 null replays across three models and two environments
+are all exact, under explicit serving premises whose violation we also
+measure (vLLM automatic prefix caching silently breaks greedy determinism).
+The central finding is exact \emph{screening-off}: with budget slack, the
+model action screens off the harness decision --- $C_{HM} = C_M$ at 53 of 56
+reward-pivotal points --- so single-layer harness credit double-counts
+exactly: $C(H) = -I(H,M)$ at screened points, and $C_{HM} - C_M$ is the
+one-extra-replay correction. The result survives pre-registered re-sampling
+of the alternative action, and it is not universal: screening breaks at
+recurring, model-specific decision points, so whether the shield holds is a
+property of the (model, harness, task) triple. Training the harness with
+interaction-corrected credit fails for an identified, pre-registered
+reason: the training distribution offers no reward margin where candidate
+policies differ. We release the apparatus, a 21-item pre-registration
+ledger including all failures, and the negative result as a design brief
+for cross-layer training benchmarks.
 \end{abstract}
 
 \section{Introduction}
@@ -119,22 +109,22 @@ pressure).
 double-counting identity ($C(H) = -I(H,M)$ exactly at screened points, with
 $C_{HM} - C_M$ as the correction rule), a coalescence lemma and corollary
 whose occurrence we \emph{verify in the recorded traces} (72/75 screened
-points explained; 3 residuals, including 2 reward collisions, declared), and
-a pivotality argument that unifies the competence window, the mt4 collapse,
-and the saturation profiles of both auxiliary models; the replications show
-the shield itself is a property of the (model, harness, task) triple: the
-8B breaks screening on hardened tasks where the 4B's original-pool slack
-shield was exact, the 4B breaks on the same hardened pool (pre-registered
-symmetric control), break points are model-specific and largely
-regime-stable, and
-the pool-matched contrast on identical tasks (0/57 vs.\ 5/28) stands. The
-re-injection mechanism explains the
-annotated 4B/8B contrast (23/24 and 0/24 points) but fails a pre-registered
-generalization test in the curated pool, and we scope it accordingly;
-empirically, a structural component (the sampled $a'$
-re-injects destroyed information, 23/24 annotated points) and a closed-loop
-component (the live downstream harness re-triggers the intervened decision,
-22/52 points).
+points explained; 3 residuals, including 2 reward collisions, declared), a
+pivotality argument that unifies the competence window, the mt4 collapse,
+and the saturation profiles of both auxiliary models, and the two empirical
+mechanisms: a structural component (the sampled $a'$ re-injects destroyed
+information, 23/24 annotated points) and a closed-loop component (the live
+downstream harness re-triggers the intervened decision, 22/52 points).
+\item \textbf{A replication record that scopes the finding}: the shield is
+a property of the (model, harness, task) triple, not of the pipeline ---
+the 8B breaks screening on hardened tasks where the 4B's original-pool
+slack shield was exact; the 4B breaks on the same hardened pool
+(pre-registered symmetric control); break points are model-specific and
+largely regime-stable; the pool-matched contrast on identical tasks (0/57
+vs.\ 5/28) stands; and the re-injection mechanism explains the annotated
+4B/8B contrast (23/24 vs.\ 0/24 points) but fails a pre-registered
+generalization test in the curated pool, and is scoped accordingly
+(Table~\ref{tab:synthesis}).
 \item \textbf{Construct validation by control tasks}: the method separates
 harmless from harmful harness decisions by construction (11/12), including
 one audited exception where a harness decision had a \emph{behavioral}, not
@@ -171,6 +161,8 @@ Replay noise floor is exactly zero & 7{,}685/7{,}685 nulls exact, 3 models $\tim
 vLLM APC breaks greedy determinism & floor $0.417$, 7/270 inexact & demonstrated \\
 Slack screening-off, 4B original pool & 0/57 raw; pivotal 53/56 = 0.946, CI95 $[0.87,1.00]$ task-clustered & confirmed (pre-reg 10, re-specified) \\
 Screening survives $a'$ re-sampling & 99/101 informative slack draws (CI95 $[0.94,1.00]$); mt6 breaks persist 9/9 & confirmed (pre-reg 21) \\
+Screening survives discovery/confirmation split & discovery (g600) 14/14; confirmation 39/42; strictly post-registration 27/30 & confirmed (split forced by ledger audit) \\
+Regime contrast not explained by selection composition & retained 8B points \emph{shallower} than 4B's (turn 0.65 vs.\ 1.55); direction disfavors the contrast & supported (\S\ref{sec:threats}) \\
 $C(H) = -I$ at screened points & algebra (Prop.~\ref{prop:dc}); exact in all measured slack points & identity \\
 Pressure breaks recur at fixed points (4B) & 8/65; same points across configs & point-level; task-clustered weak ($p=0.125$) \\
 Break rate monotonic in pressure & inverted U, Cochran--Armitage $p=0.38$ & \textbf{failed} (pre-reg 13) \\
@@ -186,7 +178,9 @@ Amortized credit transfers across environments & Spearman $0.03$/$-0.08$, chance
 \end{tabular}
 \caption{T0 --- master claim ledger: every claim, its evidence, and its
 epistemic status. Bold \textbf{failed}/\textbf{refuted} rows are reported as
-results, not omissions.}
+results, not omissions. A bundled \texttt{make reproduce} re-derives the
+null, census, split, dose-response, margin, and selection statistics from
+the raw artifacts and fails on drift.}
 \label{tab:claims}
 \end{table}
 
@@ -447,8 +441,12 @@ configurations (\texttt{l\_log\_parser} idx~8 in 3/3 pressure configs;
 each), which is what a real mechanism, rather than noise, predicts.
 
 The dependence on pressure intensity is \emph{non-monotonic}: break rates are
-0/21 (mt12), 4/22 (mt8), 3/21 (mt6), 1/22 (mt4) --- an inverted U. Our
-pre-registered monotonicity test failed (Cochran--Armitage $p = 0.38$); we
+0/21 (mt12, the g600 slack census re-used as the zero-pressure anchor ---
+same 12-turn budget, re-labeled), 4/22 (mt8), 3/21 (mt6), 1/22 (mt4) --- an
+inverted U. Our pre-registered monotonicity test failed (Cochran--Armitage
+over the four configurations ordered by increasing pressure, equal-spaced
+scores $0\ldots3$, one-sided in the increasing direction: $z = 0.30$,
+$p = 0.38$; spec and reproduction bundled in the drift-check script); we
 report that failure and analyze the cause. The strongest observed correlate
 is \textbf{reward
 saturation}: at mt4 the agent fails most tasks outright ($R$ pinned at 0), so
@@ -486,6 +484,30 @@ triple dependence of \S\ref{sec:threats}. MBPP+
 \label{fig:regime}
 \end{figure}
 
+\begin{table}[t]
+\centering\small
+\begin{tabular}{lllll}
+\toprule
+Model & Pool & Slack & Pressure & Reading \\
+\midrule
+4B & original (30) & 0/57 & 8/65 & breaks gated by pressure \\
+1.7B & original (30) & \multicolumn{2}{c}{0/23 combined} & slack replicates; pressure saturated \\
+8B & original (30) & 5/28 & 6/34, 7/35 & flat: regime-independent breaks \\
+4B & curated (22) & 4/16 & 2/23 & breaks in both regimes \\
+8B & curated (22) & 3/27 & 3/31 & flat again \\
+4B & MBPP+ (60) & \multicolumn{2}{c}{0/66 (11/11 pivotal)} & screens unconditionally \\
+1.7B & MBPP+ (60) & \multicolumn{2}{c}{0/44 (24/24 pivotal)} & screens unconditionally \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Synthesis: raw screening-off break counts by (model, pool,
+regime).} Every claim about \emph{when} the shield holds reduces to this
+grid: pressure-gating is a 4B-on-original-pool phenomenon; the 8B breaks at
+a flat rate wherever it is in its competence window; MBPP+ screens
+everywhere. Counts are point-level (breaks/points); per-configuration
+detail in Figure~\ref{fig:regime}.}
+\label{tab:synthesis}
+\end{table}
+
 \paragraph{Anatomy of the shield.} The sets in play: across the three slack
 configurations and the first pressure configuration we measured 78
 interaction points (57 slack + 21 at mt6); \textbf{75/78 show exact
@@ -504,7 +526,15 @@ data-generating process fixes the non-screening probability at $0.5$, so
 these $p$-values certify only that the pattern is not coin-flip noise. The
 inference we retain is the clustered estimate; a bundled script
 (\texttt{estatisticas\_pivotais.py}) re-derives every number in this
-paragraph from the raw artifacts and fails on drift.
+paragraph from the raw artifacts and fails on drift. One further split the
+timeline forces on us: the screening-off hypothesis was formulated after
+seeing the \emph{first} slack census (g600, whose artifacts predate the
+registration commit by 34 minutes), so g600 is discovery data. Splitting
+accordingly: discovery (g600) screens 14/14 pivotal points; the
+confirmation set (g450/g900/mt6; g450 was in flight at registration, g900
+and mt6 strictly subsequent) screens \textbf{39/42}; restricting to the two
+strictly post-registration configurations (g900+mt6) gives 27/30. The
+estimate does not depend on the discovery cell.
 
 \paragraph{Robustness to the alternative draw (pre-registration 21).} The
 sharpest objection to every number above is that $C(M)$, $C(HM)$, and hence
@@ -519,7 +549,10 @@ informative slack draws screen exactly} (rate $0.980$, CI95 task-clustered
 $[0.944, 1.00]$); restricted to genuinely new alternatives, 79/81. The two
 non-screened draws are themselves informative: one is a single-draw
 excursion at the already-declared reward-collision residual
-(\texttt{l\_log\_parser} idx~10), and one is a genuine synergy break at
+(\texttt{l\_log\_parser} idx~10\footnote{Point labels throughout are
+checkpoint indices (\texttt{cp\_index}); raw artifacts also carry the
+1-based tool-call \texttt{index} ($= \texttt{cp\_index}+1$), so this point
+appears as \texttt{index}~11 in \texttt{results.jsonl}.}), and one is a genuine synergy break at
 \texttt{invoice\_pricing} under one of its three draws ($I = +1.57$; the
 other two draws screen) --- so screening at a point is a dominant-but-not-sure
 property of the alternative distribution, not a logical constant.
@@ -775,8 +808,14 @@ policies, with the attractor determined by seed (outcome: k/k/s; $C(H)$:
 s/s/k; $C_{HM}-C_M$: k/s/s). GATE~3 failed and we report it. Two hypotheses
 remained: the credit estimator is broken, or the optimization is. A
 pre-registered audit recomputed 60 logged credits by fresh two-greedy-replay:
-\textbf{58/60 sign agreement, zero sign flips toward harmful} (mean
-discrepancy $-0.0015$). The estimator is exonerated.
+\textbf{58/60 sign agreement} (mean discrepancy $-0.0015$). Defining a
+\emph{harmful flip} as logged-positive/recomputed-negative --- a definition
+we state here, the registration specified sign agreement only --- there are
+zero: the two disagreements are one benign flip
+(\texttt{inventory\_restock} idx~0, $-0.084 \to +0.10$; logged as harmful,
+actually helpful) and one zero-to-negligible boundary case
+(\texttt{c\_temp\_label} idx~6, $0.0 \to -0.001$). The estimator is
+exonerated.
 
 \paragraph{Act 2: stable optimization, no discovery.} With the
 pre-registered fix (feature centering, $\text{lr} = 0.1$, gradient clipping),
@@ -1072,13 +1111,25 @@ pool-matched contrast (identical 30 tasks) the 4B discards 66--73\% across
 its slack configurations versus 64\% for the 8B at the same budget, a
 $\leq$9-point selection gap against a 0\% vs.\ 18\% raw break-rate gap; on
 the curated pool the rates are 57--70\% (4B) versus 53--59\% (8B). We
-cannot rule out that the \emph{composition} of retained points differs
-across models in ways the rate does not capture, so we report the rates
-per configuration in the artifacts and flag the selection as a caveat on
-all cross-model comparisons rather than correcting for it.
+measured the composition directly (\texttt{analise\_selecao.py}, from the
+per-point sampling logs joined to the baseline trajectories): selection is
+real and directional --- in \emph{both} models the retained points sit
+earlier in the trajectory (pool-matched relative position, found vs.\
+discarded: 0.33 vs.\ 0.73 for the 4B, 0.21 vs.\ 0.79 for the 8B;
+task-clustered bootstrap CIs exclude zero) and carry smaller contexts. But
+the direction \emph{disfavors} the headline contrast rather than explaining
+it: the 8B's retained points are shallower than the 4B's (mean turn 0.65
+vs.\ 1.55, context 395 vs.\ 433 tokens, $d = 0.31$--$0.54$), so if depth
+promotes breaks, composition biases the 8B toward \emph{fewer} measured
+breaks --- and it still breaks at 18\% against the 4B's 0\%. What selection
+does forbid is any claim about deep-context interaction: no census measures
+points the sampler cannot reach, and the discarded majority is precisely
+the late-trajectory, large-context population.
 
 \paragraph{Serving premises.} The exact floor holds under a fully specified
-stack: vLLM 0.8.5.post1 (V1 engine, pinned) serving one model per experiment
+stack: vLLM 0.8.5.post1 (V1 engine, pinned; PyTorch 2.6.0+cu124, CUDA 12.4,
+driver 580.173.02, Python 3.11.14, full transitive closure pinned in the
+repository's \texttt{uv.lock}) serving one model per experiment
 on a single NVIDIA RTX 4090; dtype auto (bfloat16); CUDA graphs enabled (no
 \texttt{enforce\_eager}); default chunked prefill
 (\texttt{max\_num\_batched\_tokens} $= 2048$); automatic prefix caching
@@ -1160,12 +1211,18 @@ benchmark this field still needs.
 \appendix
 \section{Pre-Registration Ledger}
 All confirmatory analyses were pre-registered in the project's execution plan
-before the corresponding data were collected. The ledger is an
-\emph{internal, same-team} pre-specification, timestamped by git commits
-that verifiably precede the corresponding run artifacts; it is not a
-third-party registration, and hours-scale gaps in a single-team pipeline
-cannot exclude unreported exploration before each commit (the pilot runs
-that preceded the formal ledger are preserved in the artifact tree). Its
+before the corresponding data were collected, with one dated exception. The
+ledger is an \emph{internal, same-team} pre-specification, timestamped by
+git commits; for every item but one the registration commit precedes the
+corresponding run artifacts. The exception is item 10: the first slack
+census (g600) completed 34 minutes \emph{before} the registration commit,
+so we treat g600 as discovery data and report the
+discovery/confirmation split in \S\ref{sec:interaction} (confirmation
+alone: 39/42). It is not a
+third-party registration, and minutes-to-hours gaps in a single-team
+pipeline cannot exclude unreported exploration before each commit (the
+pilot runs that preceded the formal ledger are preserved in the artifact
+tree). Its
 evidential force rests on the recorded failures, not on the registration
 mechanism itself. Table~\ref{tab:ledger} lists
 all 21 pre-registrations with their outcomes, including the four that
@@ -1187,7 +1244,7 @@ failed and the six partial. Failed predictions are reported in the main text whe
 7 & Credit directions never aggregated & followed & held \\
 8 & Saturation analyses outside confirmatory set & followed & held \\
 9 & GATE 3: arm 3 must beat arms 2 \emph{and} 4 & not met & \textbf{failed} \\
-10 & Screening-off mechanism sign test & 75/78 as registered; re-specified post hoc to pivotal points (non-pivotal screen by construction): 53/56, $P=4.1\times10^{-13}$ & held \\
+10 & Screening-off mechanism sign test & 75/78 as registered; re-specified post hoc to pivotal points (non-pivotal screen by construction): 53/56; g600 census predates this registration (discovery) --- confirmation subset 39/42 & held \\
 11 & Estimator audit: sign agreement on 60 recomputed credits & 58/60, 0 harmful flips & held \\
 12 & C1b primary outcome: held-out $R_{\text{eff}}>0.30$, $\geq$2/3 seeds & no arm reached it & \textbf{failed} \\
 13 & Dose-response: monotonic break rate in pressure & inverted U ($p=0.38$) & \textbf{failed} \\
