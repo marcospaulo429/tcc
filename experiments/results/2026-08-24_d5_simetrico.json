@@ -1,0 +1,106 @@
+{
+ "q4cur_g600": {
+  "nulls": 198,
+  "exact_rate": 1.0,
+  "noise_floor": 0.0,
+  "n_points": 16,
+  "n_saturated": 1,
+  "raw_breaks": 4,
+  "raw_breaks_nonsat": 3,
+  "breaks": [
+   {
+    "task_id": "h_turnstile_fsm",
+    "cp_index": 10,
+    "C_H": -0.30769230769230765,
+    "C_M": -0.30769230769230765,
+    "C_HM": 0.15384615384615385,
+    "I": 0.7692307692307692,
+    "saturated": false
+   },
+   {
+    "task_id": "h_telco_roaming",
+    "cp_index": 10,
+    "C_H": -0.07692307692307693,
+    "C_M": 0.0,
+    "C_HM": -0.7692307692307692,
+    "I": -0.6923076923076923,
+    "saturated": true
+   },
+   {
+    "task_id": "h_telco_roaming",
+    "cp_index": 13,
+    "C_H": -0.38461538461538464,
+    "C_M": 0.0,
+    "C_HM": 0.15384615384615385,
+    "I": 0.5384615384615385,
+    "saturated": false
+   },
+   {
+    "task_id": "h_hotel_folio",
+    "cp_index": 7,
+    "C_H": 0.5833333333333333,
+    "C_M": 0.9166666666666666,
+    "C_HM": 0.08333333333333337,
+    "I": -1.4166666666666665,
+    "saturated": false
+   }
+  ]
+ },
+ "q4cur_mt6": {
+  "nulls": 198,
+  "exact_rate": 1.0,
+  "noise_floor": 0.0,
+  "n_points": 23,
+  "n_saturated": 3,
+  "raw_breaks": 2,
+  "raw_breaks_nonsat": 2,
+  "breaks": [
+   {
+    "task_id": "h_turnstile_fsm",
+    "cp_index": 10,
+    "C_H": -0.07692307692307687,
+    "C_M": -0.07692307692307687,
+    "C_HM": 0.15384615384615385,
+    "I": 0.3076923076923076,
+    "saturated": false
+   },
+   {
+    "task_id": "h_hotel_folio",
+    "cp_index": 7,
+    "C_H": 0.5833333333333333,
+    "C_M": 0.9166666666666666,
+    "C_HM": 0.08333333333333337,
+    "I": -1.4166666666666665,
+    "saturated": false
+   }
+  ]
+ },
+ "comparacao": {
+  "tasks_8b": [
+   "h_cargo_manifest",
+   "h_hotel_folio",
+   "h_sku_validator",
+   "x_hours_bank"
+  ],
+  "tasks_4b": [
+   "h_hotel_folio",
+   "h_telco_roaming",
+   "h_turnstile_fsm"
+  ],
+  "overlap_tasks": [
+   "h_hotel_folio"
+  ],
+  "recorrentes_4b": [
+   [
+    "h_hotel_folio",
+    7
+   ],
+   [
+    "h_turnstile_fsm",
+    10
+   ]
+  ],
+  "hipotese_b_saturacao_ge_50": false,
+  "desfecho": "c2"
+ }
+}

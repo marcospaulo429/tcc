@@ -19,7 +19,7 @@ from pathlib import Path
 CONF = "keep_context->summarize_context"
 DEFAULT_TAGS = ["g600", "mt6", "q17_g600", "q17_mt6",
                 "q8_g600", "q8_mt6", "q8_mt4", "mbpp_g600", "mbpp_mt6",
-                "v5cur_g600", "v5cur_mt6"]
+                "v5cur_g600", "v5cur_mt6", "q4cur_g600", "q4cur_mt6"]
 
 
 def analyze_tag(tag: str) -> dict | None:

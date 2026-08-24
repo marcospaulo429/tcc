@@ -421,5 +421,137 @@
     0.0
    ]
   }
+ },
+ {
+  "tag": "q4cur_g600",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 16,
+  "all": {
+   "n": 16,
+   "n_screened_exact": 12,
+   "n_saturated": 1,
+   "n_nonsat": 15,
+   "n_breaks_nonsat": 3,
+   "break_tasks": [
+    [
+     "h_hotel_folio",
+     7
+    ],
+    [
+     "h_telco_roaming",
+     13
+    ],
+    [
+     "h_turnstile_fsm",
+     10
+    ]
+   ],
+   "I_nonsat": [
+    -1.4167,
+    -0.2308,
+    -0.2143,
+    -0.1538,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0769,
+    0.5385,
+    0.7692
+   ]
+  },
+  "conf": {
+   "n": 7,
+   "n_screened_exact": 5,
+   "n_saturated": 1,
+   "n_nonsat": 6,
+   "n_breaks_nonsat": 1,
+   "break_tasks": [
+    [
+     "h_hotel_folio",
+     7
+    ]
+   ],
+   "I_nonsat": [
+    -1.4167,
+    -0.2308,
+    -0.2143,
+    -0.1538,
+    0.0,
+    0.0769
+   ]
+  }
+ },
+ {
+  "tag": "q4cur_mt6",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 23,
+  "all": {
+   "n": 23,
+   "n_screened_exact": 21,
+   "n_saturated": 3,
+   "n_nonsat": 20,
+   "n_breaks_nonsat": 2,
+   "break_tasks": [
+    [
+     "h_hotel_folio",
+     7
+    ],
+    [
+     "h_turnstile_fsm",
+     10
+    ]
+   ],
+   "I_nonsat": [
+    -1.4167,
+    -0.2308,
+    -0.2143,
+    -0.1538,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.1429,
+    0.1667,
+    0.2308,
+    0.2308,
+    0.3077,
+    0.3846
+   ]
+  },
+  "conf": {
+   "n": 7,
+   "n_screened_exact": 6,
+   "n_saturated": 0,
+   "n_nonsat": 7,
+   "n_breaks_nonsat": 1,
+   "break_tasks": [
+    [
+     "h_hotel_folio",
+     7
+    ]
+   ],
+   "I_nonsat": [
+    -1.4167,
+    -0.2308,
+    -0.2143,
+    -0.1538,
+    0.0,
+    0.0,
+    0.0
+   ]
+  }
  }
 ]
