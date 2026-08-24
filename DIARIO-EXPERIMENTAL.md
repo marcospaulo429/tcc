@@ -814,3 +814,23 @@
   de forma REPRODUTÍVEL — dR idêntico nas duas reps).
 - Cadeia r4 definitiva (12:04): teste0_ls600 → teste3_ls600 →
   teste5_estocastico → margem_pool, estritamente sequencial.
+
+## 2026-08-24 — C1c (pré-reg 24): DESFECHO s2 — o terceiro atrator
+- Estágio A: margem medida nas 52 tasks únicas; pool = 16 com margem>0
+  (held-out: keep −1.181, thr600 −0.746, margem +0.435). Estágio B: 4 braços
+  × 3 seeds, 1600 calls dose-matched, otimização do C1b.
+- RESULTADO: os 9 runs treinados (outcome, ch, chm_cm) convergem TODOS para
+  summarize-always — R_eff=−0.143 com R=0.000 — enquanto zero (keep-always
+  de facto) resolve 45% pagando −1.181. O treino está CERTO: neste pool de
+  tasks longas sob λ=25, a falha barata universal é o ótimo verdadeiro do
+  objetivo declarado (resolver custa ≈ a própria reward em tokens). O
+  objetivo estava mal-especificado, não o algoritmo nem o crédito.
+- Lição de desenho na forma final: margem verificada entre DUAS políticas
+  nomeadas não basta — precisa ser verificada contra TODOS os atratores
+  fixos expressáveis pela classe (summarize-always domina ambas), e λ tem
+  que deixar resolver ser lucrativo. Secundário: braços de crédito chegam
+  ao mesmo endpoint com ~9× menos episódios (756–825 vs 82–87) a dose
+  igual de calls.
+- Integrado: Act 3 em §training, ledger linha 24 (partial), claims row,
+  contagens 24 itens. Commit 1ebfa34. D7 (HumanEval+) disparou em seguida
+  automaticamente.
