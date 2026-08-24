@@ -141,9 +141,12 @@ whose occurrence we \emph{verify in the recorded traces} (72/75 screened
 points explained; 3 residuals, including 2 reward collisions, declared), and
 a pivotality argument that unifies the competence window, the mt4 collapse,
 and the saturation profiles of both auxiliary models; the replications show
-the shield itself is competence-dependent --- on Qwen3-8B it inverts
-($C_{HM} \approx C_H$) exactly where the sampled $a'$ stops re-injecting the
-destroyed information; empirically, a structural component (the sampled $a'$
+the shield itself is competence-dependent --- the 8B breaks screening where
+the 4B never does, in the raw data and in a pool pre-registered and curated
+to the 8B's competence window. The re-injection mechanism explains the
+annotated 4B/8B contrast (23/24 and 0/24 points) but fails a pre-registered
+generalization test in the curated pool, and we scope it accordingly;
+empirically, a structural component (the sampled $a'$
 re-injects destroyed information, 23/24 annotated points) and a closed-loop
 component (the live downstream harness re-triggers the intervened decision,
 22/52 points).
@@ -848,7 +851,9 @@ against an exactly-zero measured noise floor. The measurement yields a
 crisp, regime-dependent picture: with budget slack the model screens off the
 harness completely (0/57), so single-layer harness credit double-counts;
 under budget pressure the shield breaks at recurring points (8/65), inside a
-competence window shaped by reward saturation. Better credit did not,
+competence window shaped by reward saturation --- and the regime contrast
+itself is a property of the model: a stronger model breaks screening at a
+flat rate in both regimes, in raw data and in a competence-curated pool. Better credit did not,
 however, train a better harness: a two-stage, pre-registered negative ---
 with the estimator exonerated by audit --- locates the binding constraint in
 the training task distribution itself: no reward margin where policies
