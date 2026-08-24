@@ -834,7 +834,22 @@ the same curated pool, pre-registered as D5) addresses both. The break structure
 is also heterogeneous: the D2d slack signature ($C_H=1.0$, $C_M=0.0$,
 $C_{HM}\approx0.9$) does not recur --- \texttt{h\_cargo\_manifest} tracks
 the harness ($C_{HM}=0.46$ vs.\ $C_H=0.62$) while \texttt{h\_hotel\_folio}
-tracks the model ($C_{HM}=0.08$ vs.\ $C_M=0.00$). The robust claim is
+tracks the model ($C_{HM}=0.08$ vs.\ $C_M=0.00$). A descriptive trace
+anatomy of all 6 curated-pool breaks (0 new rollouts) finds one uniform
+base and two patterns on top of it. Uniformly: every break is a
+\texttt{keep}$\to$\texttt{summarize} flip at a \texttt{write\_file} turn,
+the summary destroys essentially all critical constants in context (8/8,
+5/6, 7/7, 10/10), and the harness flip alone is destructive. On top:
+either the sampled $a'$ carries some constants and partially rescues the
+destroyed context (joint lands \emph{between} the single flips:
+\texttt{h\_hotel\_folio}, \texttt{h\_cargo\_manifest}), or $a'$ is itself
+beneficial and the destruction annuls exactly that benefit (joint returns
+to the original reward: \texttt{x\_hours\_bank}, \texttt{h\_sku\_validator}
+--- the one positive $I$ is of this kind). The two recurring points are
+numerically identical across regimes --- same four arm rewards, same
+destroyed constants, same free-divergence offsets, from different baseline
+trajectories --- so the break is a property of the decision point
+(task $\times$ turn), not of the budget regime. The robust claim is
 therefore narrower than the mechanism story: \emph{whether} screening-off
 holds is a property of the model--harness pair, but re-injection of
 destroyed information, which fully explained the annotated 4B/8B contrast
