@@ -9,6 +9,9 @@ dependencies = [
     "scikit-learn>=1.7.2",
 ]
 
+[project.optional-dependencies]
+serving = ["vllm==0.8.5.post1"]
+
 [dependency-groups]
 dev = ["pytest>=8.0"]
 

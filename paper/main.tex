@@ -35,8 +35,9 @@ we report both) at \emph{recurring} decision points, with a non-monotonic
 dependence on pressure intensity that co-occurs with reward saturation.
 The noise floor replicates on two additional models
 (Qwen3-1.7B and Qwen3-8B) and on a second environment (a multi-turn MBPP+
-adaptation): 6{,}301 null replays across three models and two environments
-are all exact (the single fidelity exception occurred in a separate,
+adaptation): 7{,}685 null replays across three models and two environments
+are all exact, reconciled run-by-run in the appendix (the single fidelity
+exception occurred in a separate,
 discarded pre-fix run --- 2 inexact nulls of 432, traced to an
 ASLR memory address leaking into the live context, root-caused,
 fixed at the source, and re-run: 792/792 exact after the fix).
@@ -257,7 +258,8 @@ controls and pre-registration; the outcome is an identified negative
 \subsection{Agent, decision schema and recorder}
 The agent is deliberately minimal: a coding agent in a sandboxed environment
 that reads a task description, writes files, and runs tests. Two layers make
-decisions. The \textbf{model layer} (Qwen3-4B served by vLLM, greedy
+decisions. The \textbf{model layer} (Qwen3-4B served by vLLM 0.8.5.post1 on
+a single NVIDIA RTX 4090, greedy
 decoding) chooses tool calls: \texttt{write\_file}, \texttt{run\_tests},
 \texttt{read\_file}, \texttt{finish}. The \textbf{harness layer} is a
 scripted policy that at every turn makes a \texttt{context\_policy} decision
@@ -270,7 +272,12 @@ the fraction of hidden pytest tests passed, so $R \in [0,1]$ with resolution
 set by the number of tests. Cost-adjusted reward is
 $R_{\text{eff}} = R - \lambda \cdot \text{prompt tokens}/10^5$ with
 $\lambda = 25$, fixed analytically before any training and never
-recalibrated.
+recalibrated.\footnote{The calibration artifact records raw prompt-token
+totals per policy (stored at $\lambda = 1$, from which $R_{\text{eff}}$ at
+any $\lambda$ is recomputable); $\lambda = 25$ was set in the training
+configuration before any training run, so that the token cost of a typical
+long-context episode ($\approx$4k prompt tokens) is commensurate with one
+unit of task reward.}
 
 \subsection{Replay and interventions}
 Replay re-executes a recorded trajectory through the \emph{live} agent loop
@@ -315,34 +322,33 @@ intervention). The floor is defined on the reward $R$, not on trace
 equality: in 3 null replays (all in one configuration) the replayed
 trajectory took one extra retry while reproducing $R$ exactly, and we report
 this rather than hide it.
-Across seven dedicated null-replay runs of Qwen3-4B (1{,}230 nulls), the
-nulls attached to every interaction run (401 more on Qwen3-4B), two
-configurations of Qwen3-1.7B (64 nulls), three configurations of
-Qwen3-8B (810 dedicated + 234 attached), two MBPP+ configurations
-(1{,}080 dedicated + 214 attached), and four curated-pool configurations on
-Qwen3-8B (792 nulls, run after the fix reported below), and two
-symmetric-control configurations of Qwen3-4B on the curated pool (396
-nulls), and two MBPP+ configurations of Qwen3-1.7B (1{,}080 nulls),
+Across 23 dedicated null-replay runs --- Qwen3-4B on the original pool
+(1{,}680 nulls), Qwen3-1.7B (540), Qwen3-8B (810), the hardened- and
+curated-pool runs executed after the fix reported below (792 on the 8B, 396
+on the 4B), and the MBPP+ environment (1{,}080 on the 4B, 1{,}080 on the
+1.7B) --- plus the 1{,}307 null replays attached to the 21 interaction runs,
 \textbf{every one
-of 6{,}301 null replays reproduced $R$ exactly}: the floor is $0.0$ in all
+of 7{,}685 null replays reproduced $R$ exactly}: the floor is $0.0$ in all
 configurations
-(Figure~\ref{fig:floor}a). This is a measurement under explicit premises ---
+(Figure~\ref{fig:floor}a; Table~\ref{tab:nulls} reconciles every count
+against the run artifacts, and a bundled script regenerates it). This is a
+measurement under explicit premises ---
 fixed serving config, strictly sequential requests, prefix caching off ---
 not a guarantee.
 
 A second silent nondeterminism source surfaced later, and we report it the
 same way: in a discarded pre-fix run of the first hardened pool (excluded
-from the 6{,}301: its pool failed the pre-registered curation rule, and its
+from the 7{,}685: its pool failed the pre-registered curation rule, and its
 configurations were re-run after the fix), 2 of
 432 nulls were inexact --- the first fidelity breaks observed in this
-project (2/6{,}733 including every null ever run under the stated premises;
+project (2/8{,}117 including every null ever run under the stated premises;
 the APC-contaminated run of Figure~\ref{fig:floor}b violated them and is
 counted separately).
 Root cause, identified from the diverging trace: a memory address inside a
 Python \texttt{repr} in the pytest output (ASLR) entered the model's live
 context, and greedy decoding diverged downstream. The sanitizer now
 normalizes addresses at the source (regression-tested), and the affected
-configurations were re-run from scratch. Two honesty notes: the 4{,}033
+configurations were re-run from scratch. Two honesty notes: the 5{,}023
 nulls collected \emph{before} the fix were exact because their pytest
 outputs happened to contain no address-bearing \texttt{repr}s --- measured,
 not guaranteed by sanitization; and ``four curated-pool configurations''
@@ -357,7 +363,11 @@ In our APC-contaminated run, 7 of 270 null replays were inexact and the floor
 rose to $0.417$ (Figure~\ref{fig:floor}b) --- large enough to swamp most true
 credits. Sequential execution alone is \emph{not} sufficient; APC must be
 disabled. We flag this because any replay-based attribution system built on
-default vLLM settings inherits this silent failure.
+default vLLM settings inherits this silent failure. Known discussions of
+serving nondeterminism focus on batching-induced kernel
+nondeterminism~\cite{he2025nondeterminism}; the APC effect is distinct ---
+it is cross-\emph{request} state, present even under strictly sequential
+requests --- and we have not seen it documented as a replay hazard.
 
 \begin{figure}[t]
 \centering
@@ -365,7 +375,7 @@ default vLLM settings inherits this silent failure.
 \caption{\textbf{F1 --- Measured noise floor.} (a) Dedicated null-replay
 runs (Qwen3-4B blue, Qwen3-1.7B purple); together with nulls attached to
 interaction runs, the Qwen3-8B and MBPP+ replications, and the curated-pool
-runs, all 6{,}301 null
+runs, all 7{,}685 null
 replays are exact, floor $=0.0$. (b) With
 vLLM automatic prefix caching
 on, the floor rises to $0.417$ (7/270 inexact): greedy determinism breaks
@@ -998,10 +1008,31 @@ for (conditioned rate $0.045 \to 0.143$; the ordering mt8 $>$ mt6 $>$ mt4
 persists), so the window remains a partially supported hypothesis,
 discussed but not claimed as a contribution.
 
-\paragraph{Serving premises.} The exact floor holds under fixed config,
-sequential requests, and APC off. It is a measured property of this stack,
-not a theorem; any deviation (batching, caching, config drift) voids it and
-must be re-measured.
+\paragraph{Serving premises.} The exact floor holds under a fully specified
+stack: vLLM 0.8.5.post1 (V1 engine, pinned) serving one model per experiment
+on a single NVIDIA RTX 4090; dtype auto (bfloat16); CUDA graphs enabled (no
+\texttt{enforce\_eager}); default chunked prefill
+(\texttt{max\_num\_batched\_tokens} $= 2048$); automatic prefix caching
+explicitly disabled; GPU memory utilization 0.85 (0.92 for the 8B); strictly
+sequential requests against a single instance; greedy decoding (temperature
+0, single seed) for every episode and replay rollout; and the fixed $a'$
+seed schedule of \S\ref{sec:setup}. The floor is a measured property of this
+stack, not a theorem; any deviation (batching, caching, config drift, a
+version bump) voids it
+and must be re-measured.
+
+\paragraph{Protocol cost.} Exactness is bought with throughput: the premises
+force strictly sequential serving, one request at a time, on one GPU. The
+full measurement inventory is 7{,}685 null replays, 1{,}380 counterfactual
+replays at 460 interaction points (three per point), 294 single-flip $C(H)$
+replays, and 1{,}617 $a'$ sampling calls (up to 8 seeds each); the training
+comparison adds 4{,}804 episodes (Act 2) plus the dose-matched replays. The
+chained experiment logs account for roughly 25 wall-clock hours on the
+single RTX 4090 (an under-count: the earliest runs predate chained logging).
+Dose-matching makes the replay tax concrete: at equal rollout budget, the
+interaction-corrected arm afforded 319 training episodes against the
+outcome-only arm's 1{,}789 --- a $5.6\times$ episode cost that any
+replay-based trainer must amortize.
 
 \section{Conclusion}
 We built the first apparatus that measures, on the same trajectory, the
@@ -1040,7 +1071,7 @@ failed and the six partial. Failed predictions are reported in the main text whe
 \toprule
 \# & Pre-registered prediction / rule & Outcome & Status \\
 \midrule
-1 & Noise floor per config $=\max|\Delta R|$ over nulls & $0.0$ in 7+2+3+2 configs, 3 models, 2 environments & held \\
+1 & Noise floor per config $=\max|\Delta R|$ over nulls & $0.0$ in all 23 dedicated + 21 attached runs (7{,}685 nulls; Table~\ref{tab:nulls}) & held \\
 2 & Phase-A yield / stopping rule & followed as written & held \\
 3 & Critic evaluation statistic (task-clustered Spearman) & mixed result reported as-is & held \\
 4 & Pre/post feature split for critic & followed & held \\
@@ -1067,6 +1098,49 @@ failed and the six partial. Failed predictions are reported in the main text whe
 (\S\ref{sec:training}); \#13 led to the competence-window analysis
 (\S\ref{sec:interaction}).}
 \label{tab:ledger}
+\end{table}
+
+\section{Null-Replay Reconciliation}
+\label{app:nulls}
+Table~\ref{tab:nulls} reconciles the canonical null-replay total
+(7{,}685, all exact) against every run artifact; a bundled script
+re-derives the table and fails if any count drifts. Excluded runs are
+listed with their reasons: the ASLR pre-fix runs (premises held, fidelity
+broken by an unsanitized memory address; root-caused and re-run) and the
+APC-contaminated run (premises violated by design, kept as the
+Figure~\ref{fig:floor}b demonstration).
+
+\begin{table}[h]
+\centering\scriptsize
+\begin{tabular}{llrrr}
+\toprule
+Run & Model / pool & Dedicated & Attached & Inexact \\
+\midrule
+g450, g600, g900 & 4B / original, slack & $3\times270$ & 64, 61, 61 & 0 \\
+mt8, mt6, mt4 & 4B / original, pressure & $3\times270$ & 61, 61, 61 & 0 \\
+v2, v2b & 4B / pilot pools & $2\times30$ & 16, 16 & 0 \\
+q17\_g600, q17\_mt6 & 1.7B / original & $2\times270$ & 32, 32 & 0 \\
+q8\_g600, q8\_mt6, q8\_mt4 & 8B / original & $3\times270$ & 78, 78, 78 & 0 \\
+v4\_g600, v4\_mt6 & 8B / hardened v4 (post-fix) & $2\times216$ & --- & 0 \\
+v5\_g600, v5\_mt6 & 8B / v5 pool (post-fix) & $2\times180$ & --- & 0 \\
+v5cur\_g600, v5cur\_mt6 & 8B / curated union & --- & 66, 66 & 0 \\
+q4cur\_g600, q4cur\_mt6 & 4B / curated (symmetric control) & $2\times198$ & 53, 53 & 0 \\
+mbpp\_g600, mbpp\_mt6 & 4B / MBPP+ & $2\times540$ & 107, 107 & 0 \\
+mbpp17\_g600, mbpp17\_mt6 & 1.7B / MBPP+ & $2\times540$ & 78, 78 & 0 \\
+\midrule
+\textbf{Canonical total} & & \textbf{6{,}378} & \textbf{1{,}307} & \textbf{0} \\
+\midrule
+\multicolumn{5}{l}{\emph{Excluded from the canonical total:}} \\
+v4\_g600, v4\_mt6 (pre-fix) & 8B / hardened v4, ASLR leak & $2\times216$ & --- & 2 \\
+g600 (APC) & 4B / original, APC on & 270 & 68 & 7 + 2 \\
+\bottomrule
+\end{tabular}
+\caption{Run-by-run null-replay reconciliation. Canonical total
+$6{,}378 + 1{,}307 = 7{,}685$, all exact; including the pre-fix runs,
+$2/8{,}117$ nulls ever run under the stated premises were inexact (both in
+one pre-fix run, \S\ref{sec:floor}). ``Attached'' nulls are the queue-floor
+checks run inside each interaction experiment.}
+\label{tab:nulls}
 \end{table}
 
 \bibliographystyle{plain}
