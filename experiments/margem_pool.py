@@ -54,6 +54,9 @@ def run_policy(task: dict, llm, mode: str, out_dir: Path) -> dict:
 
 
 def main() -> None:
+    import argparse
+    argparse.ArgumentParser(description="C1c estágio A: pool por margem "
+                            "(pré-reg 24)").parse_args()
     from environment.tasks_all import TASKS as T_ALL
     from environment.tasks_curated import TASKS as T_CUR
     seen, tasks = set(), []
