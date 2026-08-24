@@ -771,7 +771,7 @@ boundary seen at 1.7B and 8B. A pre-registered second attempt (D6: the
 1.7B on the same MBPP+ pool, declared outcomes) landed on the same
 boundary from the same side: floor exact (1{,}080/1{,}080), screening
 replicates raw at 44/44 points across both regimes --- a second (model,
-environment) cell with unconditional screening --- but 20/22 points per
+environment) cell with unconditional screening in the external benchmark --- but 20/22 points per
 configuration are saturated (the 1.7B still solves 34/60 MBPP+ tasks at
 $1.0$) and the pressure budget never binds on MBPP+'s short trajectories,
 so the pressure cell of environment B remains empty after two attempts,
@@ -891,7 +891,7 @@ is also heterogeneous: the D2d slack signature ($C_H=1.0$, $C_M=0.0$,
 $C_{HM}\approx0.9$) does not recur --- \texttt{h\_cargo\_manifest} tracks
 the harness ($C_{HM}=0.46$ vs.\ $C_H=0.62$) while \texttt{h\_hotel\_folio}
 tracks the model ($C_{HM}=0.08$ vs.\ $C_M=0.00$). A descriptive trace
-anatomy of all 6 curated-pool breaks (0 new rollouts) finds one uniform
+anatomy of the 8B's 6 curated-pool breaks (0 new rollouts) finds one uniform
 base and two patterns on top of it. Uniformly: every break is a
 \texttt{keep}$\to$\texttt{summarize} flip at a \texttt{write\_file} turn,
 the summary destroys essentially all critical constants in context (8/8,
@@ -906,12 +906,14 @@ numerically identical across regimes --- same four arm rewards, same
 destroyed constants, same free-divergence offsets, from different baseline
 trajectories --- so the break is a property of the decision point
 (task $\times$ turn), not of the budget regime. The same trace anatomy run
-on the 4B's D5 breaks (0 new rollouts) adds a structural asymmetry: three
-of the 4B's four unique break points are \emph{restore}-direction flips
+on the 4B's D5 breaks (0 new rollouts) adds a structural asymmetry: two
+of the 4B's four unique break points (three of the six break instances,
+counting the recurring \texttt{h\_turnstile\_fsm} point) are
+\emph{restore}-direction flips
 (\texttt{summarize}$\to$\texttt{keep}: the baseline had already summarized,
 and the flip restores destroyed constants), a direction absent from the
 8B's breaks, and they follow a third pattern --- individually beneficial
-flips that destroy each other jointly ($I>0$). Only one 4B point falls into
+or neutral flips whose joint application destroys the benefit ($I>0$). Only one 4B point falls into
 an 8B pattern. Two audit details worth recording: the recurring
 \texttt{h\_hotel\_folio} point is numerically identical across regimes in
 all four arm rewards despite distinct baseline trajectories, and the
