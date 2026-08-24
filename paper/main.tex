@@ -50,9 +50,10 @@ then sharpened the claim against us: on the same curated pool the 4B
 \emph{also} breaks raw screening (4/16 slack, 2/23 pressure, mostly
 non-saturated), so the shield is a property of the (model, harness, task)
 triple --- the pool-matched model contrast on identical tasks (0/57 vs.\
-5/28) stands, break points are model-specific and stable across regimes,
-and breaks concentrate where the pool sits near the model's competence
-boundary. The re-injection
+5/28) stands, break points are model-specific and largely stable across
+regimes (4 of 6 recurring tasks, 3 numerically identically),
+and breaks concentrate (descriptively) where the pool sits near the model's
+competence boundary. The re-injection
 mechanism that fully explains the annotated 4B/8B contrast does not
 generalize to the curated pool (pre-registered test, reported as failed).
 This implies that single-layer credit double-counts shielded
@@ -150,7 +151,8 @@ and the saturation profiles of both auxiliary models; the replications show
 the shield itself is a property of the (model, harness, task) triple: the
 8B breaks screening on hardened tasks where the 4B's original-pool slack
 shield was exact, the 4B breaks on the same hardened pool (pre-registered
-symmetric control), break points are model-specific and regime-stable, and
+symmetric control), break points are model-specific and largely
+regime-stable, and
 the pool-matched contrast on identical tasks (0/57 vs.\ 5/28) stands. The
 re-injection mechanism explains the
 annotated 4B/8B contrast (23/24 and 0/24 points) but fails a pre-registered
@@ -214,11 +216,12 @@ single-layer credit silently double-counts effects the other layer absorbs.
 Where interaction appears at all it is a diagnostic to report, not a
 quantity whose structure is interrogated or a training signal; and no prior
 work asks whether the causal structure recovered by attribution is a stable
-property of the pipeline or of the specific model--harness pair. The closest
+property of the pipeline or of the specific (model, harness, task)
+combination. The closest
 precedent is the observation that counterfactual \emph{measurability} is
 model-dependent~\cite{audit2026}; \S\ref{sec:threats} shows the stronger
-phenomenon --- the structure itself inverts with model competence at
-identical intervention points.
+phenomenon --- the structure itself changes with the model and with the
+task pool at identical intervention points.
 \begin{table}[t]
 \centering\small
 \begin{tabular}{lcccccc}
@@ -794,7 +797,9 @@ fifth, \texttt{invoice\_pricing}, has no annotated constants), and the
 breaks \emph{recur}: all 5 slack break tasks break again, with identical
 per-task structure, in both pressure configurations (6/34 at mt6, 7/35 at
 mt4). Whether screening-off holds is therefore itself
-competence-dependent: the shield is a property of the model--harness pair
+competence-dependent: at that stage of the design the shield appeared to be
+a property of the model--harness pair --- a claim the symmetric control
+below narrows further to the (model, harness, task) triple
 (the closest precedent, model-dependent counterfactual
 \emph{measurability}~\cite{audit2026}, concerns whether ground truth can be
 estimated at all; here the recovered causal structure itself inverts). We
@@ -854,15 +859,23 @@ a property of the (model, harness, \emph{task}) triple, not of the
 model--harness pair alone. What survives every cell of the design: the
 pool-matched model contrast on identical tasks (0/57 vs.\ 5/28), the
 majority of points screened in every configuration (worst cell 12/16), the
-regime contrast existing only for the 4B on its original pool, and a new
-invariant --- break points are \emph{model-specific and regime-stable}:
-within a model the same (task, turn) points break in both regimes
-(numerically identically), while across models the break sets are disjoint
-at the point level (the two models share one break task,
-\texttt{h\_hotel\_folio}, at different turns). Breaks concentrate where the
-pool sits near the model's competence boundary --- for the 4B that is the
-original pool under pressure and the hardened pool in both regimes; for
-the 8B, the hardened pool in both regimes. The break structure
+regime contrast existing only for the 4B on its original pool, and a
+majority pattern of break-point stability: break sets are disjoint across
+models at the point level (the two models share one break task,
+\texttt{h\_hotel\_folio}, at different turns), and within a model most
+break points recur across regimes --- in the 8B, 2 of 3 slack break tasks
+recur numerically identically; in the 4B, 2 of 3 break tasks recur, one
+numerically identically (\texttt{h\_hotel\_folio}), one with the same sign
+structure but different magnitudes (\texttt{h\_turnstile\_fsm}:
+$I=+0.77$ slack vs.\ $+0.31$ pressure), and \texttt{h\_telco\_roaming}
+does not recur. A further reading --- breaks concentrate where the
+pool sits near the model's competence boundary (for the 4B, the original
+pool under pressure and the hardened pool in both regimes; for
+the 8B, the hardened pool in both regimes) --- is descriptive and not
+pre-registered: the pre-declared interpretation of outcome c2 was ``a
+property of the task family, not of competence,'' and what favors the
+triple reading over the pure-family reading is the point-level disjunction
+of break sets between models on the identical pool. The break structure
 is also heterogeneous: the D2d slack signature ($C_H=1.0$, $C_M=0.0$,
 $C_{HM}\approx0.9$) does not recur --- \texttt{h\_cargo\_manifest} tracks
 the harness ($C_{HM}=0.46$ vs.\ $C_H=0.62$) while \texttt{h\_hotel\_folio}
@@ -881,9 +894,11 @@ to the original reward: \texttt{x\_hours\_bank}, \texttt{h\_sku\_validator}
 numerically identical across regimes --- same four arm rewards, same
 destroyed constants, same free-divergence offsets, from different baseline
 trajectories --- so the break is a property of the decision point
-(task $\times$ turn), not of the budget regime. The robust claim is
+(task $\times$ turn), not of the budget regime (this trace anatomy covers
+the 8B's six breaks; the 4B's D5 breaks have credit signatures only, an
+asymmetry we note). The robust claim is
 therefore narrower than the mechanism story: \emph{whether} screening-off
-holds is a property of the model--harness pair, but re-injection of
+holds is a property of the (model, harness, task) triple, and re-injection of
 destroyed information, which fully explained the annotated 4B/8B contrast
 of D2d, is neither necessary nor sufficient for the shield in a curated
 pool.
@@ -925,10 +940,10 @@ crisp, regime-dependent picture: with budget slack the model screens off the
 harness completely (0/57), so single-layer harness credit double-counts;
 under budget pressure the shield breaks at recurring points (8/65), inside a
 competence window shaped by reward saturation --- and the regime contrast
-itself is a property of the (model, pool) pair: a stronger model breaks
+itself is a property of the (model, harness, task) triple: a stronger model breaks
 screening at a flat rate in both regimes, and on a pool hardened to the
 stronger model's competence boundary \emph{both} models break, at
-model-specific, regime-stable points. Better credit did not,
+model-specific, largely regime-stable points. Better credit did not,
 however, train a better harness: a two-stage, pre-registered negative ---
 with the estimator exonerated by audit --- locates the binding constraint in
 the training task distribution itself: no reward margin where policies
