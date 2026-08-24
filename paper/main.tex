@@ -379,6 +379,13 @@ serving nondeterminism focus on batching-induced kernel
 nondeterminism~\cite{he2025nondeterminism}; the APC effect is distinct ---
 it is cross-\emph{request} state, present even under strictly sequential
 requests --- and we have not seen it documented as a replay hazard.
+The sequentiality premise was also stress-tested by accident: a scheduling
+error in our own pipeline briefly ran two experiment chains against the same
+server, and the very first affected cell produced a \emph{reproducible}
+non-exact null ($\Delta R = +0.67$ twice, diverging at the second retry
+call). Concurrent batching, like APC, is sufficient to destroy the floor;
+the contaminated runs were quarantined and re-run sequentially, and the
+incident is preserved in the run ledger.
 
 \begin{figure}[t]
 \centering
