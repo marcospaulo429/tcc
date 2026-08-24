@@ -1,0 +1,425 @@
+[
+ {
+  "tag": "g600",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 21,
+  "all": {
+   "n": 21,
+   "n_screened_exact": 21,
+   "n_saturated": 16,
+   "n_nonsat": 5,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    -0.8571,
+    -0.6,
+    0.0,
+    0.0,
+    0.1538
+   ]
+  },
+  "conf": {
+   "n": 15,
+   "n_screened_exact": 15,
+   "n_saturated": 13,
+   "n_nonsat": 2,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    -0.8571,
+    -0.6
+   ]
+  }
+ },
+ {
+  "tag": "mt6",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 21,
+  "all": {
+   "n": 21,
+   "n_screened_exact": 18,
+   "n_saturated": 15,
+   "n_nonsat": 6,
+   "n_breaks_nonsat": 2,
+   "break_tasks": [
+    [
+     "l_log_parser",
+     7
+    ],
+    [
+     "l_vending_machine",
+     10
+    ]
+   ],
+   "I_nonsat": [
+    -0.8571,
+    -0.6,
+    0.0,
+    0.0769,
+    0.1818,
+    0.2308
+   ]
+  },
+  "conf": {
+   "n": 15,
+   "n_screened_exact": 13,
+   "n_saturated": 12,
+   "n_nonsat": 3,
+   "n_breaks_nonsat": 1,
+   "break_tasks": [
+    [
+     "l_log_parser",
+     7
+    ]
+   ],
+   "I_nonsat": [
+    -0.8571,
+    -0.6,
+    0.0
+   ]
+  }
+ },
+ {
+  "tag": "q17_g600",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 11,
+  "all": {
+   "n": 11,
+   "n_screened_exact": 11,
+   "n_saturated": 10,
+   "n_nonsat": 1,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    0.0
+   ]
+  },
+  "conf": {
+   "n": 10,
+   "n_screened_exact": 10,
+   "n_saturated": 9,
+   "n_nonsat": 1,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    0.0
+   ]
+  }
+ },
+ {
+  "tag": "q17_mt6",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 12,
+  "all": {
+   "n": 12,
+   "n_screened_exact": 12,
+   "n_saturated": 11,
+   "n_nonsat": 1,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    0.0
+   ]
+  },
+  "conf": {
+   "n": 10,
+   "n_screened_exact": 10,
+   "n_saturated": 9,
+   "n_nonsat": 1,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    0.0
+   ]
+  }
+ },
+ {
+  "tag": "q8_g600",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 28,
+  "all": {
+   "n": 28,
+   "n_screened_exact": 23,
+   "n_saturated": 27,
+   "n_nonsat": 1,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    0.0
+   ]
+  },
+  "conf": {
+   "n": 27,
+   "n_screened_exact": 22,
+   "n_saturated": 27,
+   "n_nonsat": 0,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": []
+  }
+ },
+ {
+  "tag": "q8_mt6",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 34,
+  "all": {
+   "n": 34,
+   "n_screened_exact": 28,
+   "n_saturated": 31,
+   "n_nonsat": 3,
+   "n_breaks_nonsat": 1,
+   "break_tasks": [
+    [
+     "l_door_controller",
+     3
+    ]
+   ],
+   "I_nonsat": [
+    -0.2308,
+    0.0,
+    0.3846
+   ]
+  },
+  "conf": {
+   "n": 31,
+   "n_screened_exact": 25,
+   "n_saturated": 29,
+   "n_nonsat": 2,
+   "n_breaks_nonsat": 1,
+   "break_tasks": [
+    [
+     "l_door_controller",
+     3
+    ]
+   ],
+   "I_nonsat": [
+    -0.2308,
+    0.3846
+   ]
+  }
+ },
+ {
+  "tag": "q8_mt4",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 35,
+  "all": {
+   "n": 35,
+   "n_screened_exact": 28,
+   "n_saturated": 32,
+   "n_nonsat": 3,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    -0.6154,
+    -0.0769,
+    0.0
+   ]
+  },
+  "conf": {
+   "n": 33,
+   "n_screened_exact": 26,
+   "n_saturated": 31,
+   "n_nonsat": 2,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    -0.6154,
+    -0.0769
+   ]
+  }
+ },
+ {
+  "tag": "mbpp_g600",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 31,
+  "all": {
+   "n": 31,
+   "n_screened_exact": 31,
+   "n_saturated": 29,
+   "n_nonsat": 2,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    0.0,
+    0.0
+   ]
+  },
+  "conf": {
+   "n": 26,
+   "n_screened_exact": 26,
+   "n_saturated": 26,
+   "n_nonsat": 0,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": []
+  }
+ },
+ {
+  "tag": "mbpp_mt6",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 35,
+  "all": {
+   "n": 35,
+   "n_screened_exact": 35,
+   "n_saturated": 31,
+   "n_nonsat": 4,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    -0.4,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "conf": {
+   "n": 31,
+   "n_screened_exact": 31,
+   "n_saturated": 28,
+   "n_nonsat": 3,
+   "n_breaks_nonsat": 0,
+   "break_tasks": [],
+   "I_nonsat": [
+    -0.4,
+    0.0,
+    0.0
+   ]
+  }
+ },
+ {
+  "tag": "v5cur_g600",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 27,
+  "all": {
+   "n": 27,
+   "n_screened_exact": 24,
+   "n_saturated": 9,
+   "n_nonsat": 18,
+   "n_breaks_nonsat": 1,
+   "break_tasks": [
+    [
+     "x_hours_bank",
+     3
+    ]
+   ],
+   "I_nonsat": [
+    -0.1538,
+    -0.0833,
+    -0.0714,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.1538,
+    0.1538,
+    0.2308
+   ]
+  },
+  "conf": {
+   "n": 10,
+   "n_screened_exact": 7,
+   "n_saturated": 6,
+   "n_nonsat": 4,
+   "n_breaks_nonsat": 1,
+   "break_tasks": [
+    [
+     "x_hours_bank",
+     3
+    ]
+   ],
+   "I_nonsat": [
+    -0.1538,
+    -0.0833,
+    -0.0714,
+    0.0
+   ]
+  }
+ },
+ {
+  "tag": "v5cur_mt6",
+  "queue_floor_ok": true,
+  "noise_floor": 0.0,
+  "n_points": 31,
+  "all": {
+   "n": 31,
+   "n_screened_exact": 28,
+   "n_saturated": 6,
+   "n_nonsat": 25,
+   "n_breaks_nonsat": 1,
+   "break_tasks": [
+    [
+     "x_hours_bank",
+     3
+    ]
+   ],
+   "I_nonsat": [
+    -0.5,
+    -0.4545,
+    -0.3846,
+    -0.2308,
+    -0.2308,
+    -0.1818,
+    -0.1538,
+    -0.0833,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0714,
+    0.1429,
+    0.1538,
+    0.2308,
+    0.4615,
+    0.4615,
+    0.4615
+   ]
+  },
+  "conf": {
+   "n": 13,
+   "n_screened_exact": 10,
+   "n_saturated": 5,
+   "n_nonsat": 8,
+   "n_breaks_nonsat": 1,
+   "break_tasks": [
+    [
+     "x_hours_bank",
+     3
+    ]
+   ],
+   "I_nonsat": [
+    -0.5,
+    -0.4545,
+    -0.2308,
+    -0.2308,
+    -0.1538,
+    -0.0833,
+    0.0,
+    0.0
+   ]
+  }
+ }
+]

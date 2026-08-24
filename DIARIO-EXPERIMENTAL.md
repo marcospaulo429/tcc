@@ -689,3 +689,24 @@
   models tested" e linha do replay audit; precedente 2608.19760 citado
   junto ao claim de inversão ("competence, not scale"). Novelty check do
   shield inversion: NOVO (risco médio-baixo), 7 vizinhos verificados.
+
+## 2026-08-24 (madrugada) — D4b: curação PASSOU; quebras in-window replicam; mecanismo binário NÃO
+- Fix ASLR validado em produção: 792/792 nulos exatos pós-fix (4 configs,
+  piso 0.0 em todas). Fidelidade fechada.
+- Curação (pré-reg 18): 22/44 na janela (7 v4 + 15 v5) ≥ 12 → PASSOU.
+- Hipóteses: (a) piso 0.0 ✓; (b) Fisher mecanismo FALHOU (folga: 0 pontos
+  ativos re-injetam, tabela degenerada p=1.0; pressão: 2/3 quebras COM
+  re-injeção, p=0.94 direção oposta); (c) direcional FALHOU (pressão 3/31 =
+  9.7% < folga 3/27 = 11.1% — plano, replica o "flat" do D2d).
+- Resultado substantivo: quebras raw do 8B REPLICAM em pool curado
+  in-window, incluindo quebra NÃO-saturada em folga (x_hours_bank:
+  C_H=+0.25, C_M=-0.17, C_HM=0.00, I=-0.08) — fecha de vez a objeção de
+  clipping/saturação. h_hotel_folio e x_hours_bank quebram em AMBOS os
+  regimes com estrutura idêntica (recorrência de novo).
+- Estrutura heterogênea: a assinatura do D2d (C_H=1.0, C_M=0.0, C_HM≈0.9)
+  não recorre; cargo_manifest rastreia harness (C_HM=.46 vs C_H=.62),
+  hotel_folio rastreia modelo (C_HM=.08 vs C_M=0). Mecanismo de re-injeção:
+  explica os pontos anotados do D2d mas NÃO é necessário nem suficiente no
+  pool curado — reportar como falha pré-registrada do teste (b).
+- Artefatos: 2026-08-23_v4b_mecanismo.json, 2026-08-24_replicacao.json,
+  runs/v5_curation.json.
