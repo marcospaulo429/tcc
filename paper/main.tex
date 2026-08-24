@@ -36,8 +36,9 @@ dependence on pressure intensity partially mediated by reward saturation.
 The noise floor replicates on two additional models
 (Qwen3-1.7B and Qwen3-8B) and on a second environment (a multi-turn MBPP+
 adaptation): 4{,}825 null replays across three models and two environments
-are all exact (a single audited exception --- 2 inexact nulls traced to an
-ASLR memory address leaking into the live context --- was root-caused,
+are all exact (the single fidelity exception occurred in a separate,
+discarded pre-fix run --- 2 inexact nulls of 432, traced to an
+ASLR memory address leaking into the live context, root-caused,
 fixed at the source, and re-run: 792/792 exact after the fix).
 Screening-off itself replicates unconditionally on Qwen3-1.7B
 (0 raw breaks) and on MBPP+ (66/66 points); on Qwen3-8B it does
@@ -305,14 +306,22 @@ fixed serving config, strictly sequential requests, prefix caching off ---
 not a guarantee.
 
 A second silent nondeterminism source surfaced later, and we report it the
-same way: in a subsequent hardened-pool run (whose task pool failed its
-pre-registered curation rule and is not part of the analyses above), 2 of
-432 nulls were inexact --- the first fidelity breaks in $\sim$4{,}500 nulls.
+same way: in a discarded pre-fix run of the first hardened pool (excluded
+from the 4{,}825: its pool failed the pre-registered curation rule, and its
+configurations were re-run after the fix), 2 of
+432 nulls were inexact --- the first fidelity breaks observed in this
+project (2/5{,}257 including every null ever run under the stated premises;
+the APC-contaminated run of Figure~\ref{fig:floor}b violated them and is
+counted separately).
 Root cause, identified from the diverging trace: a memory address inside a
 Python \texttt{repr} in the pytest output (ASLR) entered the model's live
 context, and greedy decoding diverged downstream. The sanitizer now
 normalizes addresses at the source (regression-tested), and the affected
-configurations were re-run from scratch. The lesson generalizes:
+configurations were re-run from scratch. Two honesty notes: the 4{,}033
+nulls collected \emph{before} the fix were exact because their pytest
+outputs happened to contain no address-bearing \texttt{repr}s --- measured,
+not guaranteed by sanitization; and ``four curated-pool configurations''
+means 2 budget regimes $\times$ 2 pool halves. The lesson generalizes:
 replay-grade determinism requires auditing every byte that reaches the
 context, not just the serving stack.
 The premises matter. vLLM V1 enables automatic prefix caching (APC) by
@@ -406,7 +415,9 @@ points. Slack: 0/57 raw (0/12 non-saturated). Pressure: 8/65 raw (6/19
 non-saturated, $p=0.037$). Qwen3-1.7B (purple) replicates slack; its
 pressure null is explained by saturation (only 1 non-saturated point).
 Qwen3-8B (red) breaks raw screening at a \emph{flat} rate across regimes
-(5/28, 6/34, 7/35) --- the shield inversion of \S\ref{sec:threats}. MBPP+
+(5/28, 6/34, 7/35), and the flatness survives the pre-registered curated
+pool (orange: 3/27 slack, 3/31 pressure) --- the competence dependence of
+\S\ref{sec:threats}. MBPP+
 (green, Qwen3-4B) replicates screening unconditionally (0/66).}
 \label{fig:regime}
 \end{figure}
@@ -777,8 +788,9 @@ competence-dependent: the shield is a property of the model--harness pair
 \emph{measurability}~\cite{audit2026}, concerns whether ground truth can be
 estimated at all; here the recovered causal structure itself inverts). We
 say competence, not scale: 4B and 8B differ in post-training as well as
-size, and the claim is anchored in the measured mechanism, not in parameter
-count.
+size, and the claim is anchored in the measured re-injection contrast on
+the original pool (which, as reported below, does not generalize as a
+mechanism), not in parameter count.
 Under pressure the 8B also shows a genuine non-saturated synergy break at
 \texttt{l\_door\_controller} ($C_{HM}=0.23$ vs.\ $C_M=-0.46$, $I=+0.38$).
 Saturation still dominates both auxiliary models in opposite directions
@@ -795,16 +807,30 @@ $(0.05,0.95)$ window; 792/792 nulls exact after the ASLR fix of
 replicate and stay flat across regimes} --- 3/27 slack, 3/31 pressure ---
 including a \emph{non-saturated slack break}
 (\texttt{x\_hours\_bank}: $C_H=+0.25$, $C_M=-0.17$, $C_{HM}=0.00$,
-$I=-0.08$), which closes the clipping objection: the 8B breaks screening
-where the 4B never did (0/57), and the contrast between regimes seen on the
+$I=-0.08$), which closes the clipping objection: breaks persist where
+saturation cannot manufacture them. The pool-matched competence contrast is
+D2d's (same 30 tasks: 4B 0/57 raw vs.\ 8B 5/28); within the curated pool the
+regime contrast seen on the
 4B does not exist on the 8B even inside its competence window. Two of the
 three break points recur across both regimes with identical structure.
 Two pre-registered sub-hypotheses failed and we report them as such: the
 binary re-injection mechanism does not generalize (at active slack points
 the curated-pool $a'$ \emph{never} re-injects constants, 0/15, yet only
 3/15 break; under pressure 2 of 3 breaks occur \emph{with} re-injection;
-one-sided Fisher $p=1.0$ and $p=0.94$), and the directional prediction
-(pressure $\geq$ slack) failed ($9.7\%$ vs.\ $11.1\%$). The break structure
+one-sided Fisher $p=1.0$ and $p=0.94$ --- the slack table is degenerate, no
+exposed points, so only the pressure test is informative, and it points the
+wrong way), and the directional prediction
+(pressure $\geq$ slack) failed ($9.7\%$ vs.\ $11.1\%$). All curated-pool
+break counts are descriptive: with 3 break tasks per regime we make no
+clustered inferential claim, and we make no cross-pool $p$-value comparison
+against the 4B's 0/57. Two design threats remain and we name them: the
+curated comparison was, at the time of this analysis, cross-pool (the 4B's
+0/57 comes from the original pool --- the paired contrast on identical
+tasks is D2d's 0/57 vs.\ 5/28); and the curation window is operationalized
+by task \emph{family} (the second pool was designed around the profile that
+survived curation), so in-window break rate could be a property of the
+family rather than of competence --- the symmetric control (the 4B run on
+the same curated pool, pre-registered as D5) addresses both. The break structure
 is also heterogeneous: the D2d slack signature ($C_H=1.0$, $C_M=0.0$,
 $C_{HM}\approx0.9$) does not recur --- \texttt{h\_cargo\_manifest} tracks
 the harness ($C_{HM}=0.46$ vs.\ $C_H=0.62$) while \texttt{h\_hotel\_folio}
