@@ -779,3 +779,38 @@
 - Também nesta sessão: estatisticas_pivotais.py e margem_calibracao.py (regeneração
   com drift-check; CI da margem canônico agora [−0.029, +0.079] — o publicado antes
   veio de bootstrap ad hoc não versionado, corrigido no paper).
+
+## 2026-08-24 — Rodada 4: batch A forense + pré-regs 22/23/24 + incidentes de concorrência
+- Batch A zero-GPU (ee51bc9), auditoria forense da rodada 3: split
+  discovery/confirmation (g600 descoberta 14/14; confirmação 39/42; estrito
+  pós-registro 27/30); spec do Cochran-Armitage no drift-check (scores 0..3,
+  unilateral crescente, z=0.3012 p=0.3816 — reproduz exato; o "não reproduzi"
+  do estatístico da rodada 3 era spec errada dele, mas a culpa era nossa por
+  não declarar a spec); harmful flip definido (58/60, 2 desacordos benignos);
+  correção do apêndice ("verifiably precede" era falso para o item 10 — g600
+  terminou 34 min antes do commit; agora declarado); analise_selecao.py:
+  pontos retidos são precoces em ambos os modelos e retidos do 8B MAIS rasos
+  que os do 4B (turn 0.65 vs 1.55, d≈0.3–0.5) ⇒ composição DESFAVORECE o
+  contraste 0% vs 18% — achado favorável, no paper; abstract ≤200 palavras;
+  tabela-síntese modelo×pool×regime; make reproduce (4 scripts drift-fail).
+- Pré-regs commitados ANTES dos dados: 22 (célula ls600 — summarizer por LLM
+  greedy no harness; piso + screening s1/s2/s3) e 23 (célula estocástica
+  temp 0.8 — 5 pontos mt6, 12 seeds, braços null/M/HM, D=C_HM−C_M com CI
+  bootstrap) em 97cb19b; 24 (C1c re-treino com pool margem-verificada,
+  estágio A seleção + estágio B 4 braços × 3 seeds dose-matched 1600 calls)
+  em 31fbc8e.
+- INCIDENTES DE CONCORRÊNCIA (2×, ambos meus): (1) o bash da primeira cadeia
+  sobreviveu a um kill parcial e avançou para o teste5 em paralelo com o
+  teste0_ls600 relançado → nulo NÃO-exato reprodutível (l_discount_chain
+  idx0, dR=+0.67 em ambas as reps, divergência no 2º call do retry).
+  Diagnóstico: concorrência de batching no vLLM, não violação genuína da
+  premissa do summarizer. Quarentena: runs/_ls600_concorrente,
+  runs/_teste5_concorrente. (2) `margem_pool --help` EXECUTOU o estágio A
+  (faltava argparse) em paralelo com a cadeia relançada → quarentena
+  runs/_concorrente2; argparse adicionado e commitado. Lições: setsid +
+  set -e na cadeia; nunca invocar módulos de experiments sem checar
+  entrypoint. O incidente virou parágrafo no paper (stress-test acidental
+  da premissa de sequencialidade: concorrência basta para quebrar o piso,
+  de forma REPRODUTÍVEL — dR idêntico nas duas reps).
+- Cadeia r4 definitiva (12:04): teste0_ls600 → teste3_ls600 →
+  teste5_estocastico → margem_pool, estritamente sequencial.
