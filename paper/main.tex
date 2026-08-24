@@ -26,7 +26,7 @@ calls) and the \emph{harness} (context management, retries, termination).
 We present an apparatus that measures, on the same trajectory, the
 per-decision causal contributions $C(H)$, $C(M)$, and their interaction
 $I(H,M)$, via deterministic counterfactual replay with a \emph{measured}
-noise floor: 7{,}685 null replays across three models and two environments
+noise floor: 8{,}002 null replays across three models and two environments
 are all exact, under explicit serving premises whose violation we also
 measure (vLLM automatic prefix caching silently breaks greedy determinism).
 The central finding is exact \emph{screening-off}: with budget slack, the
@@ -39,7 +39,7 @@ recurring, model-specific decision points, so whether the shield holds is a
 property of the (model, harness, task) triple. Training the harness with
 interaction-corrected credit fails for an identified, pre-registered
 reason: the training distribution offers no reward margin where candidate
-policies differ. We release the apparatus, a 21-item pre-registration
+policies differ. We release the apparatus, a 23-item pre-registration
 ledger including all failures, and the negative result as a design brief
 for cross-layer training benchmarks.
 \end{abstract}
@@ -157,7 +157,9 @@ pre-registration ledger (Table~\ref{tab:ledger}).
 \toprule
 Claim & Evidence & Status \\
 \midrule
-Replay noise floor is exactly zero & 7{,}685/7{,}685 nulls exact, 3 models $\times$ 2 envs (Table~\ref{tab:nulls}) & confirmed (pre-reg 1) \\
+Replay noise floor is exactly zero & 8{,}002/8{,}002 nulls exact, 3 models $\times$ 2 envs (Table~\ref{tab:nulls}) & confirmed (pre-reg 1) \\
+Floor survives an LLM-in-the-loop summarizer & 317/317 nulls exact (greedy summarizer cell) & confirmed (pre-reg 22) \\
+Deterministic taxonomy predicts stochastic estimand & temp $0.8$: 2/2 screened cover 0; 2/3 breaks exclude 0, predicted sign & confirmed (pre-reg 23, outcome s1) \\
 vLLM APC breaks greedy determinism & floor $0.417$, 7/270 inexact & demonstrated \\
 Slack screening-off, 4B original pool & 0/57 raw; pivotal 53/56 = 0.946, CI95 $[0.87,1.00]$ task-clustered & confirmed (pre-reg 10, re-specified) \\
 Screening survives $a'$ re-sampling & 99/101 informative slack draws (CI95 $[0.94,1.00]$); mt6 breaks persist 9/9 & confirmed (pre-reg 21) \\
@@ -333,13 +335,14 @@ intervention). The floor is defined on the reward $R$, not on trace
 equality: in 3 null replays (all in one configuration) the replayed
 trajectory took one extra retry while reproducing $R$ exactly, and we report
 this rather than hide it.
-Across 23 dedicated null-replay runs --- Qwen3-4B on the original pool
+Across 24 dedicated null-replay runs --- Qwen3-4B on the original pool
 (1{,}680 nulls), Qwen3-1.7B (540), Qwen3-8B (810), the hardened- and
 curated-pool runs executed after the fix reported below (792 on the 8B, 396
-on the 4B), and the MBPP+ environment (1{,}080 on the 4B, 1{,}080 on the
-1.7B) --- plus the 1{,}307 null replays attached to the 21 interaction runs,
+on the 4B), the MBPP+ environment (1{,}080 on the 4B, 1{,}080 on the
+1.7B), and the LLM-summarizer cell reported below (270) --- plus the
+1{,}354 null replays attached to the 22 interaction runs,
 \textbf{every one
-of 7{,}685 null replays reproduced $R$ exactly}: the floor is $0.0$ in all
+of 8{,}002 null replays reproduced $R$ exactly}: the floor is $0.0$ in all
 configurations
 (Figure~\ref{fig:floor}a; Table~\ref{tab:nulls} reconciles every count
 against the run artifacts, and a bundled script regenerates it). This is a
@@ -349,10 +352,10 @@ not a guarantee.
 
 A second silent nondeterminism source surfaced later, and we report it the
 same way: in a discarded pre-fix run of the first hardened pool (excluded
-from the 7{,}685: its pool failed the pre-registered curation rule, and its
+from the 8{,}002: its pool failed the pre-registered curation rule, and its
 configurations were re-run after the fix), 2 of
 432 nulls were inexact --- the first fidelity breaks observed in this
-project (2/8{,}117 including every null ever run under the stated premises;
+project (2/8{,}434 including every null ever run under the stated premises;
 the APC-contaminated run of Figure~\ref{fig:floor}b violated them and is
 counted separately).
 Root cause, identified from the diverging trace: a memory address inside a
@@ -366,6 +369,19 @@ not guaranteed by sanitization; and ``four curated-pool configurations''
 means 2 budget regimes $\times$ 2 pool halves. The lesson generalizes:
 replay-grade determinism requires auditing every byte that reaches the
 context, not just the serving stack.
+The floor also survives making the harness itself an LLM program. A
+pre-registered cell replaces the rule-based summarizer with a greedy LLM
+summarizer (the served model summarizes its own history under a fixed
+prompt, temperature $0$), re-running the full pipeline on the same 30
+tasks: all 317 null replays (270 dedicated + 47 attached to the census)
+reproduced $R$ exactly. The premise ``greedy summarization is
+deterministic'' was declared falsifiable in the pre-registration; it held.
+The cell's census, however, had low pivotal yield --- 3 pivotal points out
+of 13 measured, 2 screened, 1 break (saturated) --- because the semantic
+summary preserves the very constants whose destruction generates pivotal
+harness credit in this pool; we report the cell as underpowered for the
+screening question (its declared outcome bin) and informative for the
+floor question.
 The premises matter. vLLM V1 enables automatic prefix caching (APC) by
 default, and with APC on, prefill numerics depend on the KV-cache state left
 by \emph{previous} requests: greedy decoding diverges across identical
@@ -393,7 +409,7 @@ incident is preserved in the run ledger.
 \caption{\textbf{F1 --- Measured noise floor.} (a) Dedicated null-replay
 runs (Qwen3-4B blue, Qwen3-1.7B purple); together with nulls attached to
 interaction runs, the Qwen3-8B and MBPP+ replications, and the curated-pool
-runs, all 7{,}685 null
+runs, all 8{,}002 null
 replays are exact, floor $=0.0$. (b) With
 vLLM automatic prefix caching
 on, the floor rises to $0.417$ (7/270 inexact): greedy determinism breaks
@@ -1150,8 +1166,9 @@ and must be re-measured.
 
 \paragraph{Protocol cost.} Exactness is bought with throughput: the premises
 force strictly sequential serving, one request at a time, on one GPU. The
-full measurement inventory is 7{,}685 null replays, 1{,}380 counterfactual
-replays at 460 interaction points (three per point), 294 single-flip $C(H)$
+full measurement inventory is 8{,}002 null replays, 1{,}380 counterfactual
+replays at 460 interaction points (three per point), 13 census points and
+180 stochastic replays in the round-4 cells, 294 single-flip $C(H)$
 replays, 304 re-sampling replays with 401 $a'$ sampling calls
 (pre-registration 21), and 1{,}617 census $a'$ sampling calls (up to 8
 seeds each); the training
@@ -1179,6 +1196,19 @@ survives unchanged is the double-counting identity, which is algebraic and
 holds in expectation. The deterministic setting of this paper is the
 calibration case where all of this is measurable at zero variance --- we
 deliberately paid throughput for that identifiability.
+We then \emph{executed} this recipe (pre-registered, 180 replays): at
+temperature $0.8$ with 12 seeds per arm, on the two highest-$|C_H|$
+screened points and the three pressure breaks of the mt6 census. Declared
+outcome s1 held: at both screened points the stochastic
+$D = \bar{C}_{HM} - \bar{C}_M$ covers zero (at one of them exactly ---
+every one of 36 replays returns the same reward); at 2/3 break points $D$
+excludes zero with the sign predicted by the deterministic taxonomy
+(\texttt{api\_router} $D = +0.46$, CI $[0.38, 0.58]$; \texttt{l\_log\_parser}
+$D = -0.15$, CI $[-0.15, -0.13]$, against null spreads of $0.00$--$0.04$),
+while the third (\texttt{l\_vending\_machine}, the weakest deterministic
+break at $|C_{HM}-C_M| = 0.09$) dissolves into the sampling noise. The
+deterministic census is thus not an artifact of greedy decoding: it
+predicts where the stochastic estimand separates from its null band.
 
 \paragraph{What the triple claim does to the practical prescription.} If
 \emph{whether} screening holds depends on the (model, harness, task)
@@ -1210,7 +1240,7 @@ the training task distribution itself: no reward margin where policies
 differ, unreachable states where learned thresholds would fire. We offer the
 infrastructure, the
 regime-dependence finding, the APC determinism warning, and a
-pre-registration ledger of 21 predictions (including 4 failures and 6
+pre-registration ledger of 23 predictions (including 4 failures and 8
 partials) as the
 contributions, and the training negative as the design brief for the
 benchmark this field still needs.
@@ -1242,7 +1272,7 @@ failed and the six partial. Failed predictions are reported in the main text whe
 \toprule
 \# & Pre-registered prediction / rule & Outcome & Status \\
 \midrule
-1 & Noise floor per config $=\max|\Delta R|$ over nulls & $0.0$ in all 23 dedicated + 21 attached runs (7{,}685 nulls; Table~\ref{tab:nulls}) & held \\
+1 & Noise floor per config $=\max|\Delta R|$ over nulls & $0.0$ in all 24 dedicated + 22 attached runs (8{,}002 nulls; Table~\ref{tab:nulls}) & held \\
 2 & Phase-A yield / stopping rule & followed as written & held \\
 3 & Critic evaluation statistic (task-clustered Spearman) & mixed result reported as-is & held \\
 4 & Pre/post feature split for critic & followed & held \\
@@ -1263,6 +1293,8 @@ failed and the six partial. Failed predictions are reported in the main text whe
 19 & D5 symmetric control: 4B on the 22 curated tasks; (a) floor $0.0$; (b) 4B saturated-in-failure ($\geq$50\%); (c) declared outcomes c1/c2/c3 & floor held (396/396); (b) \textbf{failed} (1/16, 3/23 saturated); outcome c2: 4B also breaks in-window (4/16, 2/23) $\Rightarrow$ claim re-scoped to (model, harness, task) triple & partial \\
 20 & D6 empty cell: 1.7B on MBPP+; (a) floor $0.0$; (b) power gate ($\geq$5 non-saturated); (c) declared outcomes c1/c2/c3 & floor held (1{,}080/1{,}080); outcome c3: 2/22 non-saturated, pressure never binds --- inconclusive as pre-specified; bonus: screening 44/44 raw in both regimes & partial \\
 21 & $a'$ re-sampling sensitivity: 56 pivotal instances $\times$ 3 disjoint seed schedules; declared outcomes stable ($\geq 0.90$) / partial / fragile ($<0.75$) on informative slack draws & stable: 99/101 (0.980, CI95 $[0.94,1.00]$); 79/81 on genuinely new $a'$; mt6 breaks persist 9/9 & confirmed \\
+22 & LLM-summarizer cell: (a) floor $0.0$ under a greedy LLM summarizer (declared falsifiable); (b) screening $\geq$0.90 / 0.75--0.90 / $<$0.75 & (a) held (317/317 exact); (b) 2/3 pivotal screened, but yield too low to bin --- semantic summaries preserve the constants that generate pivotal $C(H)$ in this pool & partial \\
+23 & Stochastic protocol at temp $0.8$: 5 mt6 points $\times$ 12 seeds $\times$ 3 arms; s1 = screened cover 0 (2/2) and breaks exclude 0 ($\geq$2/3) & s1: screened 2/2 cover 0; breaks 2/3 exclude 0 with predicted sign; weakest deterministic break ($0.09$) dissolves & confirmed \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
@@ -1275,7 +1307,7 @@ failed and the six partial. Failed predictions are reported in the main text whe
 \section{Null-Replay Reconciliation}
 \label{app:nulls}
 Table~\ref{tab:nulls} reconciles the canonical null-replay total
-(7{,}685, all exact) against every run artifact; a bundled script
+(8{,}002, all exact) against every run artifact; a bundled script
 re-derives the table and fails if any count drifts. Excluded runs are
 listed with their reasons: the ASLR pre-fix runs (premises held, fidelity
 broken by an unsanitized memory address; root-caused and re-run) and the
@@ -1299,8 +1331,9 @@ v5cur\_g600, v5cur\_mt6 & 8B / curated union & --- & 66, 66 & 0 \\
 q4cur\_g600, q4cur\_mt6 & 4B / curated (symmetric control) & $2\times198$ & 53, 53 & 0 \\
 mbpp\_g600, mbpp\_mt6 & 4B / MBPP+ & $2\times540$ & 107, 107 & 0 \\
 mbpp17\_g600, mbpp17\_mt6 & 1.7B / MBPP+ & $2\times540$ & 78, 78 & 0 \\
+ls600 & 4B / original, LLM summarizer & 270 & 47 & 0 \\
 \midrule
-\textbf{Canonical total} & & \textbf{6{,}378} & \textbf{1{,}307} & \textbf{0} \\
+\textbf{Canonical total} & & \textbf{6{,}648} & \textbf{1{,}354} & \textbf{0} \\
 \midrule
 \multicolumn{5}{l}{\emph{Excluded from the canonical total:}} \\
 v4\_g600, v4\_mt6 (pre-fix) & 8B / hardened v4, ASLR leak & $2\times216$ & --- & 2 \\
@@ -1308,8 +1341,8 @@ g600 (APC) & 4B / original, APC on & 270 & 68 & 7 + 2 \\
 \bottomrule
 \end{tabular}
 \caption{Run-by-run null-replay reconciliation. Canonical total
-$6{,}378 + 1{,}307 = 7{,}685$, all exact; including the pre-fix runs,
-$2/8{,}117$ nulls ever run under the stated premises were inexact (both in
+$6{,}648 + 1{,}354 = 8{,}002$, all exact; including the pre-fix runs,
+$2/8{,}434$ nulls ever run under the stated premises were inexact (both in
 one pre-fix run, \S\ref{sec:floor}). ``Attached'' nulls are the queue-floor
 checks run inside each interaction experiment.}
 \label{tab:nulls}
