@@ -710,3 +710,19 @@
   pool curado — reportar como falha pré-registrada do teste (b).
 - Artefatos: 2026-08-23_v4b_mecanismo.json, 2026-08-24_replicacao.json,
   runs/v5_curation.json.
+
+## 2026-08-24 (madrugada) — Review 11: 8.5 (teto atingido); anatomia W2; D5 lançado
+- Review 11 auditou todos os números do D4/D4b contra os artefatos (zero
+  discrepâncias) e deu 8.5 accept (nov 8, rigor 9.0, sig 7.0, clar 8.0):
+  teto do review 10 ATINGIDO, não excedido. Acima exige controle simétrico
+  (4B no pool curado) e anatomia das quebras.
+- Fixes W1/W3–W8 aplicados (contrastes escopados por pool, Fisher
+  degenerado declarado, confound de família nomeado, §floor 2/5.257,
+  F3 com barras curadas).
+- Anatomia W2 (0 rollouts): base uniforme (summarize destrói ~100% das
+  constantes; H-flip destrutivo em 6/6) + 2 padrões (resgate parcial por a′
+  com constantes → conjunto intermediário; a′ benéfico anulado → conjunto
+  volta ao original). Pontos recorrentes idênticos entre regimes: quebra é
+  propriedade do ponto, não do regime.
+- D5 pré-registrado (item 19) ANTES de rodar e lançado: 4B nas mesmas 22
+  tasks curadas (q4cur_g600/q4cur_mt6), desfechos c1/c2/c3 declarados.
