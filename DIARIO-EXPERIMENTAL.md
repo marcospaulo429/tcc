@@ -672,3 +672,20 @@
   pressão (recurrence 5/6 e 5/7), artefato regenerado; (3) declarado 4/5
   (invoice_pricing sem constantes anotadas) + regra de matching (substring
   do literal no a′ serializado); (4) I≈-0.1 → I∈[-0.2,-0.1].
+
+## 2026-08-24 — Campanha noturna: D4 (curação falhou), D4b pré-registrado e armado
+- Pré-reg 17 (D4): pool tasks_v4 (24 tasks h_, constantes pós-240, canônica
+  24/24) rodado no 8B. Curação pré-registrada (janela (0.05,0.95), ≥12)
+  FALHA: 17/24 baselines em 1.00 — perfil "pipeline aritmético de
+  constantes" é fácil demais p/ o 8B. 7 fracionárias: donation 0.15,
+  customs 0.23, sku 0.23, hotel 0.42, cargo 0.62, telco 0.69, turnstile
+  0.77. Reportar como falha no ledger (desfecho previsto no pré-registro).
+- Pré-reg 18 (D4b, ANTES de gerar o v5): pool v5 = 20 tasks x_ no perfil
+  fracionário (FSM/protocolos, matching/alocação, validadores/parsers,
+  ledgers, rating por intervalos). Curação idêntica na UNIÃO v4∪v5,
+  baselines v4 reutilizados (determinístico), ÚLTIMA tentativa. Pool
+  entregue e validado (canônica 20/20; suíte 551 verdes).
+- Paper: lacuna explícita no Related Work + T1 com coluna "structure across
+  models tested" e linha do replay audit; precedente 2608.19760 citado
+  junto ao claim de inversão ("competence, not scale"). Novelty check do
+  shield inversion: NOVO (risco médio-baixo), 7 vizinhos verificados.
