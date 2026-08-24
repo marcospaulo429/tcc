@@ -11,12 +11,17 @@ from pathlib import Path
 _CACHE_DIRS = ("__pycache__", ".pytest_cache")
 _SUMMARY_RE = re.compile(r"(\d+)\s+(passed|failed|errors?)")
 _TIME_RE = re.compile(r"\bin \d+\.\d+s\b")
+_ADDR_RE = re.compile(r"0x[0-9a-fA-F]{6,}")
+_ADDR_TAIL_RE = re.compile(r"\b[0-9a-f]{7,16}(?=>)")
 
 
 def _sanitize(output: str, sandbox_dir: Path) -> str:
-    """Remove fontes de não-determinismo (tempo de execução, path aleatório do tempdir)
+    """Remove fontes de não-determinismo (tempo de execução, path aleatório do tempdir,
+    endereços de memória/ASLR em reprs tipo '<function f at 0x7f...>')
     antes que a saída entre no contexto do LLM — senão o replay diverge por artefato."""
     output = output.replace(str(sandbox_dir), "<sandbox>")
+    output = _ADDR_RE.sub("0xADDR", output)
+    output = _ADDR_TAIL_RE.sub("ADDR", output)
     return _TIME_RE.sub("", output)
 
 

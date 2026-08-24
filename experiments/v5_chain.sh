@@ -21,12 +21,13 @@ start_vllm () {
 export TCC_MODEL="Qwen/Qwen3-8B"
 start_vllm "$TCC_MODEL" 0.92 || exit 1
 
-for CFG in "v5_g600:12" "v5_mt6:6"; do
-  TAG="${CFG%%:*}"; MT="${CFG##*:}"
+for CFG in "v4_g600:12:environment.tasks_v4" "v4_mt6:6:environment.tasks_v4" \
+           "v5_g600:12:environment.tasks_v5" "v5_mt6:6:environment.tasks_v5"; do
+  TAG="$(echo "$CFG" | cut -d: -f1)"; MT="$(echo "$CFG" | cut -d: -f2)"; MOD="$(echo "$CFG" | cut -d: -f3)"
   if [ -f "runs/teste0_${TAG}/summary.json" ]; then echo "=== pula teste0 ${TAG} ==="; continue; fi
   echo "=== D4b teste0 ${TAG} max_turns=${MT} ($(date -Is)) ==="
   uv run python -m experiments.teste0 --out "runs/teste0_${TAG}" \
-    --tasks-module environment.tasks_v5 --threshold 600 --max-turns "$MT" \
+    --tasks-module "$MOD" --threshold 600 --max-turns "$MT" \
     --points 3 --reps 3 || { echo "FALHA teste0 ${TAG}"; start_vllm "Qwen/Qwen3-4B" 0.85; exit 1; }
 done
 

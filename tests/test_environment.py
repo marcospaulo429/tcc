@@ -259,3 +259,23 @@ class TestSandboxFiles:
         result = sandbox.run_tests(get_task("rle_encode")["test_code"])
         assert result["reward"] == 0.0
         assert result["success"] is False
+
+
+class TestSanitizeAddresses:
+    """Regressão: ASLR/endereços de memória no output do pytest quebravam a
+    fidelidade do replay (2/216 nulos não-exatos no D4, h_sku_validator)."""
+
+    def test_hex_addresses_normalized(self):
+        from pathlib import Path
+
+        from environment.sandbox import _sanitize
+
+        raw = ("<function validate at 0x7f8f0239d00> vs "
+               "<function validate at 0x7f9ac381d00>\n"
+               "8f0239d00>('KP-10201021')\n9ac381d00>('KP-10201021')")
+        out = _sanitize(raw, Path("/tmp/sandbox_x"))
+        assert "0x7f8f0239d00" not in out and "0x7f9ac381d00" not in out
+        assert "8f0239d00>" not in out and "9ac381d00>" not in out
+        a = _sanitize("at 0x7fab12cd3400>\nab12cd34ef>('X')", Path("/tmp/a"))
+        b = _sanitize("at 0x7fcd34ef5600>\ncd34ef56ab>('X')", Path("/tmp/a"))
+        assert a == b
