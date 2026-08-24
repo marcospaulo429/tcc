@@ -744,3 +744,19 @@
   baseline-relativa em ponto recorrente), e célula vazia do desenho →
   D6 pré-registrado (item 20, ANTES de rodar) e lançado: 1.7B no MBPP+
   (mbpp17_g600/mt6), desfechos c1/c2/c3 declarados.
+
+## 2026-08-24 (~6h) — D6 integrado; reviews 14 (9.3) e 15 (9.5 accept oral). META >9 SUPERADA.
+- D6 (1.7B×MBPP+): desfecho c3 (inconclusivo por potência, gate ≥5 não-sat
+  aplicado como pré-registrado: 2/22); bônus: piso 1.080/1.080 exato e
+  screening raw 44/44 nos 2 regimes — 2ª célula do benchmark externo com
+  screening incondicional. Célula de pressão do env B declarada vazia após
+  2 tentativas honestas. Totais: 6.301 nulos exatos (2/6.733 contando
+  pré-fix). Ledger: 20 pré-registros, 4 failed, 6 partial.
+- Review 14: 9.3 — achou regressão factual real (3/4→2/4 pontos únicos de
+  restauração na anatomia D5, propagada do relatório do impl; verificada
+  por mim contra o JSON e corrigida) + 2 escopos. Review 15 (mesmo
+  reviewer): condições cumpridas → **9.5, accept (oral candidate)**.
+- GPU restaurada ao 4B pela cadeia. Suíte 552 verdes. Paper compila limpo,
+  0 refs quebradas.
+- Pendentes conhecidos (não bloqueiam): \todo{autores}, estilo ICLR
+  oficial, anatomia de traço 1.7B (opcional).
