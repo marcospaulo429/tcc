@@ -352,6 +352,8 @@ def main() -> None:
     ap.add_argument("--arm", required=True,
                     choices=["outcome", "ch", "chm_cm", "zero", "calibrate"])
     ap.add_argument("--tasks-module", default="environment.tasks_all")
+    ap.add_argument("--pool-json", default=None,
+                    help="pool margem-verificada (pré-reg 24): json com train/heldout")
     ap.add_argument("--budget-calls", type=int, default=2000)
     ap.add_argument("--seed", type=int, default=1)
     ap.add_argument("--out", required=True)
@@ -369,7 +371,14 @@ def main() -> None:
 
     from agent.llm import LLMClient  # lazy: testes nunca importam o cliente de rede
     llm = CountingLLM(LLMClient())
-    train_tasks, heldout_tasks = load_task_split(args.tasks_module)
+    if args.pool_json:
+        pool = json.loads(Path(args.pool_json).read_text())
+        by_id = {t["task_id"]: t
+                 for t in importlib.import_module(args.tasks_module).TASKS}
+        train_tasks = [by_id[tid] for tid in pool["train"]]
+        heldout_tasks = [by_id[tid] for tid in pool["heldout"]]
+    else:
+        train_tasks, heldout_tasks = load_task_split(args.tasks_module)
     out = Path(args.out)
 
     if args.arm == "calibrate":
