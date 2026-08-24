@@ -2,7 +2,7 @@
 import importlib
 
 _MODULES = ("environment.tasks", "environment.tasks_v2", "environment.tasks_v3",
-            "environment.tasks_v4", "environment.tasks_mbpp")
+            "environment.tasks_v4", "environment.tasks_v5", "environment.tasks_mbpp")
 
 
 def resolve_task(task_id: str) -> dict:
