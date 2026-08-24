@@ -188,21 +188,33 @@ they optimize the composition blindly (HarnessCompass's ``cross-component
 interference'' is between components \emph{of the harness}, not causal
 model--harness interaction). Agent Lightning~\cite{agentlightning}
 provides rollout infrastructure for agent RL without addressing attribution.
-Table~\ref{tab:positioning} summarizes: no prior work measures $C(H)$, $C(M)$
-and $I(H,M)$ on the same trajectory, which is precisely where the
-double-counting error lives.
+Table~\ref{tab:positioning} summarizes the gap this paper attacks: no prior
+work measures $C(H)$, $C(M)$ and $I(H,M)$ at the same decision point of the
+same trajectory against an exact, zero-noise-floor replay --- every existing
+system attributes within a single layer (the harness, the step stream, or the
+agent), where cross-layer interaction is invisible by construction and
+single-layer credit silently double-counts effects the other layer absorbs.
+Where interaction appears at all it is a diagnostic to report, not a
+quantity whose structure is interrogated or a training signal; and no prior
+work asks whether the causal structure recovered by attribution is a stable
+property of the pipeline or of the specific model--harness pair. The closest
+precedent is the observation that counterfactual \emph{measurability} is
+model-dependent~\cite{audit2026}; \S\ref{sec:threats} shows the stronger
+phenomenon --- the structure itself inverts with model competence at
+identical intervention points.
 \begin{table}[t]
 \centering\small
-\begin{tabular}{lccccc}
+\begin{tabular}{lcccccc}
 \toprule
- & counterfactual & measures & measures & $I(H,M)$ on same & trains \\
-Method & via replay & $C(H)$ & $C(M)$ & trajectory & with $I$ \\
+ & counterfactual & measures & measures & $I(H,M)$ on same & trains & structure across \\
+Method & via replay & $C(H)$ & $C(M)$ & trajectory & with $I$ & models tested \\
 \midrule
-CHILL-Harness & \checkmark$^{\mathrm{off}}$ & \checkmark & -- & -- & -- \\
-CAR & \checkmark & -- & \checkmark & --$^{\mathrm{s}}$ & -- \\
-C3 v2 & \checkmark & \multicolumn{2}{c}{(per agent)} & -- & -- \\
-Co-Harness / HASE & -- & -- & -- & -- & --$^{\ast}$ \\
-\textbf{Ours} & \checkmark & \checkmark & \checkmark & \checkmark & tested$^{\dagger}$ \\
+CHILL-Harness & \checkmark$^{\mathrm{off}}$ & \checkmark & -- & -- & -- & -- \\
+CAR & \checkmark & -- & \checkmark & --$^{\mathrm{s}}$ & -- & -- \\
+C3 v2 & \checkmark & \multicolumn{2}{c}{(per agent)} & -- & -- & -- \\
+Replay audit~\cite{audit2026} & \checkmark & -- & \checkmark & -- & -- & $\sim^{\mathrm{m}}$ \\
+Co-Harness / HASE & -- & -- & -- & -- & --$^{\ast}$ & -- \\
+\textbf{Ours} & \checkmark & \checkmark & \checkmark & \checkmark & tested$^{\dagger}$ & \checkmark \\
 \bottomrule
 \end{tabular}
 \caption{T1 --- positioning. $^{\mathrm{off}}$Checkpointed paired replay used
@@ -210,7 +222,9 @@ offline to train an amortized estimator; disabled at decision time.
 $^{\mathrm{s}}$CAR measures step--step interaction (Shapley) \emph{within}
 one layer, not across the model/harness boundary. $^{\ast}$Joint
 harness+weights training without
-per-decision causal measurement. $^{\dagger}$Tested with dose-matched
+per-decision causal measurement. $^{\mathrm{m}}$Observes that counterfactual
+\emph{measurability} is model-dependent, within a single layer; no
+cross-layer structure. $^{\dagger}$Tested with dose-matched
 controls and pre-registration; the outcome is an identified negative
 (\S\ref{sec:training}).}
 \label{tab:positioning}
@@ -733,7 +747,13 @@ fifth, \texttt{invoice\_pricing}, has no annotated constants), and the
 breaks \emph{recur}: all 5 slack break tasks break again, with identical
 per-task structure, in both pressure configurations (6/34 at mt6, 7/35 at
 mt4). Whether screening-off holds is therefore itself
-competence-dependent: the shield is a property of the model--harness pair.
+competence-dependent: the shield is a property of the model--harness pair
+(the closest precedent, model-dependent counterfactual
+\emph{measurability}~\cite{audit2026}, concerns whether ground truth can be
+estimated at all; here the recovered causal structure itself inverts). We
+say competence, not scale: 4B and 8B differ in post-training as well as
+size, and the claim is anchored in the measured mechanism, not in parameter
+count.
 Under pressure the 8B also shows a genuine non-saturated synergy break at
 \texttt{l\_door\_controller} ($C_{HM}=0.23$ vs.\ $C_M=-0.46$, $I=+0.38$).
 Saturation still dominates both auxiliary models in opposite directions
