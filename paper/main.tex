@@ -35,15 +35,20 @@ we report both) at \emph{recurring} decision points, with a non-monotonic
 dependence on pressure intensity partially mediated by reward saturation.
 The noise floor replicates on two additional models
 (Qwen3-1.7B and Qwen3-8B) and on a second environment (a multi-turn MBPP+
-adaptation): 4{,}033 null replays across three models and two environments
-are all exact. Screening-off itself replicates unconditionally on Qwen3-1.7B
+adaptation): 4{,}825 null replays across three models and two environments
+are all exact (a single audited exception --- 2 inexact nulls traced to an
+ASLR memory address leaking into the live context --- was root-caused,
+fixed at the source, and re-run: 792/792 exact after the fix).
+Screening-off itself replicates unconditionally on Qwen3-1.7B
 (0 raw breaks) and on MBPP+ (66/66 points); on Qwen3-8B it does
 \emph{not}: raw breaks appear at a similar rate in both regimes (5/28 slack,
-6/34 pressure), concentrated at recurring short tasks where the shield
-\emph{inverts} ($C_{HM} \approx C_H$): the stronger model's sampled
-alternative no longer re-injects the destroyed information, so whether
-screening-off holds is itself competence-dependent --- the shield is a
-property of the model--harness pair, not of the harness.
+6/34 pressure), and the result survives a pre-registered curation of the
+task pool to the 8B's competence window (3/27 slack, 3/31 pressure,
+including a non-saturated slack break) --- whether
+screening-off holds is itself competence-dependent: the shield is a
+property of the model--harness pair, not of the harness. The re-injection
+mechanism that fully explains the annotated 4B/8B contrast does not
+generalize to the curated pool (pre-registered test, reported as failed).
 This implies that single-layer credit double-counts shielded
 decisions --- not approximately but exactly: at screened points the
 single-layer harness credit equals the negated interaction,
@@ -287,9 +292,10 @@ this rather than hide it.
 Across seven dedicated null-replay runs of Qwen3-4B (1{,}230 nulls), the
 nulls attached to every interaction run (401 more on Qwen3-4B), two
 configurations of Qwen3-1.7B (64 nulls), three configurations of
-Qwen3-8B (810 dedicated + 234 attached), and two MBPP+ configurations
-(1{,}080 dedicated + 214 attached), \textbf{every one of 4{,}033 null
-replays reproduced $R$ exactly}: the floor is $0.0$ in all
+Qwen3-8B (810 dedicated + 234 attached), two MBPP+ configurations
+(1{,}080 dedicated + 214 attached), and four curated-pool configurations on
+Qwen3-8B (792 nulls, run after the fix reported below), \textbf{every one
+of 4{,}825 null replays reproduced $R$ exactly}: the floor is $0.0$ in all
 configurations
 (Figure~\ref{fig:floor}a). This is a measurement under explicit premises ---
 fixed serving config, strictly sequential requests, prefix caching off ---
@@ -321,7 +327,8 @@ default vLLM settings inherits this silent failure.
 \includegraphics[width=\linewidth]{figures/f1_noise_floor.pdf}
 \caption{\textbf{F1 --- Measured noise floor.} (a) Dedicated null-replay
 runs (Qwen3-4B blue, Qwen3-1.7B purple); together with nulls attached to
-interaction runs and the Qwen3-8B and MBPP+ replications, all 4{,}033 null
+interaction runs, the Qwen3-8B and MBPP+ replications, and the curated-pool
+runs, all 4{,}825 null
 replays are exact, floor $=0.0$. (b) With
 vLLM automatic prefix caching
 on, the floor rises to $0.417$ (7/270 inexact): greedy determinism breaks
@@ -775,9 +782,35 @@ Saturation still dominates both auxiliary models in opposite directions
 (11/12 of the 1.7B's pressure points, from weakness; 90/97 of the 8B's
 points, from strength --- and the slack regime leaves the 8B a single
 non-saturated point, so the conditioned slack contrast has essentially no
-power and we do not claim it). Estimating the \emph{break rate} on a second
-powered model still requires a task pool curated to that model's competence,
-which we flag as the remaining step.
+power and we do not claim it). The remaining step --- the break rate on a
+pool curated to the 8B's competence --- was then run (pre-registrations 17
+and 18): a first hardened pool failed its pre-registered curation rule
+(17/24 tasks solved at $1.0$; reported as failure), and a second pool
+targeted at the fractional-reward profile passed (22 of 44 tasks in the
+$(0.05,0.95)$ window; 792/792 nulls exact after the ASLR fix of
+\S\ref{sec:floor}). \textbf{In-window, the 8B's raw screening breaks
+replicate and stay flat across regimes} --- 3/27 slack, 3/31 pressure ---
+including a \emph{non-saturated slack break}
+(\texttt{x\_hours\_bank}: $C_H=+0.25$, $C_M=-0.17$, $C_{HM}=0.00$,
+$I=-0.08$), which closes the clipping objection: the 8B breaks screening
+where the 4B never did (0/57), and the contrast between regimes seen on the
+4B does not exist on the 8B even inside its competence window. Two of the
+three break points recur across both regimes with identical structure.
+Two pre-registered sub-hypotheses failed and we report them as such: the
+binary re-injection mechanism does not generalize (at active slack points
+the curated-pool $a'$ \emph{never} re-injects constants, 0/15, yet only
+3/15 break; under pressure 2 of 3 breaks occur \emph{with} re-injection;
+one-sided Fisher $p=1.0$ and $p=0.94$), and the directional prediction
+(pressure $\geq$ slack) failed ($9.7\%$ vs.\ $11.1\%$). The break structure
+is also heterogeneous: the D2d slack signature ($C_H=1.0$, $C_M=0.0$,
+$C_{HM}\approx0.9$) does not recur --- \texttt{h\_cargo\_manifest} tracks
+the harness ($C_{HM}=0.46$ vs.\ $C_H=0.62$) while \texttt{h\_hotel\_folio}
+tracks the model ($C_{HM}=0.08$ vs.\ $C_M=0.00$). The robust claim is
+therefore narrower than the mechanism story: \emph{whether} screening-off
+holds is a property of the model--harness pair, but re-injection of
+destroyed information, which fully explained the annotated 4B/8B contrast
+of D2d, is neither necessary nor sufficient for the shield in a curated
+pool.
 
 \paragraph{Clustered inference.} Points within a task are not independent.
 At the task level the pressure-vs-slack contrast is 3 tasks vs.\ 0 (sign
@@ -822,7 +855,7 @@ the training task distribution itself: no reward margin where policies
 differ, unreachable states where learned thresholds would fire. We offer the
 infrastructure, the
 regime-dependence finding, the APC determinism warning, and a
-pre-registration ledger of 17 predictions (including 4 failures and 3
+pre-registration ledger of 18 predictions (including 4 failures and 4
 partials) as the
 contributions, and the training negative as the design brief for the
 benchmark this field still needs.
@@ -831,8 +864,8 @@ benchmark this field still needs.
 \section{Pre-Registration Ledger}
 All confirmatory analyses were pre-registered in the project's execution plan
 before the corresponding data were collected. Table~\ref{tab:ledger} lists
-all 17 pre-registrations with their outcomes, including the four that
-failed and the three partial. Failed predictions are reported in the main text where they occur.
+all 18 pre-registrations with their outcomes, including the four that
+failed and the four partial. Failed predictions are reported in the main text where they occur.
 
 \begin{table}[h]
 \centering\scriptsize
@@ -858,6 +891,7 @@ failed and the three partial. Failed predictions are reported in the main text w
 15 & D2d replication: floor, slack, pressure on Qwen3-8B (incl.\ mt4 escalation rule) & floor replicates; raw screening does \emph{not} (5/28 slack breaks, shield inversion); 1 non-saturated pressure break & partial \\
 16 & D3 second environment: floor, screening, pressure on MBPP+ (60 tasks); critic transfer A$\to$B & floor+screening replicate (66/66); pressure inconclusive (saturation); transfer null & partial \\
 17 & D4 curated-pool break rate on 8B: curation rule (baseline reward in $(0.05,0.95)$, $\geq$12 of 24 hardened tasks) & 7/24 fractional (17/24 solved at $1.0$); curation failed as pre-specified; run also exposed the ASLR fidelity leak (\S\ref{sec:floor}) & \textbf{failed} \\
+18 & D4b (final attempt): union pool $\geq$12 in window; (a) floor $0.0$; (b) breaks $\Leftrightarrow$ no re-injection (Fisher); (c) pressure rate $\geq$ slack & curation passed (22/44); floor held (792/792 exact); (b) \textbf{failed} ($p=1.0$, $p=0.94$); (c) \textbf{failed} ($9.7\%<11.1\%$, flat); in-window breaks replicate incl.\ non-saturated slack & partial \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
