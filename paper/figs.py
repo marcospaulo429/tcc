@@ -120,20 +120,30 @@ def fig2() -> None:
 # ----------------------------- F3: regime-dependence do screening-off
 def fig3() -> None:
     wc = load(RES / "2026-08-23_wc_wb_analises.json")["por_config"]
+    rep = {r["tag"]: r["all"] for r in load(RES / "2026-08-23_replicacao.json")}
     order = ["g450", "g600(mt12)", "g900", "mt8", "mt6", "mt4", "q17_g600", "q17_mt6"]
     labels = ["g450", "g600", "g900", "mt8", "mt6", "mt4", "1.7B\ng600", "1.7B\nmt6"]
     raw = [wc[k]["taxa_bruta"] for k in order]
     cond = [wc[k]["taxa_nonsat"] for k in order]
     nn = [(wc[k]["quebras"], wc[k]["n"]) for k in order]
     nns = [(wc[k]["quebras_nonsat"], wc[k]["n_nonsat"]) for k in order]
+    extra = ["q8_g600", "q8_mt6", "q8_mt4", "mbpp_g600", "mbpp_mt6"]
+    labels += ["8B\ng600", "8B\nmt6", "8B\nmt4", "MBPP+\ng600", "MBPP+\nmt6"]
+    for k in extra:
+        a = rep[k]
+        raw.append((a["n"] - a["n_screened_exact"]) / a["n"])
+        cond.append(a["n_breaks_nonsat"] / a["n_nonsat"] if a["n_nonsat"] else 0.0)
+        nn.append((a["n"] - a["n_screened_exact"], a["n"]))
+        nns.append((a["n_breaks_nonsat"], a["n_nonsat"]))
 
-    x = np.arange(len(order))
+    x = np.arange(len(labels))
     w = 0.38
-    fig, ax = plt.subplots(figsize=(6.0, 2.4))
-    cols = [COL_SLACK] * 3 + [COL_PRESS] * 3 + ["#6a51a3"] * 2
+    fig, ax = plt.subplots(figsize=(8.4, 2.4))
+    cols = ([COL_SLACK] * 3 + [COL_PRESS] * 3 + ["#6a51a3"] * 2
+            + ["#a63603"] * 3 + ["#238b45"] * 2)
     ax.bar(x - w / 2, raw, w, color=cols, alpha=0.55, label="raw")
     ax.bar(x + w / 2, cond, w, color=cols, hatch="//", label="non-saturated only")
-    for i in range(len(order)):
+    for i in range(len(labels)):
         ax.text(x[i] - w / 2, raw[i] + 0.015, "%d/%d" % nn[i], ha="center", fontsize=6.5)
         ax.text(x[i] + w / 2, cond[i] + 0.015, "%d/%d" % nns[i], ha="center", fontsize=6.5)
     ax.set_xticks(x)
@@ -142,8 +152,12 @@ def fig3() -> None:
     ax.set_ylim(0, 0.62)
     ax.axvspan(-0.5, 2.5, color=COL_SLACK, alpha=0.05)
     ax.axvspan(2.5, 5.5, color=COL_PRESS, alpha=0.05)
+    ax.axvspan(7.5, 10.5, color="#a63603", alpha=0.05)
+    ax.axvspan(10.5, 12.5, color="#238b45", alpha=0.05)
     ax.text(1.0, 0.56, "budget slack (Qwen3-4B)", ha="center", fontsize=8, color=COL_SLACK)
     ax.text(4.0, 0.56, "budget pressure", ha="center", fontsize=8, color=COL_PRESS)
+    ax.text(9.0, 0.56, "Qwen3-8B (raw flat)", ha="center", fontsize=8, color="#a63603")
+    ax.text(11.5, 0.56, "MBPP+ (4B)", ha="center", fontsize=8, color="#238b45")
     ax.legend(loc="center right", frameon=False)
     fig.tight_layout()
     fig.savefig(OUT / "f3_regime_dependence.pdf", bbox_inches="tight")

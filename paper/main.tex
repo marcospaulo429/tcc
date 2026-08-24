@@ -378,11 +378,15 @@ only where the agent neither saturates success nor failure.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/f3_regime_dependence.pdf}
-\caption{\textbf{F3 --- Screening-off is regime-dependent.} Break rate of
+\caption{\textbf{F3 --- Screening-off is regime-dependent, and the regime
+contrast is model-dependent.} Break rate of
 $C_{HM} = C_M$ per configuration, raw and conditioned on non-saturated
 points. Slack: 0/57 raw (0/12 non-saturated). Pressure: 8/65 raw (6/19
 non-saturated, $p=0.037$). Qwen3-1.7B (purple) replicates slack; its
-pressure null is explained by saturation (only 1 non-saturated point).}
+pressure null is explained by saturation (only 1 non-saturated point).
+Qwen3-8B (red) breaks raw screening at a \emph{flat} rate across regimes
+(5/28, 6/34, 7/35) --- the shield inversion of \S\ref{sec:threats}. MBPP+
+(green, Qwen3-4B) replicates screening unconditionally (0/66).}
 \label{fig:regime}
 \end{figure}
 
