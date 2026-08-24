@@ -726,3 +726,21 @@
   propriedade do ponto, não do regime.
 - D5 pré-registrado (item 19) ANTES de rodar e lançado: 4B nas mesmas 22
   tasks curadas (q4cur_g600/q4cur_mt6), desfechos c1/c2/c3 declarados.
+
+## 2026-08-24 (madrugada, cont.) — D5 integrado; review 12 (8.5) → review 13 (9.0 accept oral); D6 lançado
+- D5 (controle simétrico): desfecho c2 — 4B TAMBÉM quebra no pool curado
+  (4/16 folga, 2/23 pressão, quase todas não-saturadas; I=+0.77 turnstile,
+  I=-1.42 hotel_folio); hipótese (b) de saturação-em-falha FALHOU (1/16,
+  3/23). Claim re-escopado ao triple (modelo, harness, task); contraste
+  pool-matched do D2d preservado; 396/396 nulos exatos (total 5.221).
+- Review 12: 8.5, achou 1 contradição real (frase do claim antigo) e 1
+  invariante superafirmado (turnstile não-idêntico entre regimes) —
+  corrigidos + glosa pré-registrada de c2 citada por extenso no paper.
+- Review 13 (mesmo reviewer): auditoria dígito a dígito OK → **9.0 accept
+  (oral candidate)**. Residuais p/ 9.5: denominador do "6" (feito),
+  gramática (feito), anatomia D5 (feita: flips de RESTAURAÇÃO
+  summarize→keep são 3/4 dos pontos únicos do 4B — direção ausente no 8B;
+  3º padrão "flips benéficos que se destroem em conjunto"; magnitude de I
+  baseline-relativa em ponto recorrente), e célula vazia do desenho →
+  D6 pré-registrado (item 20, ANTES de rodar) e lançado: 1.7B no MBPP+
+  (mbpp17_g600/mt6), desfechos c1/c2/c3 declarados.
