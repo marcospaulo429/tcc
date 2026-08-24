@@ -21,65 +21,31 @@ Per-Decision Cross-Layer Causal Credit in LLM Agents}
 \maketitle
 
 \begin{abstract}
-LLM agents interleave decisions from two layers: the \emph{model} (tool calls)
-and the \emph{harness} (context management, retries, termination). We show, via
-deterministic counterfactual replay with a \emph{measured} noise floor (exact
-fidelity under explicit serving premises), that per-decision causal
-contributions $C(H)$, $C(M)$ and their interaction $I(H,M) = C(H,M) - C(H) -
-C(M)$ are identifiable on the same trajectory. Interaction is
-\emph{regime-dependent}: with budget slack, the model action screens off the
-harness decision ($C_{HM}=C_M$, 0 breaks in 57 points across three
-configurations); under budget pressure, screening-off breaks (8/65 across
-three pressure levels; $p=0.005$ point-level, $p=0.125$ task-clustered ---
-we report both) at \emph{recurring} decision points, with a non-monotonic
-dependence on pressure intensity that co-occurs with reward saturation.
-The noise floor replicates on two additional models
-(Qwen3-1.7B and Qwen3-8B) and on a second environment (a multi-turn MBPP+
-adaptation): 7{,}685 null replays across three models and two environments
-are all exact, reconciled run-by-run in the appendix (the single fidelity
-exception occurred in a separate,
-discarded pre-fix run --- 2 inexact nulls of 432, traced to an
-ASLR memory address leaking into the live context, root-caused,
-fixed at the source, and re-run: 792/792 exact after the fix).
-Screening-off itself replicates unconditionally on Qwen3-1.7B
-(0 raw breaks) and on MBPP+ with two models (66/66 points on the 4B, 44/44
-on the 1.7B); on Qwen3-8B it does
-\emph{not}: raw breaks appear at a similar rate in both regimes (5/28 slack,
-6/34 pressure), and the result survives a pre-registered curation of the
-task pool to the 8B's competence window (3/27 slack, 3/31 pressure,
-including a non-saturated slack break). A pre-registered symmetric control
-then sharpened the claim against us: on the same curated pool the 4B
-\emph{also} breaks raw screening (4/16 slack, 2/23 pressure, mostly
-non-saturated), so the shield is a property of the (model, harness, task)
-triple --- the pool-matched model contrast on identical tasks (0/57 vs.\
-5/28) stands, break points are model-specific and largely stable across
-regimes (4 of 6 slack break tasks recur, 3 of them numerically identical;
-the 8B's one pressure-only break task sits outside this denominator),
-and breaks concentrate (descriptively) where the pool sits near the model's
-competence boundary. The re-injection
-mechanism that fully explains the annotated 4B/8B contrast does not
-generalize to the curated pool (pre-registered test, reported as failed).
-This implies that single-layer credit double-counts shielded
-decisions --- not approximately but exactly: at screened points the
-single-layer harness credit equals the negated interaction,
-$C(H) = -I(H,M)$, and a coalescence argument --- whose occurrence we verify
-in the recorded traces --- shows why determinism makes
-the equality exact. We then train the harness layer with interaction-aware credit
-against outcome-only, single-layer, and untrained controls (dose-matched in
-total rollouts, 3 seeds, twice --- the second run with a pre-registered
-optimization fix): no credit signal learns the threshold policy that is
-expressible by the policy class and dominant on held-out tasks (the
-threshold policy reaches held-out $R_\text{eff}$ 0.398; every trained arm
-converges to keep-always at 0.237 or collapses). A pre-registered audit (60 points, two-greedy-replay
-recomputation, 58/60 sign agreement) rules out the estimator as the cause: the
-binding constraint is the \emph{training task distribution}, not credit
-quality --- the reward margin between the target policy and the keep-always
-attractor on the training tasks is statistically indistinguishable from zero
-at our power ($+0.024$, CI95 $[-0.026, +0.079]$), and the states where
-the learned thresholds would fire are unreachable under any context policy.
-We report this
-two-stage identified negative result as a design lesson for cross-layer
-training benchmarks.
+LLM agents interleave decisions from two layers: the \emph{model} (tool
+calls) and the \emph{harness} (context management, retries, termination).
+We present an apparatus that measures, on the same trajectory, the
+per-decision causal contributions $C(H)$, $C(M)$, and their interaction
+$I(H,M) = C(H,M) - C(H) - C(M)$, via deterministic counterfactual replay
+with a \emph{measured} noise floor: 7{,}685 null replays across three models
+(Qwen3-1.7B/4B/8B) and two environments are all exact, under explicit
+serving premises whose violation we also measure (vLLM automatic prefix
+caching silently breaks greedy determinism; an ASLR address leak caused the
+only 2 inexact nulls ever observed, root-caused and fixed). The central
+finding is exact \emph{screening-off}: with budget slack, the model action
+screens off the harness decision ($C_{HM} = C_M$; 0 breaks in 57 points;
+53/56 reward-pivotal points overall), so single-layer harness credit
+double-counts \emph{exactly} --- at screened points $C(H) = -I(H,M)$, with
+$C_{HM} - C_M$ as the one-extra-replay correction. Screening is not
+universal: it breaks under budget pressure at recurring, model-specific
+decision points, and pre-registered replications and a symmetric control
+show that \emph{whether} it holds is a property of the (model, harness,
+task) triple, not of the pipeline. Training the harness with
+interaction-corrected credit, dose-matched against outcome-only and
+single-layer arms, fails for an identified, pre-registered reason: the
+training task distribution offers no reward margin where candidate policies
+differ. We release the apparatus, a 20-item pre-registration ledger (4
+failures, 6 partials), and the negative result as a design brief for
+cross-layer training benchmarks.
 \end{abstract}
 
 \section{Introduction}
@@ -181,6 +147,41 @@ pre-registered audit (58/60 sign agreement)
 rules out the estimator; state-visitation and reward-margin analyses localize
 the failure in the training task distribution, not in credit quality.
 \end{enumerate}
+
+This is a measurement-and-falsification paper, not a method paper: the
+deliverables are the apparatus, the double-counting identity and its
+correction rule, the replication record, and the benchmark design brief the
+negative result licenses. Table~\ref{tab:claims} maps every claim to its
+evidence and epistemic status; the reader can audit each row against the
+pre-registration ledger (Table~\ref{tab:ledger}).
+
+\begin{table}[t]
+\centering\scriptsize
+\begin{tabular}{p{0.34\linewidth}p{0.36\linewidth}p{0.22\linewidth}}
+\toprule
+Claim & Evidence & Status \\
+\midrule
+Replay noise floor is exactly zero & 7{,}685/7{,}685 nulls exact, 3 models $\times$ 2 envs (Table~\ref{tab:nulls}) & confirmed (pre-reg 1) \\
+vLLM APC breaks greedy determinism & floor $0.417$, 7/270 inexact & demonstrated \\
+Slack screening-off, 4B original pool & 0/57 raw; pivotal points 53/56, $P=4.1\times10^{-13}$ & confirmed (pre-reg 10, re-specified) \\
+$C(H) = -I$ at screened points & algebra (Prop.~\ref{prop:dc}); exact in all measured slack points & identity \\
+Pressure breaks recur at fixed points (4B) & 8/65; same points across configs & point-level; task-clustered weak ($p=0.125$) \\
+Break rate monotonic in pressure & inverted U, Cochran--Armitage $p=0.38$ & \textbf{failed} (pre-reg 13) \\
+Saturation mediates the window & conditioned rates only & descriptive (post-treatment) \\
+Screening-off is universal across models & 1.7B: 0 raw breaks; 8B: breaks flat in both regimes & \textbf{refuted} \\
+Shield is a property of the (model, harness, task) triple & curation + symmetric control; break sets point-level disjoint across models & supported; positive characterization inductive \\
+Re-injection mechanism generalizes & 23/24 annotated (original pool) vs.\ 0/15 exposed (curated), Fisher $p=1.0$/$0.94$ & \textbf{failed} (pre-reg 18) \\
+Screening replicates in a second environment & MBPP+: 66/66 (4B), 44/44 (1.7B); pressure cell empty & confirmed; pressure inconclusive (pre-reg 16, 20) \\
+Interaction-corrected credit trains a better harness & no arm learns thr600; margin $+0.024$, CI95 $[-0.026,+0.079]$ & \textbf{failed} (pre-reg 9, 12); cause identified \\
+Learned critic beats cheap heuristics & context-size heuristic wins overall & refuted; $C(H)\approx$ position + size \\
+Amortized credit transfers across environments & Spearman $0.03$/$-0.08$, chance & refuted (pre-reg 16) \\
+\bottomrule
+\end{tabular}
+\caption{T0 --- master claim ledger: every claim, its evidence, and its
+epistemic status. Bold \textbf{failed}/\textbf{refuted} rows are reported as
+results, not omissions.}
+\label{tab:claims}
+\end{table}
 
 \section{Related Work}
 Counterfactual replay for agent credit is an active area, but every existing
@@ -409,7 +410,13 @@ V2/L information-destruction, S designed synergy, C controls.}
 \subsection{Interaction $I(H,M)$ and its anatomy}
 \label{sec:interaction}
 The central measurement flips a harness decision and a model decision at the
-same point, alone and jointly. \textbf{With budget slack} (max 12 turns;
+same point, alone and jointly. We say the model action \emph{screens off}
+the harness decision at a point when the joint flip yields exactly the model
+flip's reward, $C_{HM} = C_M$ --- operationally: conditional on the model
+counterfactual, the harness flip has no marginal effect. We borrow the term
+from probabilistic causality in this operational sense only;
+\S\ref{sec:formal} gives the deterministic reading. \textbf{With budget
+slack} (max 12 turns;
 three budget configurations g450/g600/g900), the model action screens off the
 harness decision \emph{exactly}: $C_{HM} = C_M$ in \textbf{57/57} points ---
 the sampled alternative model action re-establishes what the harness
@@ -783,7 +790,8 @@ seeds each (anecdotal at $n=3$).}
 
 \section{Threats to Validity and Discussion}
 \label{sec:threats}
-\paragraph{Synthetic tasks and external validity.} Our tasks are designed,
+\subsection{External validity}
+Our tasks are designed,
 not sampled from a public benchmark, and this is a real limitation --- but a
 motivated one. The measurement requires (i) control over the \emph{position}
 of destroyable information, to separate informational from behavioral
@@ -812,16 +820,20 @@ so the pressure cell of environment B remains empty after two attempts,
 and we declare it rather than stretch it. The designed tasks remain necessary for the
 regime-dependence claim; the core phenomenon --- exact floor, exact
 screening, double counting --- is not an artifact of our task design.
-We position this as a methods
-paper: the transferable artifact is the recorder/replay/forced-queue
+We position this as a measurement paper: the transferable artifacts are the
+recorder/replay/forced-queue
 infrastructure, the APC finding, and the measurement protocol.
 
-\paragraph{What replicates, raw, per model and environment.} The floor
+\subsection{Replication across models, pools, and environments}
+\paragraph{Floor and unconditional replications.} The floor
 replicates everywhere (pre-registered as D2c, D2d, D3 before running): the
 8B contributes 810 dedicated and 234 attached null replays and MBPP+
 contributes 1{,}294, all exact. Screening-off replicates
 \emph{unconditionally} on Qwen3-1.7B (0 raw breaks in 23 points) and on
-MBPP+ (66/66). On Qwen3-8B it does not: raw break rates are flat across
+MBPP+ (66/66).
+
+\paragraph{The 8B breaks the shield.} On Qwen3-8B it does not: raw break
+rates are flat across
 regimes (5/28 slack, 6/34 mt6, 7/35 mt4), so the slack/pressure contrast
 established on Qwen3-4B does \emph{not} transfer to the 8B, and we report
 this as the headline of the replication rather than conditioning it away.
@@ -858,7 +870,10 @@ Saturation still dominates both auxiliary models in opposite directions
 (11/12 of the 1.7B's pressure points, from weakness; 90/97 of the 8B's
 points, from strength --- and the slack regime leaves the 8B a single
 non-saturated point, so the conditioned slack contrast has essentially no
-power and we do not claim it). The remaining step --- the break rate on a
+power and we do not claim it).
+
+\paragraph{Curated pool (pre-registrations 17--18).} The remaining step ---
+the break rate on a
 pool curated to the 8B's competence --- was then run (pre-registrations 17
 and 18): a first hardened pool failed its pre-registered curation rule
 (17/24 tasks solved at $1.0$; reported as failure), and a second pool
@@ -884,7 +899,10 @@ wrong way), and the directional prediction
 (pressure $\geq$ slack) failed ($9.7\%$ vs.\ $11.1\%$). All curated-pool
 break counts are descriptive: with 3 break tasks per regime we make no
 clustered inferential claim, and we make no cross-pool $p$-value comparison
-against the 4B's 0/57. Two design threats were named at this point --- the
+against the 4B's 0/57.
+
+\paragraph{Symmetric control (pre-registration 19) and the triple claim.}
+Two design threats were named at this point --- the
 curated comparison was cross-pool (the 4B's
 0/57 comes from the original pool --- the paired contrast on identical
 tasks is D2d's 0/57 vs.\ 5/28); and the curation window is operationalized
@@ -901,7 +919,9 @@ prediction that the 4B would sit saturated-in-failure on this pool failed
 (1/16 and 3/23 saturated --- reported as a failed pre-registered
 sub-hypothesis). The competence claim therefore re-scopes: the shield is
 a property of the (model, harness, \emph{task}) triple, not of the
-model--harness pair alone. What survives every cell of the design: the
+model--harness pair alone.
+
+\paragraph{What survives every cell.} The
 pool-matched model contrast on identical tasks (0/57 vs.\ 5/28), the
 majority of points screened in every configuration (worst cell 12/16), the
 regime contrast existing only for the 4B on its original pool, and a
@@ -920,47 +940,22 @@ the 8B, the hardened pool in both regimes) --- is descriptive and not
 pre-registered: the pre-declared interpretation of outcome c2 was ``a
 property of the task family, not of competence,'' and what favors the
 triple reading over the pure-family reading is the point-level disjunction
-of break sets between models on the identical pool. The break structure
-is also heterogeneous: the D2d slack signature ($C_H=1.0$, $C_M=0.0$,
-$C_{HM}\approx0.9$) does not recur --- \texttt{h\_cargo\_manifest} tracks
-the harness ($C_{HM}=0.46$ vs.\ $C_H=0.62$) while \texttt{h\_hotel\_folio}
-tracks the model ($C_{HM}=0.08$ vs.\ $C_M=0.00$). A descriptive trace
-anatomy of the 8B's 6 curated-pool breaks (0 new rollouts) finds one uniform
-base and two patterns on top of it. Uniformly: every break is a
-\texttt{keep}$\to$\texttt{summarize} flip at a \texttt{write\_file} turn,
-the summary destroys essentially all critical constants in context (8/8,
-5/6, 7/7, 10/10), and the harness flip alone is destructive. On top:
-either the sampled $a'$ carries some constants and partially rescues the
-destroyed context (joint lands \emph{between} the single flips:
-\texttt{h\_hotel\_folio}, \texttt{h\_cargo\_manifest}), or $a'$ is itself
-beneficial and the destruction annuls exactly that benefit (joint returns
-to the original reward: \texttt{x\_hours\_bank}, \texttt{h\_sku\_validator}
---- the one positive $I$ is of this kind). The two recurring points are
-numerically identical across regimes --- same four arm rewards, same
-destroyed constants, same free-divergence offsets, from different baseline
-trajectories --- so the break is a property of the decision point
-(task $\times$ turn), not of the budget regime. The same trace anatomy run
-on the 4B's D5 breaks (0 new rollouts) adds a structural asymmetry: two
-of the 4B's four unique break points (three of the six break instances,
-counting the recurring \texttt{h\_turnstile\_fsm} point) are
-\emph{restore}-direction flips
-(\texttt{summarize}$\to$\texttt{keep}: the baseline had already summarized,
-and the flip restores destroyed constants), a direction absent from the
-8B's breaks, and they follow a third pattern --- individually beneficial
-or neutral flips whose joint application destroys the benefit ($I>0$). Only one 4B point falls into
-an 8B pattern. Two audit details worth recording: the recurring
-\texttt{h\_hotel\_folio} point is numerically identical across regimes in
-all four arm rewards despite distinct baseline trajectories, and the
-recurring \texttt{h\_turnstile\_fsm} magnitude difference ($I=+0.77$ vs.\
-$+0.31$) traces entirely to baseline quality --- $C_{HM}$ and all
-free-divergence offsets are identical across regimes, so the $I$
-\emph{magnitude} at a recurring point is baseline-relative even when the
-break itself is stable. The robust claim is
+of break sets between models on the identical pool. The break structure is
+also heterogeneous --- the D2d slack signature ($C_H=1.0$, $C_M=0.0$,
+$C_{HM}\approx0.9$) does not recur --- and a descriptive trace anatomy of
+all 8B and 4B curated-pool breaks (0 new rollouts) finds one uniform base,
+three recurring patterns, and a model asymmetry (restore-direction flips
+appear only in the 4B); Appendix~\ref{app:anatomy} reports it in full,
+including two audit details showing that recurring break points are
+numerically identical across regimes while $I$ \emph{magnitudes} are
+baseline-relative. The robust claim is
 therefore narrower than the mechanism story: \emph{whether} screening-off
 holds is a property of the (model, harness, task) triple, and re-injection of
 destroyed information, which fully explained the annotated 4B/8B contrast
 of D2d, is neither necessary nor sufficient for the shield in a curated
 pool.
+
+\subsection{Statistical caveats}
 
 \paragraph{Clustered inference.} Points within a task are not independent.
 At the task level the pressure-vs-slack contrast is 3 tasks vs.\ 0 (sign
@@ -981,6 +976,20 @@ structure --- exact screening at pivotal points, cross-configuration
 recurrence of break points, and the pool-matched model contrast --- rather
 than on any single threshold crossing.
 
+\paragraph{Saturation is endogenous, and conditioning on it is
+post-treatment.} Reward resolution is set by test count, so saturation is
+partly a design artifact. Worse for inference: saturation is defined on the
+rewards of the replayed arms, i.e.\ on outcomes of the intervention itself,
+so every saturation-conditioned rate in this paper conditions on a
+post-treatment variable and carries selection bias of unknown sign. We
+therefore use conditioned contrasts descriptively only, never
+confirmatorily, and we describe saturation as a correlate of the competence
+window, not a mediator. The inverted-U at mt4 is only partially accounted
+for (conditioned rate $0.045 \to 0.143$; the ordering mt8 $>$ mt6 $>$ mt4
+persists), so the window remains a partially supported hypothesis,
+discussed but not claimed as a contribution.
+
+\subsection{Estimand and infrastructure caveats}
 \paragraph{Estimator coupling.} $C(M)$ and $I$ share the sampled alternative
 action $a'$: they are not independent evidence, and the structural component
 of screening-off (\S\ref{sec:interaction}) is partly a property of the
@@ -994,19 +1003,6 @@ estimand: $a'$ is a \emph{single} sample per point (fixed seed schedule,
 that one alternative; we have not measured sensitivity to re-sampling $a'$,
 and we flag it as the highest-value robustness check this apparatus can run
 next.
-
-\paragraph{Saturation is endogenous, and conditioning on it is
-post-treatment.} Reward resolution is set by test count, so saturation is
-partly a design artifact. Worse for inference: saturation is defined on the
-rewards of the replayed arms, i.e.\ on outcomes of the intervention itself,
-so every saturation-conditioned rate in this paper conditions on a
-post-treatment variable and carries selection bias of unknown sign. We
-therefore use conditioned contrasts descriptively only, never
-confirmatorily, and we describe saturation as a correlate of the competence
-window, not a mediator. The inverted-U at mt4 is only partially accounted
-for (conditioned rate $0.045 \to 0.143$; the ordering mt8 $>$ mt6 $>$ mt4
-persists), so the window remains a partially supported hypothesis,
-discussed but not claimed as a contribution.
 
 \paragraph{Serving premises.} The exact floor holds under a fully specified
 stack: vLLM 0.8.5.post1 (V1 engine, pinned) serving one model per experiment
@@ -1033,6 +1029,34 @@ Dose-matching makes the replay tax concrete: at equal rollout budget, the
 interaction-corrected arm afforded 319 training episodes against the
 outcome-only arm's 1{,}789 --- a $5.6\times$ episode cost that any
 replay-based trainer must amortize.
+
+\paragraph{Beyond determinism: the stochastic protocol.} Real agent stacks
+violate every exactness premise (sampling temperature, flaky tests, batched
+serving). The protocol degrades gracefully rather than breaking: under
+stochastic replay each branch reward becomes a distribution, $C(d)$ a
+difference of means, and the measured null-replay \emph{distribution}
+replaces the exact floor. The per-point recipe is: (i) estimate the null
+spread from $n_0$ null replays (the analogue of \S\ref{sec:floor}, now a
+variance rather than a maximum); (ii) size the per-branch replay count so
+that the minimal credit of interest exceeds the resulting standard error;
+(iii) cluster inference by task, as here. Exact screening-off becomes a
+test of $C_{HM} - C_M$ against the null band rather than a literal
+equality, and the coalescence lemma weakens to a coupling argument; what
+survives unchanged is the double-counting identity, which is algebraic and
+holds in expectation. The deterministic setting of this paper is the
+calibration case where all of this is measurable at zero variance --- we
+deliberately paid throughput for that identifiability.
+
+\paragraph{What the triple claim does to the practical prescription.} If
+\emph{whether} screening holds depends on the (model, harness, task)
+triple, no fixed correction transports across stacks: ``measure before
+training'' survives only as a per-stack diagnostic --- run the null floor,
+then the screening census on your own triple, then decide which credit
+signal is billable. This deliberately weakens the prescription from a rule
+to a protocol. The transportable artifacts are the identity $C(H) = -I$ at
+screened points (algebra, stack-independent), the correction rule
+$C_{HM} - C_M$ (one extra replay), and the census procedure itself --- not
+any particular census result.
 
 \section{Conclusion}
 We built the first apparatus that measures, on the same trajectory, the
@@ -1142,6 +1166,46 @@ one pre-fix run, \S\ref{sec:floor}). ``Attached'' nulls are the queue-floor
 checks run inside each interaction experiment.}
 \label{tab:nulls}
 \end{table}
+
+\section{Break-Point Anatomy (Descriptive)}
+\label{app:anatomy}
+This appendix reports the full descriptive trace anatomy of the curated-pool
+screening breaks (0 new rollouts; all from recorded replay traces). It is
+descriptive throughout: no count below is a pre-registered test.
+
+\paragraph{The 8B's six breaks.} One uniform base and two patterns on top of
+it. Uniformly: every break is a \texttt{keep}$\to$\texttt{summarize} flip at
+a \texttt{write\_file} turn, the summary destroys essentially all critical
+constants in context (8/8, 5/6, 7/7, 10/10), and the harness flip alone is
+destructive. On top: either the sampled $a'$ carries some constants and
+partially rescues the destroyed context (the joint flip lands \emph{between}
+the single flips: \texttt{h\_hotel\_folio}, \texttt{h\_cargo\_manifest} ---
+the former tracks the model, $C_{HM}=0.08$ vs.\ $C_M=0.00$; the latter the
+harness, $C_{HM}=0.46$ vs.\ $C_H=0.62$), or $a'$ is itself beneficial and
+the destruction annuls exactly that benefit (the joint flip returns to the
+original reward: \texttt{x\_hours\_bank}, \texttt{h\_sku\_validator} ---
+the one positive $I$ is of this kind). The two recurring points are
+numerically identical across regimes --- same four arm rewards, same
+destroyed constants, same free-divergence offsets, from different baseline
+trajectories --- so the break is a property of the decision point (task
+$\times$ turn), not of the budget regime.
+
+\paragraph{The 4B's D5 breaks.} The same anatomy adds a structural
+asymmetry: two of the 4B's four unique break points (three of the six break
+instances, counting the recurring \texttt{h\_turnstile\_fsm} point) are
+\emph{restore}-direction flips (\texttt{summarize}$\to$\texttt{keep}: the
+baseline had already summarized, and the flip restores destroyed constants),
+a direction absent from the 8B's breaks, and they follow a third pattern ---
+individually beneficial or neutral flips whose joint application destroys
+the benefit ($I>0$). Only one 4B point falls into an 8B pattern.
+
+\paragraph{Audit details.} The recurring \texttt{h\_hotel\_folio} point is
+numerically identical across regimes in all four arm rewards despite
+distinct baseline trajectories, and the recurring \texttt{h\_turnstile\_fsm}
+magnitude difference ($I=+0.77$ slack vs.\ $+0.31$ pressure) traces entirely
+to baseline quality --- $C_{HM}$ and all free-divergence offsets are
+identical across regimes. The $I$ \emph{magnitude} at a recurring point is
+therefore baseline-relative even when the break itself is stable.
 
 \bibliographystyle{plain}
 \bibliography{refs}
