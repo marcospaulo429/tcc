@@ -1,0 +1,1392 @@
+{
+ "date": "2026-08-24",
+ "motivo": "review 13 residual 4 — anatomia das 6 quebras raw do D5 (4B no pool curado, q4cur_*)",
+ "n_rollouts_novos": 0,
+ "points": [
+  {
+   "task_id": "h_turnstile_fsm",
+   "cp_index": 10,
+   "tag": "q4cur_g600",
+   "regime": "slack",
+   "trajectory_id": "139261da7fe54b10806b104428832c96",
+   "direction": "summarize_context->keep_context",
+   "turn": 3,
+   "tc_index": 11,
+   "rewards": {
+    "orig": 0.38461538461538464,
+    "h": 0.6923076923076923,
+    "m": 0.6923076923076923,
+    "hm": 0.23076923076923078
+   },
+   "credits": {
+    "C_H": -0.30769230769230765,
+    "C_M": -0.30769230769230765,
+    "C_HM": 0.15384615384615385,
+    "I": 0.7692307692307692
+   },
+   "saturated": false,
+   "a_consts_flip_h": {
+    "flip_to_summarize": false,
+    "consts_in_ctx_baseline_tc": [
+     "2.85",
+     "4.6",
+     "7.15",
+     "3",
+     "'JAMMED'"
+    ],
+    "consts_in_ctx_pos_flip_h": [
+     "'MT-'",
+     "9",
+     "2.85",
+     "4.6",
+     "7.15",
+     "3",
+     "'JAMMED'"
+    ],
+    "consts_restored": [
+     "'MT-'",
+     "9"
+    ],
+    "n_total": 7
+   },
+   "b_a_prime": {
+    "action_type": "write_file",
+    "original_action_type": "write_file",
+    "same_path": false,
+    "consts_in_a_prime": [],
+    "consts_in_a_orig": [],
+    "a_prime_chars": 146
+   },
+   "c_arms": {
+    "h": {
+     "replay_path": "runs/teste3_q4cur_g600/replays/45eab172916a44d7966ce90db76b17f2.jsonl",
+     "reward": 0.6923076923076923,
+     "n_decisions_replay_suffix": 27,
+     "n_decisions_baseline_suffix": 19,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "summarize_context"
+      },
+      "replay_action": {
+       "action": "keep_context"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 1,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "card_utils.py",
+       "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+      },
+      "replay_action": {
+       "action": "run_tests"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "'MT-'",
+      "9",
+      "2.85",
+      "4.6",
+      "7.15",
+      "3",
+      "'JAMMED'"
+     ]
+    },
+    "m": {
+     "replay_path": "runs/teste3_q4cur_g600/replays/f30a62015d2c4d71891be976b96966e1.jsonl",
+     "reward": 0.6923076923076923,
+     "n_decisions_replay_suffix": 26,
+     "n_decisions_baseline_suffix": 18,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "card_utils.py",
+       "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+      },
+      "replay_action": {
+       "action": "write_file",
+       "path": "turnstile_utils.py",
+       "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 6,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "card_utils.py",
+       "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+      },
+      "replay_action": {
+       "action": "write_file",
+       "path": "turnstile_utils.py",
+       "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "2.85",
+      "4.6",
+      "7.15",
+      "3",
+      "'JAMMED'"
+     ]
+    },
+    "hm": {
+     "replay_path": "runs/teste3_q4cur_g600/replays/3ce0dfedc20b4f1483ff2fa685c590c4.jsonl",
+     "reward": 0.23076923076923078,
+     "n_decisions_replay_suffix": 27,
+     "n_decisions_baseline_suffix": 19,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "summarize_context"
+      },
+      "replay_action": {
+       "action": "keep_context"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 3,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "keep_context"
+      },
+      "replay_action": {
+       "action": "summarize_context"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "'MT-'",
+      "9",
+      "2.85",
+      "4.6",
+      "7.15",
+      "3",
+      "'JAMMED'"
+     ]
+    }
+   },
+   "d_label": "H-flip benéfico; a′ sozinho benéfico; conjunto intermediário (não rastreia nenhum braço)",
+   "d_padrao_vs_8b": "fora dos 2 padrões do 8B (ver d_label)"
+  },
+  {
+   "task_id": "h_turnstile_fsm",
+   "cp_index": 10,
+   "tag": "q4cur_mt6",
+   "regime": "pressure",
+   "trajectory_id": "0f0d083e1aeb4ea79b80359a1fcd5af5",
+   "direction": "summarize_context->keep_context",
+   "turn": 3,
+   "tc_index": 11,
+   "rewards": {
+    "orig": 0.6153846153846154,
+    "h": 0.6923076923076923,
+    "m": 0.6923076923076923,
+    "hm": 0.46153846153846156
+   },
+   "credits": {
+    "C_H": -0.07692307692307687,
+    "C_M": -0.07692307692307687,
+    "C_HM": 0.15384615384615385,
+    "I": 0.3076923076923076
+   },
+   "saturated": false,
+   "a_consts_flip_h": {
+    "flip_to_summarize": false,
+    "consts_in_ctx_baseline_tc": [
+     "2.85",
+     "4.6",
+     "7.15",
+     "3",
+     "'JAMMED'"
+    ],
+    "consts_in_ctx_pos_flip_h": [
+     "'MT-'",
+     "9",
+     "2.85",
+     "4.6",
+     "7.15",
+     "3",
+     "'JAMMED'"
+    ],
+    "consts_restored": [
+     "'MT-'",
+     "9"
+    ],
+    "n_total": 7
+   },
+   "b_a_prime": {
+    "action_type": "write_file",
+    "original_action_type": "write_file",
+    "same_path": false,
+    "consts_in_a_prime": [],
+    "consts_in_a_orig": [],
+    "a_prime_chars": 146
+   },
+   "c_arms": {
+    "h": {
+     "replay_path": "runs/teste3_q4cur_mt6/replays/a95cd1813e5e43eb971e03aff56afefa.jsonl",
+     "reward": 0.6923076923076923,
+     "n_decisions_replay_suffix": 9,
+     "n_decisions_baseline_suffix": 9,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "summarize_context"
+      },
+      "replay_action": {
+       "action": "keep_context"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 1,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "card_utils.py",
+       "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+      },
+      "replay_action": {
+       "action": "run_tests"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "'MT-'",
+      "9",
+      "2.85",
+      "4.6",
+      "7.15",
+      "3",
+      "'JAMMED'"
+     ]
+    },
+    "m": {
+     "replay_path": "runs/teste3_q4cur_mt6/replays/b10000ef714f4d6cbf1fb74311dcf634.jsonl",
+     "reward": 0.6923076923076923,
+     "n_decisions_replay_suffix": 8,
+     "n_decisions_baseline_suffix": 8,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "card_utils.py",
+       "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+      },
+      "replay_action": {
+       "action": "write_file",
+       "path": "turnstile_utils.py",
+       "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 6,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "card_utils.py",
+       "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+      },
+      "replay_action": {
+       "action": "write_file",
+       "path": "turnstile_utils.py",
+       "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "2.85",
+      "4.6",
+      "7.15",
+      "3",
+      "'JAMMED'"
+     ]
+    },
+    "hm": {
+     "replay_path": "runs/teste3_q4cur_mt6/replays/8e62dab4a5054dfe8f34cfeb9391fd9d.jsonl",
+     "reward": 0.46153846153846156,
+     "n_decisions_replay_suffix": 9,
+     "n_decisions_baseline_suffix": 9,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "summarize_context"
+      },
+      "replay_action": {
+       "action": "keep_context"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 3,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "keep_context"
+      },
+      "replay_action": {
+       "action": "summarize_context"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "'MT-'",
+      "9",
+      "2.85",
+      "4.6",
+      "7.15",
+      "3",
+      "'JAMMED'"
+     ]
+    }
+   },
+   "d_label": "H-flip benéfico; a′ sozinho benéfico; conjunto intermediário (não rastreia nenhum braço)",
+   "d_padrao_vs_8b": "fora dos 2 padrões do 8B (ver d_label)"
+  },
+  {
+   "task_id": "h_telco_roaming",
+   "cp_index": 10,
+   "tag": "q4cur_g600",
+   "regime": "slack",
+   "trajectory_id": "c9211410b2a54a5383a744a3474e8580",
+   "direction": "keep_context->summarize_context",
+   "turn": 3,
+   "tc_index": 11,
+   "rewards": {
+    "orig": 0.23076923076923078,
+    "h": 0.3076923076923077,
+    "m": 0.23076923076923078,
+    "hm": 1.0
+   },
+   "credits": {
+    "C_H": -0.07692307692307693,
+    "C_M": 0.0,
+    "C_HM": -0.7692307692307692,
+    "I": -0.6923076923076923
+   },
+   "saturated": true,
+   "a_consts_flip_h": {
+    "flip_to_summarize": true,
+    "consts_in_ctx_baseline_tc": [
+     "512",
+     "0.0193",
+     "0.0072",
+     "0.4180",
+     "21.9",
+     "9.35",
+     "'RM7'",
+     "'RM3'",
+     "87.6"
+    ],
+    "consts_in_ctx_pos_flip_h": [
+     "0.4180",
+     "21.9",
+     "9.35",
+     "'RM7'",
+     "'RM3'"
+    ],
+    "consts_destroyed": [
+     "512",
+     "0.0193",
+     "0.0072",
+     "87.6"
+    ],
+    "n_total": 9
+   },
+   "b_a_prime": {
+    "action_type": "write_file",
+    "original_action_type": "write_file",
+    "same_path": true,
+    "consts_in_a_prime": [
+     "87.6"
+    ],
+    "consts_in_a_orig": [
+     "87.6"
+    ],
+    "a_prime_chars": 460
+   },
+   "c_arms": {
+    "h": {
+     "replay_path": "runs/teste3_q4cur_g600/replays/492a1ed019be4267abacf8b84d36738a.jsonl",
+     "reward": 0.3076923076923077,
+     "n_decisions_replay_suffix": 27,
+     "n_decisions_baseline_suffix": 28,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "keep_context"
+      },
+      "replay_action": {
+       "action": "summarize_context"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 1,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "solution.py",
+       "content": "def roaming_bill(mb: float, minutes: int, code: str) -> float:\n    total = data_charge(mb) + voice_charge(minutes)\n    c…"
+      },
+      "replay_action": {
+       "action": "write_file",
+       "path": "data_utils.py",
+       "content": "def data_charge(gigabytes: float) -> float:\n    return gigabytes * 12.96"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "0.4180",
+      "21.9",
+      "9.35",
+      "'RM7'",
+      "'RM3'"
+     ]
+    },
+    "m": {
+     "replay_path": "runs/teste3_q4cur_g600/replays/02a78005d9cc4286bfbe7e419cc60d96.jsonl",
+     "reward": 0.23076923076923078,
+     "n_decisions_replay_suffix": 27,
+     "n_decisions_baseline_suffix": 27,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "solution.py",
+       "content": "def roaming_bill(mb: float, minutes: int, code: str) -> float:\n    total = data_charge(mb) + voice_charge(minutes)\n    c…"
+      },
+      "replay_action": {
+       "action": "write_file",
+       "path": "solution.py",
+       "content": "def roaming_bill(mb: float, minutes: int, code: str) -> float:\n    total = data_charge(mb) + voice_charge(minutes)\n    c…"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 12,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "retry_once"
+      },
+      "replay_action": {
+       "action": "write_file",
+       "path": "voice_utils.py",
+       "content": "def voice_charge(minutes: int) -> float:\n    if minutes < 0:\n        return 0.0\n    return minutes * 0.15"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "512",
+      "0.0193",
+      "0.0072",
+      "0.4180",
+      "21.9",
+      "9.35",
+      "'RM7'",
+      "'RM3'",
+      "87.6"
+     ]
+    },
+    "hm": {
+     "replay_path": "runs/teste3_q4cur_g600/replays/1f82b9e32b8d42b4838ec7c21eeea7dd.jsonl",
+     "reward": 1.0,
+     "n_decisions_replay_suffix": 6,
+     "n_decisions_baseline_suffix": 28,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "keep_context"
+      },
+      "replay_action": {
+       "action": "summarize_context"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 3,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "summarize_context"
+      },
+      "replay_action": {
+       "action": "keep_context"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "0.4180",
+      "21.9",
+      "9.35",
+      "'RM7'",
+      "'RM3'"
+     ]
+    }
+   },
+   "d_label": "H-flip benéfico; a′ sozinho neutro; conjunto intermediário (não rastreia nenhum braço)",
+   "d_padrao_vs_8b": "padrão 8B #1 (resgate parcial por a′ com constantes → conjunto intermediário)"
+  },
+  {
+   "task_id": "h_telco_roaming",
+   "cp_index": 13,
+   "tag": "q4cur_g600",
+   "regime": "slack",
+   "trajectory_id": "c9211410b2a54a5383a744a3474e8580",
+   "direction": "summarize_context->keep_context",
+   "turn": 4,
+   "tc_index": 14,
+   "rewards": {
+    "orig": 0.23076923076923078,
+    "h": 0.6153846153846154,
+    "m": 0.23076923076923078,
+    "hm": 0.07692307692307693
+   },
+   "credits": {
+    "C_H": -0.38461538461538464,
+    "C_M": 0.0,
+    "C_HM": 0.15384615384615385,
+    "I": 0.5384615384615385
+   },
+   "saturated": false,
+   "a_consts_flip_h": {
+    "flip_to_summarize": false,
+    "consts_in_ctx_baseline_tc": [
+     "21.9",
+     "9.35",
+     "'RM7'",
+     "'RM3'",
+     "87.6"
+    ],
+    "consts_in_ctx_pos_flip_h": [
+     "512",
+     "0.0193",
+     "0.0072",
+     "0.4180",
+     "21.9",
+     "9.35",
+     "'RM7'",
+     "'RM3'",
+     "87.6"
+    ],
+    "consts_restored": [
+     "512",
+     "0.0193",
+     "0.0072",
+     "0.4180"
+    ],
+    "n_total": 9
+   },
+   "b_a_prime": {
+    "action_type": "write_file",
+    "original_action_type": "write_file",
+    "same_path": true,
+    "consts_in_a_prime": [],
+    "consts_in_a_orig": [],
+    "a_prime_chars": 122
+   },
+   "c_arms": {
+    "h": {
+     "replay_path": "runs/teste3_q4cur_g600/replays/b2b020baedff4383901fc692e3b686d6.jsonl",
+     "reward": 0.6153846153846154,
+     "n_decisions_replay_suffix": 24,
+     "n_decisions_baseline_suffix": 25,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "summarize_context"
+      },
+      "replay_action": {
+       "action": "keep_context"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 1,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "data_utils.py",
+       "content": "def data_charge(mb: float) -> float:\n    if mb < 0:\n        return 0.0\n    return mb * 1.2"
+      },
+      "replay_action": {
+       "action": "run_tests"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "512",
+      "0.0193",
+      "0.0072",
+      "0.4180",
+      "21.9",
+      "9.35",
+      "'RM7'",
+      "'RM3'",
+      "87.6"
+     ]
+    },
+    "m": {
+     "replay_path": "runs/teste3_q4cur_g600/replays/38cc75323ef841f7877bcdac84b991c6.jsonl",
+     "reward": 0.23076923076923078,
+     "n_decisions_replay_suffix": 23,
+     "n_decisions_baseline_suffix": 24,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "data_utils.py",
+       "content": "def data_charge(mb: float) -> float:\n    if mb < 0:\n        return 0.0\n    return mb * 1.2"
+      },
+      "replay_action": {
+       "action": "write_file",
+       "path": "data_utils.py",
+       "content": "def data_charge(mb: float) -> float:\n    return mb * 0.25"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 3,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "voice_utils.py",
+       "content": "def voice_charge(minutes: int) -> float:\n    if minutes < 0:\n        return 0.0\n    return minutes * 0.15"
+      },
+      "replay_action": {
+       "action": "write_file",
+       "path": "voice_utils.py",
+       "content": "def voice_charge(minutes: int) -> float:\n    return minutes * 0.15"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "21.9",
+      "9.35",
+      "'RM7'",
+      "'RM3'",
+      "87.6"
+     ]
+    },
+    "hm": {
+     "replay_path": "runs/teste3_q4cur_g600/replays/da8e47789e5842e7b76d566a41535725.jsonl",
+     "reward": 0.07692307692307693,
+     "n_decisions_replay_suffix": 24,
+     "n_decisions_baseline_suffix": 25,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "summarize_context"
+      },
+      "replay_action": {
+       "action": "keep_context"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 3,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "keep_context"
+      },
+      "replay_action": {
+       "action": "summarize_context"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "512",
+      "0.0193",
+      "0.0072",
+      "0.4180",
+      "21.9",
+      "9.35",
+      "'RM7'",
+      "'RM3'",
+      "87.6"
+     ]
+    }
+   },
+   "d_label": "H-flip benéfico; a′ sozinho neutro; conjunto intermediário (não rastreia nenhum braço)",
+   "d_padrao_vs_8b": "fora dos 2 padrões do 8B (ver d_label)"
+  },
+  {
+   "task_id": "h_hotel_folio",
+   "cp_index": 7,
+   "tag": "q4cur_g600",
+   "regime": "slack",
+   "trajectory_id": "d6f28a35a6af4128ac310b2ad6d5f570",
+   "direction": "keep_context->summarize_context",
+   "turn": 2,
+   "tc_index": 8,
+   "rewards": {
+    "orig": 1.0,
+    "h": 0.4166666666666667,
+    "m": 0.08333333333333333,
+    "hm": 0.9166666666666666
+   },
+   "credits": {
+    "C_H": 0.5833333333333333,
+    "C_M": 0.9166666666666666,
+    "C_HM": 0.08333333333333337,
+    "I": -1.4166666666666665
+   },
+   "saturated": false,
+   "a_consts_flip_h": {
+    "flip_to_summarize": true,
+    "consts_in_ctx_baseline_tc": [
+     "412.60",
+     "388.45",
+     "297.30",
+     "0.0685",
+     "13",
+     "0.8823",
+     "23.4",
+     "9"
+    ],
+    "consts_in_ctx_pos_flip_h": [
+     "412.60",
+     "388.45",
+     "297.30",
+     "0.0685",
+     "9"
+    ],
+    "consts_destroyed": [
+     "13",
+     "0.8823",
+     "23.4"
+    ],
+    "n_total": 8
+   },
+   "b_a_prime": {
+    "action_type": "write_file",
+    "original_action_type": "write_file",
+    "same_path": true,
+    "consts_in_a_prime": [
+     "13",
+     "0.8823",
+     "23.4",
+     "9"
+    ],
+    "consts_in_a_orig": [
+     "13",
+     "0.8823",
+     "23.4",
+     "9"
+    ],
+    "a_prime_chars": 767
+   },
+   "c_arms": {
+    "h": {
+     "replay_path": "runs/teste3_q4cur_g600/replays/d95cd43cc700439797ae7d164c717119.jsonl",
+     "reward": 0.4166666666666667,
+     "n_decisions_replay_suffix": 31,
+     "n_decisions_baseline_suffix": 6,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "keep_context"
+      },
+      "replay_action": {
+       "action": "summarize_context"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 1,
+      "decision_point": "retry",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "solution.py",
+       "content": "import math\n\ndef half_up(x):\n    return math.floor(x * 100 + 0.5) / 100\n\ndef folio(nights: int, month: int, breakfast: b…"
+      },
+      "replay_action": {
+       "action": "retry_once"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "412.60",
+      "388.45",
+      "297.30",
+      "0.0685",
+      "9"
+     ]
+    },
+    "m": {
+     "replay_path": "runs/teste3_q4cur_g600/replays/120accaeec59415d8ca5f94590799a02.jsonl",
+     "reward": 0.08333333333333333,
+     "n_decisions_replay_suffix": 30,
+     "n_decisions_baseline_suffix": 5,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "solution.py",
+       "content": "import math\n\ndef half_up(x):\n    return math.floor(x * 100 + 0.5) / 100\n\ndef folio(nights: int, month: int, breakfast: b…"
+      },
+      "replay_action": {
+       "action": "write_file",
+       "path": "solution.py",
+       "content": "import math\n\ndef half_up(x):\n    return math.floor(x * 100 + 0.5) / 100\n\ndef folio(nights: int, month: int, breakfast: b…"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 3,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "run_tests"
+      },
+      "replay_action": {
+       "action": "write_file",
+       "path": "season_utils.py",
+       "content": "def room_rate(month: int) -> float:\n    # Room rate based on season\n    if month in [12, 1, 2]:  # Winter\n        return…"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "412.60",
+      "388.45",
+      "297.30",
+      "0.0685",
+      "13",
+      "0.8823",
+      "23.4",
+      "9"
+     ]
+    },
+    "hm": {
+     "replay_path": "runs/teste3_q4cur_g600/replays/e8c7f49cbe2244aaa2e535ade51d4505.jsonl",
+     "reward": 0.9166666666666666,
+     "n_decisions_replay_suffix": 30,
+     "n_decisions_baseline_suffix": 6,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "keep_context"
+      },
+      "replay_action": {
+       "action": "summarize_context"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 3,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "summarize_context"
+      },
+      "replay_action": {
+       "action": "keep_context"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "412.60",
+      "388.45",
+      "297.30",
+      "0.0685",
+      "9"
+     ]
+    }
+   },
+   "d_label": "H-flip destrutivo; a′ sozinho destrutivo; conjunto intermediário (não rastreia nenhum braço)",
+   "d_padrao_vs_8b": "fora dos 2 padrões do 8B (ver d_label)"
+  },
+  {
+   "task_id": "h_hotel_folio",
+   "cp_index": 7,
+   "tag": "q4cur_mt6",
+   "regime": "pressure",
+   "trajectory_id": "8317eed3f6fc49758a7c64ce5d504413",
+   "direction": "keep_context->summarize_context",
+   "turn": 2,
+   "tc_index": 8,
+   "rewards": {
+    "orig": 1.0,
+    "h": 0.4166666666666667,
+    "m": 0.08333333333333333,
+    "hm": 0.9166666666666666
+   },
+   "credits": {
+    "C_H": 0.5833333333333333,
+    "C_M": 0.9166666666666666,
+    "C_HM": 0.08333333333333337,
+    "I": -1.4166666666666665
+   },
+   "saturated": false,
+   "a_consts_flip_h": {
+    "flip_to_summarize": true,
+    "consts_in_ctx_baseline_tc": [
+     "412.60",
+     "388.45",
+     "297.30",
+     "0.0685",
+     "13",
+     "0.8823",
+     "23.4",
+     "9"
+    ],
+    "consts_in_ctx_pos_flip_h": [
+     "412.60",
+     "388.45",
+     "297.30",
+     "0.0685",
+     "9"
+    ],
+    "consts_destroyed": [
+     "13",
+     "0.8823",
+     "23.4"
+    ],
+    "n_total": 8
+   },
+   "b_a_prime": {
+    "action_type": "write_file",
+    "original_action_type": "write_file",
+    "same_path": true,
+    "consts_in_a_prime": [
+     "13",
+     "0.8823",
+     "23.4",
+     "9"
+    ],
+    "consts_in_a_orig": [
+     "13",
+     "0.8823",
+     "23.4",
+     "9"
+    ],
+    "a_prime_chars": 767
+   },
+   "c_arms": {
+    "h": {
+     "replay_path": "runs/teste3_q4cur_mt6/replays/ad365f4f9da44f09baac912f837e3dfc.jsonl",
+     "reward": 0.4166666666666667,
+     "n_decisions_replay_suffix": 13,
+     "n_decisions_baseline_suffix": 6,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "keep_context"
+      },
+      "replay_action": {
+       "action": "summarize_context"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 1,
+      "decision_point": "retry",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "solution.py",
+       "content": "import math\n\ndef half_up(x):\n    return math.floor(x * 100 + 0.5) / 100\n\ndef folio(nights: int, month: int, breakfast: b…"
+      },
+      "replay_action": {
+       "action": "retry_once"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "412.60",
+      "388.45",
+      "297.30",
+      "0.0685",
+      "9"
+     ]
+    },
+    "m": {
+     "replay_path": "runs/teste3_q4cur_mt6/replays/341ed41423e94d808150c947a5da243b.jsonl",
+     "reward": 0.08333333333333333,
+     "n_decisions_replay_suffix": 12,
+     "n_decisions_baseline_suffix": 5,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "write_file",
+       "path": "solution.py",
+       "content": "import math\n\ndef half_up(x):\n    return math.floor(x * 100 + 0.5) / 100\n\ndef folio(nights: int, month: int, breakfast: b…"
+      },
+      "replay_action": {
+       "action": "write_file",
+       "path": "solution.py",
+       "content": "import math\n\ndef half_up(x):\n    return math.floor(x * 100 + 0.5) / 100\n\ndef folio(nights: int, month: int, breakfast: b…"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 3,
+      "decision_point": "tool_call",
+      "baseline_action": {
+       "action": "run_tests"
+      },
+      "replay_action": {
+       "action": "write_file",
+       "path": "season_utils.py",
+       "content": "def room_rate(month: int) -> float:\n    # Room rate based on season\n    if month in [12, 1, 2]:  # Winter\n        return…"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "412.60",
+      "388.45",
+      "297.30",
+      "0.0685",
+      "13",
+      "0.8823",
+      "23.4",
+      "9"
+     ]
+    },
+    "hm": {
+     "replay_path": "runs/teste3_q4cur_mt6/replays/b6ef79211e6b43f197e0f70e7caa64bd.jsonl",
+     "reward": 0.9166666666666666,
+     "n_decisions_replay_suffix": 12,
+     "n_decisions_baseline_suffix": 6,
+     "first_divergence": {
+      "offset": 0,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "keep_context"
+      },
+      "replay_action": {
+       "action": "summarize_context"
+      }
+     },
+     "first_free_divergence": {
+      "offset": 3,
+      "decision_point": "context_policy",
+      "baseline_action": {
+       "action": "summarize_context"
+      },
+      "replay_action": {
+       "action": "keep_context"
+      }
+     },
+     "consts_in_ctx_first_model_decision": [
+      "412.60",
+      "388.45",
+      "297.30",
+      "0.0685",
+      "9"
+     ]
+    }
+   },
+   "d_label": "H-flip destrutivo; a′ sozinho destrutivo; conjunto intermediário (não rastreia nenhum braço)",
+   "d_padrao_vs_8b": "fora dos 2 padrões do 8B (ver d_label)"
+  }
+ ],
+ "recorrentes_entre_regimes": {
+  "h_turnstile_fsm_cp10": {
+   "iguais": {
+    "rewards_identicos": false,
+    "labels_identicos": true,
+    "a_prime_mesmo_tipo": true,
+    "mesma_trajetoria_baseline": false
+   },
+   "diferencas": {
+    "rewards": {
+     "q4cur_g600": {
+      "orig": 0.38461538461538464,
+      "h": 0.6923076923076923,
+      "m": 0.6923076923076923,
+      "hm": 0.23076923076923078
+     },
+     "q4cur_mt6": {
+      "orig": 0.6153846153846154,
+      "h": 0.6923076923076923,
+      "m": 0.6923076923076923,
+      "hm": 0.46153846153846156
+     }
+    },
+    "n_decisoes_h": {
+     "q4cur_g600": 27,
+     "q4cur_mt6": 9
+    },
+    "n_decisoes_m": {
+     "q4cur_g600": 26,
+     "q4cur_mt6": 8
+    },
+    "n_decisoes_hm": {
+     "q4cur_g600": 27,
+     "q4cur_mt6": 9
+    }
+   }
+  },
+  "h_hotel_folio_cp7": {
+   "iguais": {
+    "rewards_identicos": true,
+    "labels_identicos": true,
+    "a_prime_mesmo_tipo": true,
+    "mesma_trajetoria_baseline": false
+   },
+   "diferencas": {
+    "n_decisoes_h": {
+     "q4cur_g600": 31,
+     "q4cur_mt6": 13
+    },
+    "n_decisoes_m": {
+     "q4cur_g600": 30,
+     "q4cur_mt6": 12
+    },
+    "n_decisoes_hm": {
+     "q4cur_g600": 30,
+     "q4cur_mt6": 12
+    }
+   }
+  }
+ },
+ "e_turnstile_cp10_diferenca_I": {
+  "pergunta": "diferença de magnitude de I entre regimes vem de qual braço/mecanismo?",
+  "trajetorias_baseline_distintas": true,
+  "rewards_por_braco": {
+   "orig": {
+    "g600": 0.38461538461538464,
+    "mt6": 0.6153846153846154,
+    "delta_mt6_menos_g600": 0.23076923076923078
+   },
+   "h": {
+    "g600": 0.6923076923076923,
+    "mt6": 0.6923076923076923,
+    "delta_mt6_menos_g600": 0.0
+   },
+   "m": {
+    "g600": 0.6923076923076923,
+    "mt6": 0.6923076923076923,
+    "delta_mt6_menos_g600": 0.0
+   },
+   "hm": {
+    "g600": 0.23076923076923078,
+    "mt6": 0.46153846153846156,
+    "delta_mt6_menos_g600": 0.23076923076923078
+   }
+  },
+  "bracos_que_mudam": [
+   "orig",
+   "hm"
+  ],
+  "I": {
+   "g600": 0.7692307692307692,
+   "mt6": 0.3076923076923076
+  },
+  "decomposicao": {
+   "C_H": {
+    "g600": -0.30769230769230765,
+    "mt6": -0.07692307692307687
+   },
+   "C_M": {
+    "g600": -0.30769230769230765,
+    "mt6": -0.07692307692307687
+   },
+   "C_HM": {
+    "g600": 0.15384615384615385,
+    "mt6": 0.15384615384615385
+   }
+  },
+  "comprimento_sufixo_baseline": {
+   "q4cur_g600": 19,
+   "q4cur_mt6": 9
+  },
+  "comprimento_sufixo_replays": {
+   "q4cur_g600": {
+    "h": 27,
+    "m": 26,
+    "hm": 27
+   },
+   "q4cur_mt6": {
+    "h": 9,
+    "m": 8,
+    "hm": 9
+   }
+  },
+  "divergencia_livre_por_braco": {
+   "q4cur_g600": {
+    "h": {
+     "offset": 1,
+     "decision_point": "tool_call",
+     "baseline_action": {
+      "action": "write_file",
+      "path": "card_utils.py",
+      "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+     },
+     "replay_action": {
+      "action": "run_tests"
+     }
+    },
+    "m": {
+     "offset": 6,
+     "decision_point": "tool_call",
+     "baseline_action": {
+      "action": "write_file",
+      "path": "card_utils.py",
+      "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+     },
+     "replay_action": {
+      "action": "write_file",
+      "path": "turnstile_utils.py",
+      "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+     }
+    },
+    "hm": {
+     "offset": 3,
+     "decision_point": "context_policy",
+     "baseline_action": {
+      "action": "keep_context"
+     },
+     "replay_action": {
+      "action": "summarize_context"
+     }
+    }
+   },
+   "q4cur_mt6": {
+    "h": {
+     "offset": 1,
+     "decision_point": "tool_call",
+     "baseline_action": {
+      "action": "write_file",
+      "path": "card_utils.py",
+      "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+     },
+     "replay_action": {
+      "action": "run_tests"
+     }
+    },
+    "m": {
+     "offset": 6,
+     "decision_point": "tool_call",
+     "baseline_action": {
+      "action": "write_file",
+      "path": "card_utils.py",
+      "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+     },
+     "replay_action": {
+      "action": "write_file",
+      "path": "turnstile_utils.py",
+      "content": "def card_ok(card: str) -> bool:\n    return len(card) == 8 and card.isdigit()"
+     }
+    },
+    "hm": {
+     "offset": 3,
+     "decision_point": "context_policy",
+     "baseline_action": {
+      "action": "keep_context"
+     },
+     "replay_action": {
+      "action": "summarize_context"
+     }
+    }
+   }
+  }
+ },
+ "f_hotel_cp7": {
+  "identidade_entre_regimes": {
+   "rewards_4_bracos_identicos": true,
+   "rewards": {
+    "orig": 1.0,
+    "h": 0.4166666666666667,
+    "m": 0.08333333333333333,
+    "hm": 0.9166666666666666
+   },
+   "creditos_identicos": true,
+   "mesma_trajetoria_baseline": false,
+   "trajectory_ids": {
+    "q4cur_g600": "d6f28a35a6af4128ac310b2ad6d5f570",
+    "q4cur_mt6": "8317eed3f6fc49758a7c64ce5d504413"
+   }
+  },
+  "comparacao_8b_cp0_vs_4b_cp7": {
+   "nota": "mesma task, pontos DIFERENTES: 8B quebra no cp0 (turno 0), 4B no cp7 (turno 2)",
+   "8b_cp0": {
+    "cp_index": 0,
+    "turn": 0,
+    "direction": "keep_context->summarize_context",
+    "rewards": {
+     "orig": 0.4166666666666667,
+     "h": 0.0,
+     "m": 0.4166666666666667,
+     "hm": 0.3333333333333333
+    },
+    "credits": {
+     "C_H": 0.4166666666666667,
+     "C_M": 0.0,
+     "C_HM": 0.08333333333333337,
+     "I": -0.3333333333333333
+    },
+    "d_label": "H-flip destrutivo; a′ sozinho neutro; conjunto intermediário (não rastreia nenhum braço)"
+   },
+   "8b_consts_destroyed": [
+    "412.60",
+    "388.45",
+    "297.30",
+    "0.0685",
+    "13",
+    "0.8823",
+    "23.4",
+    "9"
+   ],
+   "8b_a_prime": {
+    "action_type": "write_file",
+    "consts_in_a_prime": [
+     "412.60",
+     "388.45",
+     "297.30",
+     "9"
+    ]
+   },
+   "4b_cp7": {
+    "cp_index": 7,
+    "turn": 2,
+    "direction": "keep_context->summarize_context",
+    "rewards": {
+     "orig": 1.0,
+     "h": 0.4166666666666667,
+     "m": 0.08333333333333333,
+     "hm": 0.9166666666666666
+    },
+    "credits": {
+     "C_H": 0.5833333333333333,
+     "C_M": 0.9166666666666666,
+     "C_HM": 0.08333333333333337,
+     "I": -1.4166666666666665
+    },
+    "d_label": "H-flip destrutivo; a′ sozinho destrutivo; conjunto intermediário (não rastreia nenhum braço)"
+   },
+   "4b_consts_delta": {
+    "flip_to_summarize": true,
+    "consts_in_ctx_baseline_tc": [
+     "412.60",
+     "388.45",
+     "297.30",
+     "0.0685",
+     "13",
+     "0.8823",
+     "23.4",
+     "9"
+    ],
+    "consts_in_ctx_pos_flip_h": [
+     "412.60",
+     "388.45",
+     "297.30",
+     "0.0685",
+     "9"
+    ],
+    "consts_destroyed": [
+     "13",
+     "0.8823",
+     "23.4"
+    ],
+    "n_total": 8
+   },
+   "4b_a_prime": {
+    "action_type": "write_file",
+    "consts_in_a_prime": [
+     "13",
+     "0.8823",
+     "23.4",
+     "9"
+    ]
+   }
+  }
+ },
+ "limitations": [
+  "Detecção de constantes é por substring textual no contexto/ação; não captura valores recomputados pelo modelo a partir do enunciado resumido nem constantes reescritas em outra forma.",
+  "Análise descritiva post-hoc de n=6 pontos; nenhum teste estatístico, nenhuma inferência causal além dos rewards já medidos no Teste 3 (q4cur_*).",
+  "Dois pontos têm flip summarize→keep (direção inversa à anatomia do 8B, que era toda keep→summarize): neles o braço H RESTAURA contexto em vez de destruir, e o campo (a) reporta consts_restored.",
+  "Os rótulos de padrão vs 8B são heurísticos (classify_vs_8b) sobre igualdades exatas de reward; padrões novos são declarados como 'fora dos 2 padrões do 8B'.",
+  "A comparação hotel 4B cp7 vs 8B cp0 usa pontos de intervenção diferentes (turnos 2 vs 0) e baselines de modelos diferentes; é mecânica descritiva, não contraste pareado."
+ ]
+}

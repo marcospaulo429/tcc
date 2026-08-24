@@ -895,9 +895,21 @@ to the original reward: \texttt{x\_hours\_bank}, \texttt{h\_sku\_validator}
 numerically identical across regimes --- same four arm rewards, same
 destroyed constants, same free-divergence offsets, from different baseline
 trajectories --- so the break is a property of the decision point
-(task $\times$ turn), not of the budget regime (this trace anatomy covers
-the 8B's six breaks; the 4B's D5 breaks have credit signatures only, an
-asymmetry we note). The robust claim is
+(task $\times$ turn), not of the budget regime. The same trace anatomy run
+on the 4B's D5 breaks (0 new rollouts) adds a structural asymmetry: three
+of the 4B's four unique break points are \emph{restore}-direction flips
+(\texttt{summarize}$\to$\texttt{keep}: the baseline had already summarized,
+and the flip restores destroyed constants), a direction absent from the
+8B's breaks, and they follow a third pattern --- individually beneficial
+flips that destroy each other jointly ($I>0$). Only one 4B point falls into
+an 8B pattern. Two audit details worth recording: the recurring
+\texttt{h\_hotel\_folio} point is numerically identical across regimes in
+all four arm rewards despite distinct baseline trajectories, and the
+recurring \texttt{h\_turnstile\_fsm} magnitude difference ($I=+0.77$ vs.\
+$+0.31$) traces entirely to baseline quality --- $C_{HM}$ and all
+free-divergence offsets are identical across regimes, so the $I$
+\emph{magnitude} at a recurring point is baseline-relative even when the
+break itself is stable. The robust claim is
 therefore narrower than the mechanism story: \emph{whether} screening-off
 holds is a property of the (model, harness, task) triple, and re-injection of
 destroyed information, which fully explained the annotated 4B/8B contrast
