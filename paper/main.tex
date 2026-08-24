@@ -36,10 +36,12 @@ screens off the harness decision ($C_{HM} = C_M$; 0 breaks in 57 points;
 53/56 reward-pivotal points overall), so single-layer harness credit
 double-counts \emph{exactly} --- at screened points $C(H) = -I(H,M)$, with
 $C_{HM} - C_M$ as the one-extra-replay correction. Screening is not
-universal: it breaks under budget pressure at recurring, model-specific
-decision points, and pre-registered replications and a symmetric control
-show that \emph{whether} it holds is a property of the (model, harness,
-task) triple, not of the pipeline. Training the harness with
+universal: it breaks at recurring, model-specific decision points --- under
+budget pressure for the 4B (a contrast that is suggestive at the task level,
+not confirmed: 3 breaking tasks, clustered $p=0.125$) and at a flat rate in
+both regimes for the 8B --- and pre-registered replications and a symmetric
+control show that \emph{whether} it holds is a property of the (model,
+harness, task) triple, not of the pipeline. Training the harness with
 interaction-corrected credit, dose-matched against outcome-only and
 single-layer arms, fails for an identified, pre-registered reason: the
 training task distribution offers no reward margin where candidate policies
@@ -163,7 +165,7 @@ Claim & Evidence & Status \\
 \midrule
 Replay noise floor is exactly zero & 7{,}685/7{,}685 nulls exact, 3 models $\times$ 2 envs (Table~\ref{tab:nulls}) & confirmed (pre-reg 1) \\
 vLLM APC breaks greedy determinism & floor $0.417$, 7/270 inexact & demonstrated \\
-Slack screening-off, 4B original pool & 0/57 raw; pivotal points 53/56, $P=4.1\times10^{-13}$ & confirmed (pre-reg 10, re-specified) \\
+Slack screening-off, 4B original pool & 0/57 raw; pivotal 53/56 = 0.946, CI95 $[0.87,1.00]$ task-clustered & confirmed (pre-reg 10, re-specified) \\
 $C(H) = -I$ at screened points & algebra (Prop.~\ref{prop:dc}); exact in all measured slack points & identity \\
 Pressure breaks recur at fixed points (4B) & 8/65; same points across configs & point-level; task-clustered weak ($p=0.125$) \\
 Break rate monotonic in pressure & inverted U, Cochran--Armitage $p=0.38$ & \textbf{failed} (pre-reg 13) \\
@@ -171,8 +173,8 @@ Saturation mediates the window & conditioned rates only & descriptive (post-trea
 Screening-off is universal across models & 1.7B: 0 raw breaks; 8B: breaks flat in both regimes & \textbf{refuted} \\
 Shield is a property of the (model, harness, task) triple & curation + symmetric control; break sets point-level disjoint across models & supported; positive characterization inductive \\
 Re-injection mechanism generalizes & 23/24 annotated (original pool) vs.\ 0/15 exposed (curated), Fisher $p=1.0$/$0.94$ & \textbf{failed} (pre-reg 18) \\
-Screening replicates in a second environment & MBPP+: 66/66 (4B), 44/44 (1.7B); pressure cell empty & confirmed; pressure inconclusive (pre-reg 16, 20) \\
-Interaction-corrected credit trains a better harness & no arm learns thr600; margin $+0.024$, CI95 $[-0.026,+0.079]$ & \textbf{failed} (pre-reg 9, 12); cause identified \\
+Screening replicates in a second environment & MBPP+: 11/11 pivotal (4B), 24/24 pivotal (1.7B); rest screens by construction; pressure cell empty & confirmed; pressure inconclusive (pre-reg 16, 20) \\
+Interaction-corrected credit trains a better harness & no arm learns thr600; margin $+0.024$, CI95 $[-0.029,+0.079]$ & \textbf{failed} (pre-reg 9, 12); cause identified \\
 Learned critic beats cheap heuristics & context-size heuristic wins overall & refuted; $C(H)\approx$ position + size \\
 Amortized credit transfers across environments & Spearman $0.03$/$-0.08$, chance & refuted (pre-reg 16) \\
 \bottomrule
@@ -211,6 +213,15 @@ they optimize the composition blindly (HarnessCompass's ``cross-component
 interference'' is between components \emph{of the harness}, not causal
 model--harness interaction). Agent Lightning~\cite{agentlightning}
 provides rollout infrastructure for agent RL without addressing attribution.
+The correction rule $C_{HM}-C_M$ itself sits in an older lineage:
+difference rewards and COMA~\cite{wolpert2001,foerster2018} marginalize one
+\emph{agent's} action against a default or an expected baseline; we
+marginalize one \emph{layer's} decision against a measured joint
+counterfactual, made exact rather than estimated by the zero floor.
+Hindsight credit assignment~\cite{harutyunyan2019} and process reward
+models~\cite{lightman2023} also assign per-step credit, but as learned,
+amortized quantities inside the model layer --- precisely the setting where
+our transfer test shows amortization failing across environments.
 Table~\ref{tab:positioning} summarizes the gap this paper attacks: no prior
 work measures $C(H)$, $C(M)$ and $I(H,M)$ at the same decision point of the
 same trajectory against an exact, zero-noise-floor replay --- every existing
@@ -414,8 +425,8 @@ same point, alone and jointly. We say the model action \emph{screens off}
 the harness decision at a point when the joint flip yields exactly the model
 flip's reward, $C_{HM} = C_M$ --- operationally: conditional on the model
 counterfactual, the harness flip has no marginal effect. We borrow the term
-from probabilistic causality in this operational sense only;
-\S\ref{sec:formal} gives the deterministic reading. \textbf{With budget
+from probabilistic causality~\cite{reichenbach1956} in this operational
+sense only; \S\ref{sec:formal} gives the deterministic reading. \textbf{With budget
 slack} (max 12 turns;
 three budget configurations g450/g600/g900), the model action screens off the
 harness decision \emph{exactly}: $C_{HM} = C_M$ in \textbf{57/57} points ---
@@ -474,15 +485,21 @@ triple dependence of \S\ref{sec:threats}. MBPP+
 configurations and the first pressure configuration we measured 78
 interaction points (57 slack + 21 at mt6); \textbf{75/78 show exact
 screening-off} ($C_{HM} = C_M$) --- the 3 exceptions are the mt6 pressure
-breaks. The pre-registered sign test against a 50/50 null gives
-$P = 2.6\times10^{-19}$, but we do not lean on that number: by
-Remark~\ref{rem:pivot}, reward-non-pivotal points satisfy $C_{HM} = C_M$ by
-construction, so the 50/50 null is too easy. Restricting to the 56
-reward-pivotal points --- where screening is falsifiable --- gives
-\textbf{53/56} ($P = 4.1\times10^{-13}$); collapsing further to unique
-task$\times$point pairs (removing cross-configuration pseudo-replication)
-gives 19/22 ($P = 4.3\times10^{-4}$), and 13 of 16 pivotal tasks screen at
-every measured point. The inference we retain is the pivotal-point one. Among the screened points, 52 are non-trivially
+breaks. We report this estimation-first, on the falsifiable subpopulation:
+by Remark~\ref{rem:pivot}, reward-non-pivotal points satisfy $C_{HM} = C_M$
+by construction, so the informative unit is the 56 reward-pivotal points.
+There the screened fraction is $\mathbf{53/56} = 0.946$, CI95 $[0.87, 1.00]$
+by task-clustered bootstrap over the 16 pivotal tasks; collapsing further to
+unique task$\times$point pairs (removing cross-configuration
+pseudo-replication) gives 19/22, and 13 of 16 pivotal tasks screen at every
+measured point. Binomial sign tests against a 50/50 null give
+$P = 4.1\times10^{-13}$ (instances) and $P = 4.3\times10^{-4}$ (unique
+pairs), but we do not rest the claim on them: no substantive model of the
+data-generating process fixes the non-screening probability at $0.5$, so
+these $p$-values certify only that the pattern is not coin-flip noise. The
+inference we retain is the clustered estimate; a bundled script
+(\texttt{estatisticas\_pivotais.py}) re-derives every number in this
+paragraph from the raw artifacts and fails on drift. Among the screened points, 52 are non-trivially
 \emph{shielded}: the harness flip
 alone has a real effect ($C(H) \neq 0$) that the joint flip erases --- these
 are exactly the double-counting cases. Of the 52 shielded points, 24
@@ -762,9 +779,14 @@ states the training tasks \emph{do} visit (thr600 fires above 600 tokens,
 well inside the visited range), the reward margin between thr600 and
 keep-always is statistically indistinguishable from zero: paired bootstrap
 on the training tasks
-gives $+0.024$, CI95 $[-0.026, +0.079]$, $P(\text{diff} \leq 0) = 0.19$ ---
+gives $+0.024$, CI95 $[-0.029, +0.079]$, $P(\text{diff} \leq 0) = 0.19$
+(re-derivable from the raw calibration artifact by the bundled
+\texttt{margem\_calibracao.py}, which fails on drift) ---
 whatever gradient signal exists on the training tasks is bounded by this
-statistically undetectable margin, however accurate the credit.
+margin, which is undetectable at this sample size; we note the interval
+admits margins (up to $+0.08$) that more episodes might resolve, so this
+second argument is an underpowered null and the diagnosis rests primarily
+on the state-visitation argument.
 \emph{Third}, thr600's held-out dominance comes from cumulative-cost
 structure: long held-out tasks accumulate prompt tokens under keep-always
 (e.g.\ \texttt{l\_vending\_machine}, 5{,}933 cumulative prompt tokens,
@@ -804,7 +826,10 @@ from MBPP+ \cite{evalplus2023} with fractional reward (6--10 test functions
 per task, canonical solutions validated in our sandbox), one slack and one
 pressure configuration on Qwen3-4B. The floor replicates exactly (1{,}294
 null replays, all exact) and \textbf{screening-off replicates at 66/66
-interaction points} --- including a non-saturated point with $I=-0.4$, a
+interaction points, of which 11 are reward-pivotal (11/11 screened)} ---
+the other 55 screen by construction (Remark~\ref{rem:pivot}), so the
+informative content of the replication is the pivotal 11/11, not the 66/66
+--- including a non-saturated point with $I=-0.4$, a
 live double-counting case in an external benchmark. What the adaptation
 cannot yet test is the pressure-regime break rate: 60/66 points are
 reward-saturated (Qwen3-4B is too strong for MBPP+), leaving 6 non-saturated
@@ -812,7 +837,8 @@ points and no breaks --- inconclusive at that power, the same saturation
 boundary seen at 1.7B and 8B. A pre-registered second attempt (D6: the
 1.7B on the same MBPP+ pool, declared outcomes) landed on the same
 boundary from the same side: floor exact (1{,}080/1{,}080), screening
-replicates raw at 44/44 points across both regimes --- a second (model,
+replicates raw at 44/44 points across both regimes (24/24 reward-pivotal)
+--- a second (model,
 environment) cell with unconditional screening in the external benchmark --- but 20/22 points per
 configuration are saturated (the 1.7B still solves 34/60 MBPP+ tasks at
 $1.0$) and the pressure budget never binds on MBPP+'s short trajectories,
@@ -830,7 +856,7 @@ replicates everywhere (pre-registered as D2c, D2d, D3 before running): the
 8B contributes 810 dedicated and 234 attached null replays and MBPP+
 contributes 1{,}294, all exact. Screening-off replicates
 \emph{unconditionally} on Qwen3-1.7B (0 raw breaks in 23 points) and on
-MBPP+ (66/66).
+MBPP+ (66/66 raw; 11/11 pivotal).
 
 \paragraph{The 8B breaks the shield.} On Qwen3-8B it does not: raw break
 rates are flat across
@@ -1004,6 +1030,24 @@ that one alternative; we have not measured sensitivity to re-sampling $a'$,
 and we flag it as the highest-value robustness check this apparatus can run
 next.
 
+\paragraph{Selection into measurement.} A point enters the interaction
+census only if the sampler finds a parseable $a' \neq a$ within the 8-seed
+schedule; across configurations 53--73\% of candidate points are discarded
+this way. The measured population is therefore selected on the model's own
+output entropy at that state --- a post-decision variable plausibly
+correlated with both competence and the information content of the context
+--- and every break or screening rate is conditional on ``an alternative
+exists.'' For the headline cross-model contrasts the discard rates are close
+enough that differential selection is an implausible driver: on the
+pool-matched contrast (identical 30 tasks) the 4B discards 66--73\% across
+its slack configurations versus 64\% for the 8B at the same budget, a
+$\leq$9-point selection gap against a 0\% vs.\ 18\% raw break-rate gap; on
+the curated pool the rates are 57--70\% (4B) versus 53--59\% (8B). We
+cannot rule out that the \emph{composition} of retained points differs
+across models in ways the rate does not capture, so we report the rates
+per configuration in the artifacts and flag the selection as a caveat on
+all cross-model comparisons rather than correcting for it.
+
 \paragraph{Serving premises.} The exact floor holds under a fully specified
 stack: vLLM 0.8.5.post1 (V1 engine, pinned) serving one model per experiment
 on a single NVIDIA RTX 4090; dtype auto (bfloat16); CUDA graphs enabled (no
@@ -1084,7 +1128,14 @@ benchmark this field still needs.
 \appendix
 \section{Pre-Registration Ledger}
 All confirmatory analyses were pre-registered in the project's execution plan
-before the corresponding data were collected. Table~\ref{tab:ledger} lists
+before the corresponding data were collected. The ledger is an
+\emph{internal, same-team} pre-specification, timestamped by git commits
+that verifiably precede the corresponding run artifacts; it is not a
+third-party registration, and hours-scale gaps in a single-team pipeline
+cannot exclude unreported exploration before each commit (the pilot runs
+that preceded the formal ledger are preserved in the artifact tree). Its
+evidential force rests on the recorded failures, not on the registration
+mechanism itself. Table~\ref{tab:ledger} lists
 all 20 pre-registrations with their outcomes, including the four that
 failed and the six partial. Failed predictions are reported in the main text where they occur.
 
