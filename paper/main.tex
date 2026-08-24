@@ -39,7 +39,7 @@ recurring, model-specific decision points, so whether the shield holds is a
 property of the (model, harness, task) triple. Training the harness with
 interaction-corrected credit fails for an identified, pre-registered
 reason: the training distribution offers no reward margin where candidate
-policies differ. We release the apparatus, a 23-item pre-registration
+policies differ. We release the apparatus, a 24-item pre-registration
 ledger including all failures, and the negative result as a design brief
 for cross-layer training benchmarks.
 \end{abstract}
@@ -160,6 +160,7 @@ Claim & Evidence & Status \\
 Replay noise floor is exactly zero & 8{,}002/8{,}002 nulls exact, 3 models $\times$ 2 envs (Table~\ref{tab:nulls}) & confirmed (pre-reg 1) \\
 Floor survives an LLM-in-the-loop summarizer & 317/317 nulls exact (greedy summarizer cell) & confirmed (pre-reg 22) \\
 Deterministic taxonomy predicts stochastic estimand & temp $0.8$: 2/2 screened cover 0; 2/3 breaks exclude 0, predicted sign & confirmed (pre-reg 23, outcome s1) \\
+Training negative survives a verified margin & 9/9 trained runs find the true optimum of the mis-specified objective (cheap failure) & confirmed (pre-reg 24, outcome s2) \\
 vLLM APC breaks greedy determinism & floor $0.417$, 7/270 inexact & demonstrated \\
 Slack screening-off, 4B original pool & 0/57 raw; pivotal 53/56 = 0.946, CI95 $[0.87,1.00]$ task-clustered & confirmed (pre-reg 10, re-specified) \\
 Screening survives $a'$ re-sampling & 99/101 informative slack draws (CI95 $[0.94,1.00]$); mt6 breaks persist 9/9 & confirmed (pre-reg 21) \\
@@ -889,6 +890,37 @@ nonzero reward margin to the states where candidate policies actually differ
 --- otherwise credit fidelity is moot, and the failure will masquerade as an
 algorithmic one.
 
+\paragraph{Act 3: verified margin, third attractor.} We then ran the
+experiment this lesson demands (pre-registered with declared outcomes
+before any run). Stage A measured, for all 52 unique tasks in the project,
+the actual $R_{\text{eff}}$ margin between thr600 and keep-always under two
+deterministic episodes per task, and selected the 16 tasks with positive
+margin (train/held-out split by alternating rank, fixed before training);
+held-out references: keep-always $-1.181$, thr600 $-0.746$, a verified
+margin of $+0.435$. Stage B re-ran all four arms $\times$ 3 seeds,
+dose-matched at 1{,}600 LLM calls, with the Act-2 optimization. The result
+is sharper than either prior act: \textbf{every trained arm in every seed
+--- outcome-only and both credit arms, 9/9 runs --- converges to the same
+third attractor, summarize-always}, scoring held-out
+$R_{\text{eff}} = -0.143$ with $R = 0.000$, while the zero arm (de facto
+keep-always) solves 45\% of held-out tasks at $R_{\text{eff}} = -1.181$.
+The trained arms are \emph{right}: on this pool of long, hard tasks under
+$\lambda = 25$, universal cheap failure is the true optimum of the declared
+objective --- solving a task costs roughly its reward in tokens. Training
+worked; the objective was mis-specified. The declared outcome bin is s2
+(all arms escape keep-always, no credit-vs-outcome ordering), and the
+design lesson finalizes into its strongest form: verifying a margin between
+two named policies is not enough --- \textbf{the margin must be verified
+against every fixed attractor expressible by the policy class} (here
+summarize-always dominates both named references), and the cost weight
+$\lambda$ must leave solving profitable, or every signal --- outcome or
+credit, at any fidelity --- will honestly optimize its way to failure. A
+secondary observation at matched call dose: the credit arms reached the
+same endpoint from roughly 9$\times$ fewer episodes (outcome
+756--825 episodes per seed; $C_{HM}-C_M$ 82--87), consistent with credit
+buying per-episode signal at the price of replays, but on this landscape
+there was only one place to go.
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.72\linewidth]{figures/f5_training.pdf}
@@ -1240,7 +1272,7 @@ the training task distribution itself: no reward margin where policies
 differ, unreachable states where learned thresholds would fire. We offer the
 infrastructure, the
 regime-dependence finding, the APC determinism warning, and a
-pre-registration ledger of 23 predictions (including 4 failures and 8
+pre-registration ledger of 24 predictions (including 4 failures and 9
 partials) as the
 contributions, and the training negative as the design brief for the
 benchmark this field still needs.
@@ -1295,6 +1327,7 @@ failed and the six partial. Failed predictions are reported in the main text whe
 21 & $a'$ re-sampling sensitivity: 56 pivotal instances $\times$ 3 disjoint seed schedules; declared outcomes stable ($\geq 0.90$) / partial / fragile ($<0.75$) on informative slack draws & stable: 99/101 (0.980, CI95 $[0.94,1.00]$); 79/81 on genuinely new $a'$; mt6 breaks persist 9/9 & confirmed \\
 22 & LLM-summarizer cell: (a) floor $0.0$ under a greedy LLM summarizer (declared falsifiable); (b) screening $\geq$0.90 / 0.75--0.90 / $<$0.75 & (a) held (317/317 exact); (b) 2/3 pivotal screened, but yield too low to bin --- semantic summaries preserve the constants that generate pivotal $C(H)$ in this pool & partial \\
 23 & Stochastic protocol at temp $0.8$: 5 mt6 points $\times$ 12 seeds $\times$ 3 arms; s1 = screened cover 0 (2/2) and breaks exclude 0 ($\geq$2/3) & s1: screened 2/2 cover 0; breaks 2/3 exclude 0 with predicted sign; weakest deterministic break ($0.09$) dissolves & confirmed \\
+24 & Margin-verified training rerun: stage A selects tasks with measured thr600$>$keep margin (16/52, held-out margin $+0.435$); stage B 4 arms $\times$ 3 seeds at 1{,}600 calls; outcomes s1 (credit $>$ outcome) / s2 (escape, no ordering) / s3 (keep-always again) & s2: all 9 trained runs converge to a \emph{third} attractor (summarize-always, $R_{\text{eff}}=-0.143$, $R=0$) that truly dominates the declared objective; $\lambda$ mis-specification exposed & partial \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
