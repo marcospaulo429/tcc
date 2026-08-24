@@ -128,9 +128,9 @@ def fig3() -> None:
     nn = [(wc[k]["quebras"], wc[k]["n"]) for k in order]
     nns = [(wc[k]["quebras_nonsat"], wc[k]["n_nonsat"]) for k in order]
     extra = ["q8_g600", "q8_mt6", "q8_mt4", "v5cur_g600", "v5cur_mt6",
-             "mbpp_g600", "mbpp_mt6"]
+             "q4cur_g600", "q4cur_mt6", "mbpp_g600", "mbpp_mt6"]
     labels += ["8B\ng600", "8B\nmt6", "8B\nmt4", "8B cur\ng600", "8B cur\nmt6",
-               "MBPP+\ng600", "MBPP+\nmt6"]
+               "4B cur\ng600", "4B cur\nmt6", "MBPP+\ng600", "MBPP+\nmt6"]
     for k in extra:
         a = rep[k]
         raw.append((a["n"] - a["n_screened_exact"]) / a["n"])
@@ -140,9 +140,9 @@ def fig3() -> None:
 
     x = np.arange(len(labels))
     w = 0.38
-    fig, ax = plt.subplots(figsize=(9.6, 2.4))
+    fig, ax = plt.subplots(figsize=(10.8, 2.4))
     cols = ([COL_SLACK] * 3 + [COL_PRESS] * 3 + ["#6a51a3"] * 2
-            + ["#a63603"] * 3 + ["#e6550d"] * 2 + ["#238b45"] * 2)
+            + ["#a63603"] * 3 + ["#e6550d"] * 2 + ["#08519c"] * 2 + ["#238b45"] * 2)
     ax.bar(x - w / 2, raw, w, color=cols, alpha=0.55, label="raw")
     ax.bar(x + w / 2, cond, w, color=cols, hatch="//", label="non-saturated only")
     for i in range(len(labels)):
@@ -156,12 +156,14 @@ def fig3() -> None:
     ax.axvspan(2.5, 5.5, color=COL_PRESS, alpha=0.05)
     ax.axvspan(7.5, 10.5, color="#a63603", alpha=0.05)
     ax.axvspan(10.5, 12.5, color="#e6550d", alpha=0.05)
-    ax.axvspan(12.5, 14.5, color="#238b45", alpha=0.05)
+    ax.axvspan(12.5, 14.5, color="#08519c", alpha=0.05)
+    ax.axvspan(14.5, 16.5, color="#238b45", alpha=0.05)
     ax.text(1.0, 0.56, "budget slack (Qwen3-4B)", ha="center", fontsize=8, color=COL_SLACK)
     ax.text(4.0, 0.56, "budget pressure", ha="center", fontsize=8, color=COL_PRESS)
     ax.text(9.0, 0.56, "Qwen3-8B (raw flat)", ha="center", fontsize=8, color="#a63603")
     ax.text(11.5, 0.56, "8B curated", ha="center", fontsize=8, color="#e6550d")
-    ax.text(13.5, 0.56, "MBPP+ (4B)", ha="center", fontsize=8, color="#238b45")
+    ax.text(13.5, 0.56, "4B curated", ha="center", fontsize=8, color="#08519c")
+    ax.text(15.5, 0.56, "MBPP+ (4B)", ha="center", fontsize=8, color="#238b45")
     ax.legend(loc="center right", frameon=False)
     fig.tight_layout()
     fig.savefig(OUT / "f3_regime_dependence.pdf", bbox_inches="tight")

@@ -35,7 +35,7 @@ we report both) at \emph{recurring} decision points, with a non-monotonic
 dependence on pressure intensity partially mediated by reward saturation.
 The noise floor replicates on two additional models
 (Qwen3-1.7B and Qwen3-8B) and on a second environment (a multi-turn MBPP+
-adaptation): 4{,}825 null replays across three models and two environments
+adaptation): 5{,}221 null replays across three models and two environments
 are all exact (the single fidelity exception occurred in a separate,
 discarded pre-fix run --- 2 inexact nulls of 432, traced to an
 ASLR memory address leaking into the live context, root-caused,
@@ -45,9 +45,14 @@ Screening-off itself replicates unconditionally on Qwen3-1.7B
 \emph{not}: raw breaks appear at a similar rate in both regimes (5/28 slack,
 6/34 pressure), and the result survives a pre-registered curation of the
 task pool to the 8B's competence window (3/27 slack, 3/31 pressure,
-including a non-saturated slack break) --- whether
-screening-off holds is itself competence-dependent: the shield is a
-property of the model--harness pair, not of the harness. The re-injection
+including a non-saturated slack break). A pre-registered symmetric control
+then sharpened the claim against us: on the same curated pool the 4B
+\emph{also} breaks raw screening (4/16 slack, 2/23 pressure, mostly
+non-saturated), so the shield is a property of the (model, harness, task)
+triple --- the pool-matched model contrast on identical tasks (0/57 vs.\
+5/28) stands, break points are model-specific and stable across regimes,
+and breaks concentrate where the pool sits near the model's competence
+boundary. The re-injection
 mechanism that fully explains the annotated 4B/8B contrast does not
 generalize to the curated pool (pre-registered test, reported as failed).
 This implies that single-layer credit double-counts shielded
@@ -142,9 +147,12 @@ whose occurrence we \emph{verify in the recorded traces} (72/75 screened
 points explained; 3 residuals, including 2 reward collisions, declared), and
 a pivotality argument that unifies the competence window, the mt4 collapse,
 and the saturation profiles of both auxiliary models; the replications show
-the shield itself is competence-dependent --- the 8B breaks screening where
-the 4B never does, in the raw data and in a pool pre-registered and curated
-to the 8B's competence window. The re-injection mechanism explains the
+the shield itself is a property of the (model, harness, task) triple: the
+8B breaks screening on hardened tasks where the 4B's original-pool slack
+shield was exact, the 4B breaks on the same hardened pool (pre-registered
+symmetric control), break points are model-specific and regime-stable, and
+the pool-matched contrast on identical tasks (0/57 vs.\ 5/28) stands. The
+re-injection mechanism explains the
 annotated 4B/8B contrast (23/24 and 0/24 points) but fails a pre-registered
 generalization test in the curated pool, and we scope it accordingly;
 empirically, a structural component (the sampled $a'$
@@ -298,8 +306,10 @@ nulls attached to every interaction run (401 more on Qwen3-4B), two
 configurations of Qwen3-1.7B (64 nulls), three configurations of
 Qwen3-8B (810 dedicated + 234 attached), two MBPP+ configurations
 (1{,}080 dedicated + 214 attached), and four curated-pool configurations on
-Qwen3-8B (792 nulls, run after the fix reported below), \textbf{every one
-of 4{,}825 null replays reproduced $R$ exactly}: the floor is $0.0$ in all
+Qwen3-8B (792 nulls, run after the fix reported below), and two
+symmetric-control configurations of Qwen3-4B on the curated pool (396
+nulls), \textbf{every one
+of 5{,}221 null replays reproduced $R$ exactly}: the floor is $0.0$ in all
 configurations
 (Figure~\ref{fig:floor}a). This is a measurement under explicit premises ---
 fixed serving config, strictly sequential requests, prefix caching off ---
@@ -307,10 +317,10 @@ not a guarantee.
 
 A second silent nondeterminism source surfaced later, and we report it the
 same way: in a discarded pre-fix run of the first hardened pool (excluded
-from the 4{,}825: its pool failed the pre-registered curation rule, and its
+from the 5{,}221: its pool failed the pre-registered curation rule, and its
 configurations were re-run after the fix), 2 of
 432 nulls were inexact --- the first fidelity breaks observed in this
-project (2/5{,}257 including every null ever run under the stated premises;
+project (2/5{,}653 including every null ever run under the stated premises;
 the APC-contaminated run of Figure~\ref{fig:floor}b violated them and is
 counted separately).
 Root cause, identified from the diverging trace: a memory address inside a
@@ -340,7 +350,7 @@ default vLLM settings inherits this silent failure.
 \caption{\textbf{F1 --- Measured noise floor.} (a) Dedicated null-replay
 runs (Qwen3-4B blue, Qwen3-1.7B purple); together with nulls attached to
 interaction runs, the Qwen3-8B and MBPP+ replications, and the curated-pool
-runs, all 4{,}825 null
+runs, all 5{,}221 null
 replays are exact, floor $=0.0$. (b) With
 vLLM automatic prefix caching
 on, the floor rises to $0.417$ (7/270 inexact): greedy determinism breaks
@@ -416,8 +426,9 @@ non-saturated, $p=0.037$). Qwen3-1.7B (purple) replicates slack; its
 pressure null is explained by saturation (only 1 non-saturated point).
 Qwen3-8B (red) breaks raw screening at a \emph{flat} rate across regimes
 (5/28, 6/34, 7/35), and the flatness survives the pre-registered curated
-pool (orange: 3/27 slack, 3/31 pressure) --- the competence dependence of
-\S\ref{sec:threats}. MBPP+
+pool (orange: 3/27 slack, 3/31 pressure); the symmetric control (dark blue)
+shows the 4B \emph{also} breaks on the curated pool (4/16, 2/23) --- the
+triple dependence of \S\ref{sec:threats}. MBPP+
 (green, Qwen3-4B) replicates screening unconditionally (0/66).}
 \label{fig:regime}
 \end{figure}
@@ -823,14 +834,35 @@ wrong way), and the directional prediction
 (pressure $\geq$ slack) failed ($9.7\%$ vs.\ $11.1\%$). All curated-pool
 break counts are descriptive: with 3 break tasks per regime we make no
 clustered inferential claim, and we make no cross-pool $p$-value comparison
-against the 4B's 0/57. Two design threats remain and we name them: the
-curated comparison was, at the time of this analysis, cross-pool (the 4B's
+against the 4B's 0/57. Two design threats were named at this point --- the
+curated comparison was cross-pool (the 4B's
 0/57 comes from the original pool --- the paired contrast on identical
 tasks is D2d's 0/57 vs.\ 5/28); and the curation window is operationalized
 by task \emph{family} (the second pool was designed around the profile that
 survived curation), so in-window break rate could be a property of the
-family rather than of competence --- the symmetric control (the 4B run on
-the same curated pool, pre-registered as D5) addresses both. The break structure
+family rather than of competence --- and the pre-registered symmetric
+control (D5: the 4B on the same 22 curated tasks, outcomes declared in
+advance) resolved both, \emph{against} the strong form of our own claim.
+The 4B also breaks raw screening on the curated pool: 4/16 slack points (3
+non-saturated, including a synergy break at \texttt{h\_turnstile\_fsm} with
+$I=+0.77$ and \texttt{h\_hotel\_folio} at $I=-1.42$) and 2/23 pressure
+points; its floor held (396/396 nulls exact), and the pivotality-based
+prediction that the 4B would sit saturated-in-failure on this pool failed
+(1/16 and 3/23 saturated --- reported as a failed pre-registered
+sub-hypothesis). The competence claim therefore re-scopes: the shield is
+a property of the (model, harness, \emph{task}) triple, not of the
+model--harness pair alone. What survives every cell of the design: the
+pool-matched model contrast on identical tasks (0/57 vs.\ 5/28), the
+majority of points screened in every configuration (worst cell 12/16), the
+regime contrast existing only for the 4B on its original pool, and a new
+invariant --- break points are \emph{model-specific and regime-stable}:
+within a model the same (task, turn) points break in both regimes
+(numerically identically), while across models the break sets are disjoint
+at the point level (the two models share one break task,
+\texttt{h\_hotel\_folio}, at different turns). Breaks concentrate where the
+pool sits near the model's competence boundary --- for the 4B that is the
+original pool under pressure and the hardened pool in both regimes; for
+the 8B, the hardened pool in both regimes. The break structure
 is also heterogeneous: the D2d slack signature ($C_H=1.0$, $C_M=0.0$,
 $C_{HM}\approx0.9$) does not recur --- \texttt{h\_cargo\_manifest} tracks
 the harness ($C_{HM}=0.46$ vs.\ $C_H=0.62$) while \texttt{h\_hotel\_folio}
@@ -893,15 +925,17 @@ crisp, regime-dependent picture: with budget slack the model screens off the
 harness completely (0/57), so single-layer harness credit double-counts;
 under budget pressure the shield breaks at recurring points (8/65), inside a
 competence window shaped by reward saturation --- and the regime contrast
-itself is a property of the model: a stronger model breaks screening at a
-flat rate in both regimes, in raw data and in a competence-curated pool. Better credit did not,
+itself is a property of the (model, pool) pair: a stronger model breaks
+screening at a flat rate in both regimes, and on a pool hardened to the
+stronger model's competence boundary \emph{both} models break, at
+model-specific, regime-stable points. Better credit did not,
 however, train a better harness: a two-stage, pre-registered negative ---
 with the estimator exonerated by audit --- locates the binding constraint in
 the training task distribution itself: no reward margin where policies
 differ, unreachable states where learned thresholds would fire. We offer the
 infrastructure, the
 regime-dependence finding, the APC determinism warning, and a
-pre-registration ledger of 18 predictions (including 4 failures and 4
+pre-registration ledger of 19 predictions (including 4 failures and 5
 partials) as the
 contributions, and the training negative as the design brief for the
 benchmark this field still needs.
@@ -910,8 +944,8 @@ benchmark this field still needs.
 \section{Pre-Registration Ledger}
 All confirmatory analyses were pre-registered in the project's execution plan
 before the corresponding data were collected. Table~\ref{tab:ledger} lists
-all 18 pre-registrations with their outcomes, including the four that
-failed and the four partial. Failed predictions are reported in the main text where they occur.
+all 19 pre-registrations with their outcomes, including the four that
+failed and the five partial. Failed predictions are reported in the main text where they occur.
 
 \begin{table}[h]
 \centering\scriptsize
@@ -938,6 +972,7 @@ failed and the four partial. Failed predictions are reported in the main text wh
 16 & D3 second environment: floor, screening, pressure on MBPP+ (60 tasks); critic transfer A$\to$B & floor+screening replicate (66/66); pressure inconclusive (saturation); transfer null & partial \\
 17 & D4 curated-pool break rate on 8B: curation rule (baseline reward in $(0.05,0.95)$, $\geq$12 of 24 hardened tasks) & 7/24 fractional (17/24 solved at $1.0$); curation failed as pre-specified; run also exposed the ASLR fidelity leak (\S\ref{sec:floor}) & \textbf{failed} \\
 18 & D4b (final attempt): union pool $\geq$12 in window; (a) floor $0.0$; (b) breaks $\Leftrightarrow$ no re-injection (Fisher); (c) pressure rate $\geq$ slack & curation passed (22/44); floor held (792/792 exact); (b) \textbf{failed} ($p=1.0$, $p=0.94$); (c) \textbf{failed} ($9.7\%<11.1\%$, flat); in-window breaks replicate incl.\ non-saturated slack & partial \\
+19 & D5 symmetric control: 4B on the 22 curated tasks; (a) floor $0.0$; (b) 4B saturated-in-failure ($\geq$50\%); (c) declared outcomes c1/c2/c3 & floor held (396/396); (b) \textbf{failed} (1/16, 3/23 saturated); outcome c2: 4B also breaks in-window (4/16, 2/23) $\Rightarrow$ claim re-scoped to (model, harness, task) triple & partial \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
