@@ -1,0 +1,26 @@
+{
+ "mbpp17_g600": {
+  "nulls": 540,
+  "exact_rate": 1.0,
+  "noise_floor": 0.0,
+  "n_points": 22,
+  "n_saturated": 20,
+  "raw_breaks": 0
+ },
+ "mbpp17_mt6": {
+  "nulls": 540,
+  "exact_rate": 1.0,
+  "noise_floor": 0.0,
+  "n_points": 22,
+  "n_saturated": 20,
+  "raw_breaks": 0
+ },
+ "baselines_g600": {
+  "n": 60,
+  "mean": 0.6229828042328042,
+  "at_zero": 18,
+  "at_one": 34
+ },
+ "desfecho": "c3 (inconclusivo por pot\u00eancia: 2/22 pontos n\u00e3o-saturados por config, <5; press\u00e3o n\u00e3o aperta \u2014 trajet\u00f3rias curtas)",
+ "bonus": "screening raw 22/22 + 22/22 (0 quebras) no par (1.7B, MBPP+); piso 1080/1080 exato"
+}
