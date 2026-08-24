@@ -35,13 +35,14 @@ we report both) at \emph{recurring} decision points, with a non-monotonic
 dependence on pressure intensity partially mediated by reward saturation.
 The noise floor replicates on two additional models
 (Qwen3-1.7B and Qwen3-8B) and on a second environment (a multi-turn MBPP+
-adaptation): 5{,}221 null replays across three models and two environments
+adaptation): 6{,}301 null replays across three models and two environments
 are all exact (the single fidelity exception occurred in a separate,
 discarded pre-fix run --- 2 inexact nulls of 432, traced to an
 ASLR memory address leaking into the live context, root-caused,
 fixed at the source, and re-run: 792/792 exact after the fix).
 Screening-off itself replicates unconditionally on Qwen3-1.7B
-(0 raw breaks) and on MBPP+ (66/66 points); on Qwen3-8B it does
+(0 raw breaks) and on MBPP+ with two models (66/66 points on the 4B, 44/44
+on the 1.7B); on Qwen3-8B it does
 \emph{not}: raw breaks appear at a similar rate in both regimes (5/28 slack,
 6/34 pressure), and the result survives a pre-registered curation of the
 task pool to the 8B's competence window (3/27 slack, 3/31 pressure,
@@ -312,8 +313,9 @@ Qwen3-8B (810 dedicated + 234 attached), two MBPP+ configurations
 (1{,}080 dedicated + 214 attached), and four curated-pool configurations on
 Qwen3-8B (792 nulls, run after the fix reported below), and two
 symmetric-control configurations of Qwen3-4B on the curated pool (396
-nulls), \textbf{every one
-of 5{,}221 null replays reproduced $R$ exactly}: the floor is $0.0$ in all
+nulls), and two MBPP+ configurations of Qwen3-1.7B (1{,}080 nulls),
+\textbf{every one
+of 6{,}301 null replays reproduced $R$ exactly}: the floor is $0.0$ in all
 configurations
 (Figure~\ref{fig:floor}a). This is a measurement under explicit premises ---
 fixed serving config, strictly sequential requests, prefix caching off ---
@@ -321,10 +323,10 @@ not a guarantee.
 
 A second silent nondeterminism source surfaced later, and we report it the
 same way: in a discarded pre-fix run of the first hardened pool (excluded
-from the 5{,}221: its pool failed the pre-registered curation rule, and its
+from the 6{,}301: its pool failed the pre-registered curation rule, and its
 configurations were re-run after the fix), 2 of
 432 nulls were inexact --- the first fidelity breaks observed in this
-project (2/5{,}653 including every null ever run under the stated premises;
+project (2/6{,}733 including every null ever run under the stated premises;
 the APC-contaminated run of Figure~\ref{fig:floor}b violated them and is
 counted separately).
 Root cause, identified from the diverging trace: a memory address inside a
@@ -354,7 +356,7 @@ default vLLM settings inherits this silent failure.
 \caption{\textbf{F1 --- Measured noise floor.} (a) Dedicated null-replay
 runs (Qwen3-4B blue, Qwen3-1.7B purple); together with nulls attached to
 interaction runs, the Qwen3-8B and MBPP+ replications, and the curated-pool
-runs, all 5{,}221 null
+runs, all 6{,}301 null
 replays are exact, floor $=0.0$. (b) With
 vLLM automatic prefix caching
 on, the floor rises to $0.417$ (7/270 inexact): greedy determinism breaks
@@ -765,7 +767,15 @@ live double-counting case in an external benchmark. What the adaptation
 cannot yet test is the pressure-regime break rate: 60/66 points are
 reward-saturated (Qwen3-4B is too strong for MBPP+), leaving 6 non-saturated
 points and no breaks --- inconclusive at that power, the same saturation
-boundary seen at 1.7B and 8B. The designed tasks remain necessary for the
+boundary seen at 1.7B and 8B. A pre-registered second attempt (D6: the
+1.7B on the same MBPP+ pool, declared outcomes) landed on the same
+boundary from the same side: floor exact (1{,}080/1{,}080), screening
+replicates raw at 44/44 points across both regimes --- a second (model,
+environment) cell with unconditional screening --- but 20/22 points per
+configuration are saturated (the 1.7B still solves 34/60 MBPP+ tasks at
+$1.0$) and the pressure budget never binds on MBPP+'s short trajectories,
+so the pressure cell of environment B remains empty after two attempts,
+and we declare it rather than stretch it. The designed tasks remain necessary for the
 regime-dependence claim; the core phenomenon --- exact floor, exact
 screening, double counting --- is not an artifact of our task design.
 We position this as a methods
@@ -963,7 +973,7 @@ the training task distribution itself: no reward margin where policies
 differ, unreachable states where learned thresholds would fire. We offer the
 infrastructure, the
 regime-dependence finding, the APC determinism warning, and a
-pre-registration ledger of 19 predictions (including 4 failures and 5
+pre-registration ledger of 20 predictions (including 4 failures and 6
 partials) as the
 contributions, and the training negative as the design brief for the
 benchmark this field still needs.
@@ -972,8 +982,8 @@ benchmark this field still needs.
 \section{Pre-Registration Ledger}
 All confirmatory analyses were pre-registered in the project's execution plan
 before the corresponding data were collected. Table~\ref{tab:ledger} lists
-all 19 pre-registrations with their outcomes, including the four that
-failed and the five partial. Failed predictions are reported in the main text where they occur.
+all 20 pre-registrations with their outcomes, including the four that
+failed and the six partial. Failed predictions are reported in the main text where they occur.
 
 \begin{table}[h]
 \centering\scriptsize
@@ -1001,6 +1011,7 @@ failed and the five partial. Failed predictions are reported in the main text wh
 17 & D4 curated-pool break rate on 8B: curation rule (baseline reward in $(0.05,0.95)$, $\geq$12 of 24 hardened tasks) & 7/24 fractional (17/24 solved at $1.0$); curation failed as pre-specified; run also exposed the ASLR fidelity leak (\S\ref{sec:floor}) & \textbf{failed} \\
 18 & D4b (final attempt): union pool $\geq$12 in window; (a) floor $0.0$; (b) breaks $\Leftrightarrow$ no re-injection (Fisher); (c) pressure rate $\geq$ slack & curation passed (22/44); floor held (792/792 exact); (b) \textbf{failed} ($p=1.0$, $p=0.94$); (c) \textbf{failed} ($9.7\%<11.1\%$, flat); in-window breaks replicate incl.\ non-saturated slack & partial \\
 19 & D5 symmetric control: 4B on the 22 curated tasks; (a) floor $0.0$; (b) 4B saturated-in-failure ($\geq$50\%); (c) declared outcomes c1/c2/c3 & floor held (396/396); (b) \textbf{failed} (1/16, 3/23 saturated); outcome c2: 4B also breaks in-window (4/16, 2/23) $\Rightarrow$ claim re-scoped to (model, harness, task) triple & partial \\
+20 & D6 empty cell: 1.7B on MBPP+; (a) floor $0.0$; (b) power gate ($\geq$5 non-saturated); (c) declared outcomes c1/c2/c3 & floor held (1{,}080/1{,}080); outcome c3: 2/22 non-saturated, pressure never binds --- inconclusive as pre-specified; bonus: screening 44/44 raw in both regimes & partial \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
