@@ -35,7 +35,11 @@ finding is exact \emph{screening-off}: with budget slack, the model action
 screens off the harness decision ($C_{HM} = C_M$; 0 breaks in 57 points;
 53/56 reward-pivotal points overall), so single-layer harness credit
 double-counts \emph{exactly} --- at screened points $C(H) = -I(H,M)$, with
-$C_{HM} - C_M$ as the one-extra-replay correction. Screening is not
+$C_{HM} - C_M$ as the one-extra-replay correction --- and the result is
+stable under pre-registered re-sampling of the alternative action: with
+$a'$ re-drawn under three disjoint seed schedules at every pivotal point,
+99/101 informative slack draws screen (CI95 $[0.94, 1.00]$) and the three
+pressure breaks persist in 9/9 redraws. Screening is not
 universal: it breaks at recurring, model-specific decision points --- under
 budget pressure for the 4B (a contrast that is suggestive at the task level,
 not confirmed: 3 breaking tasks, clustered $p=0.125$) and at a flat rate in
@@ -45,7 +49,7 @@ harness, task) triple, not of the pipeline. Training the harness with
 interaction-corrected credit, dose-matched against outcome-only and
 single-layer arms, fails for an identified, pre-registered reason: the
 training task distribution offers no reward margin where candidate policies
-differ. We release the apparatus, a 20-item pre-registration ledger (4
+differ. We release the apparatus, a 21-item pre-registration ledger (4
 failures, 6 partials), and the negative result as a design brief for
 cross-layer training benchmarks.
 \end{abstract}
@@ -166,6 +170,7 @@ Claim & Evidence & Status \\
 Replay noise floor is exactly zero & 7{,}685/7{,}685 nulls exact, 3 models $\times$ 2 envs (Table~\ref{tab:nulls}) & confirmed (pre-reg 1) \\
 vLLM APC breaks greedy determinism & floor $0.417$, 7/270 inexact & demonstrated \\
 Slack screening-off, 4B original pool & 0/57 raw; pivotal 53/56 = 0.946, CI95 $[0.87,1.00]$ task-clustered & confirmed (pre-reg 10, re-specified) \\
+Screening survives $a'$ re-sampling & 99/101 informative slack draws (CI95 $[0.94,1.00]$); mt6 breaks persist 9/9 & confirmed (pre-reg 21) \\
 $C(H) = -I$ at screened points & algebra (Prop.~\ref{prop:dc}); exact in all measured slack points & identity \\
 Pressure breaks recur at fixed points (4B) & 8/65; same points across configs & point-level; task-clustered weak ($p=0.125$) \\
 Break rate monotonic in pressure & inverted U, Cochran--Armitage $p=0.38$ & \textbf{failed} (pre-reg 13) \\
@@ -304,8 +309,8 @@ canonical JSON differs from the recorded action, conditioned on the recorded
 (un-summarized) state. Every model-layer credit is therefore an estimand
 relative to this single sampled alternative --- $C(M) = C(M; a')$ --- and
 every screening-off claim below is a claim about this alternative class;
-sensitivity to re-sampling $a'$ is unmeasured, and we flag it explicitly
-(\S\ref{sec:threats}). The null
+sensitivity to re-sampling $a'$ is measured directly by a pre-registered
+robustness study (\S\ref{sec:interaction}). The null
 intervention --- force everything, change nothing --- must reproduce $R$
 exactly; \S\ref{sec:floor} shows it does, and what serving configuration is
 required for it to. All replays run sequentially against a single vLLM
@@ -499,7 +504,29 @@ data-generating process fixes the non-screening probability at $0.5$, so
 these $p$-values certify only that the pattern is not coin-flip noise. The
 inference we retain is the clustered estimate; a bundled script
 (\texttt{estatisticas\_pivotais.py}) re-derives every number in this
-paragraph from the raw artifacts and fails on drift. Among the screened points, 52 are non-trivially
+paragraph from the raw artifacts and fails on drift.
+
+\paragraph{Robustness to the alternative draw (pre-registration 21).} The
+sharpest objection to every number above is that $C(M)$, $C(HM)$, and hence
+screening are relative to a \emph{single} sampled $a'$ per point. We
+pre-registered outcomes (stable $\geq 0.90$ / partial / fragile $< 0.75$,
+over informative slack draws) and re-sampled $a'$ at all 56 pivotal
+instances under three disjoint seed schedules (3001--3008, 4001--4008,
+5001--5008; same procedure, temperature $0.8$), yielding 152 new draws (16
+no-alternative outcomes; 304 extra replays), of which 81\% differ from the
+published $a'$. \textbf{The pre-declared stable outcome was met: 99/101
+informative slack draws screen exactly} (rate $0.980$, CI95 task-clustered
+$[0.944, 1.00]$); restricted to genuinely new alternatives, 79/81. The two
+non-screened draws are themselves informative: one is a single-draw
+excursion at the already-declared reward-collision residual
+(\texttt{l\_log\_parser} idx~10), and one is a genuine synergy break at
+\texttt{invoice\_pricing} under one of its three draws ($I = +1.57$; the
+other two draws screen) --- so screening at a point is a dominant-but-not-sure
+property of the alternative distribution, not a logical constant.
+Symmetrically, the three published mt6 break points \emph{break again under
+every redraw} (9/9): breaks are properties of the decision point, not of
+the draw. Sixteen draws found no alternative (the selection channel of
+\S\ref{sec:threats}, rate consistent across schedules: 6/4/6). Among the screened points, 52 are non-trivially
 \emph{shielded}: the harness flip
 alone has a real effect ($C(H) \neq 0$) that the joint flip erases --- these
 are exactly the double-counting cases. Of the 52 shielded points, 24
@@ -1025,10 +1052,12 @@ unannotated points declared) rather than hiding
 it; an estimand with $a'$ sampled from the summarized state would measure a
 different, also legitimate, quantity. Two further limitations of the
 estimand: $a'$ is a \emph{single} sample per point (fixed seed schedule,
-\S\ref{sec:setup}), so every screening and interaction claim is relative to
-that one alternative; we have not measured sensitivity to re-sampling $a'$,
-and we flag it as the highest-value robustness check this apparatus can run
-next.
+\S\ref{sec:setup}) in the census; the pre-registered re-sampling study
+(\S\ref{sec:interaction}) measures sensitivity to that draw directly and
+finds the slack result stable ($99/101$) and the pressure breaks
+draw-invariant ($9/9$). What remains unmeasured is coverage of the
+alternative \emph{distribution} beyond $k=3$ redraws at temperature $0.8$,
+and the alternative estimand with $a'$ conditioned on the summarized state.
 
 \paragraph{Selection into measurement.} A point enters the interaction
 census only if the sampler finds a parseable $a' \neq a$ within the 8-seed
@@ -1065,7 +1094,9 @@ and must be re-measured.
 force strictly sequential serving, one request at a time, on one GPU. The
 full measurement inventory is 7{,}685 null replays, 1{,}380 counterfactual
 replays at 460 interaction points (three per point), 294 single-flip $C(H)$
-replays, and 1{,}617 $a'$ sampling calls (up to 8 seeds each); the training
+replays, 304 re-sampling replays with 401 $a'$ sampling calls
+(pre-registration 21), and 1{,}617 census $a'$ sampling calls (up to 8
+seeds each); the training
 comparison adds 4{,}804 episodes (Act 2) plus the dose-matched replays. The
 chained experiment logs account for roughly 25 wall-clock hours on the
 single RTX 4090 (an under-count: the earliest runs predate chained logging).
@@ -1107,7 +1138,8 @@ We built the first apparatus that measures, on the same trajectory, the
 causal credit of harness decisions, model decisions, and their interaction,
 against an exactly-zero measured noise floor. The measurement yields a
 crisp, regime-dependent picture: with budget slack the model screens off the
-harness completely (0/57), so single-layer harness credit double-counts;
+harness completely (0/57, stable under pre-registered re-sampling of the
+alternative action), so single-layer harness credit double-counts;
 under budget pressure the shield breaks at recurring points (8/65), inside a
 competence window shaped by reward saturation --- and the regime contrast
 itself is a property of the (model, harness, task) triple: a stronger model breaks
@@ -1120,7 +1152,7 @@ the training task distribution itself: no reward margin where policies
 differ, unreachable states where learned thresholds would fire. We offer the
 infrastructure, the
 regime-dependence finding, the APC determinism warning, and a
-pre-registration ledger of 20 predictions (including 4 failures and 6
+pre-registration ledger of 21 predictions (including 4 failures and 6
 partials) as the
 contributions, and the training negative as the design brief for the
 benchmark this field still needs.
@@ -1136,7 +1168,7 @@ cannot exclude unreported exploration before each commit (the pilot runs
 that preceded the formal ledger are preserved in the artifact tree). Its
 evidential force rests on the recorded failures, not on the registration
 mechanism itself. Table~\ref{tab:ledger} lists
-all 20 pre-registrations with their outcomes, including the four that
+all 21 pre-registrations with their outcomes, including the four that
 failed and the six partial. Failed predictions are reported in the main text where they occur.
 
 \begin{table}[h]
@@ -1166,6 +1198,7 @@ failed and the six partial. Failed predictions are reported in the main text whe
 18 & D4b (final attempt): union pool $\geq$12 in window; (a) floor $0.0$; (b) breaks $\Leftrightarrow$ no re-injection (Fisher); (c) pressure rate $\geq$ slack & curation passed (22/44); floor held (792/792 exact); (b) \textbf{failed} ($p=1.0$, $p=0.94$); (c) \textbf{failed} ($9.7\%<11.1\%$, flat); in-window breaks replicate incl.\ non-saturated slack & partial \\
 19 & D5 symmetric control: 4B on the 22 curated tasks; (a) floor $0.0$; (b) 4B saturated-in-failure ($\geq$50\%); (c) declared outcomes c1/c2/c3 & floor held (396/396); (b) \textbf{failed} (1/16, 3/23 saturated); outcome c2: 4B also breaks in-window (4/16, 2/23) $\Rightarrow$ claim re-scoped to (model, harness, task) triple & partial \\
 20 & D6 empty cell: 1.7B on MBPP+; (a) floor $0.0$; (b) power gate ($\geq$5 non-saturated); (c) declared outcomes c1/c2/c3 & floor held (1{,}080/1{,}080); outcome c3: 2/22 non-saturated, pressure never binds --- inconclusive as pre-specified; bonus: screening 44/44 raw in both regimes & partial \\
+21 & $a'$ re-sampling sensitivity: 56 pivotal instances $\times$ 3 disjoint seed schedules; declared outcomes stable ($\geq 0.90$) / partial / fragile ($<0.75$) on informative slack draws & stable: 99/101 (0.980, CI95 $[0.94,1.00]$); 79/81 on genuinely new $a'$; mt6 breaks persist 9/9 & confirmed \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:

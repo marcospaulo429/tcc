@@ -760,3 +760,22 @@
   0 refs quebradas.
 - Pendentes conhecidos (não bloqueiam): \todo{autores}, estilo ICLR
   oficial, anatomia de traço 1.7B (opcional).
+
+## 2026-08-24 — Teste 4: sensibilidade de re-amostragem de a′ (pré-reg 21) — DESFECHO s1 (ESTÁVEL)
+- Pré-reg 21 commitado (e7fb544) ANTES de rodar; script experiments/teste4_resample.py;
+  população: 56 instâncias pivotais do census 4B; 3 schedules disjuntos (3001–8, 4001–8,
+  5001–8); 168 tentativas → 152 a′ encontradas (16 sem alternativa: 6/4/6 por schedule),
+  81% distintas do a′ publicado; 304 replays + 401 chamadas de amostragem; 0 timeouts.
+- SLACK: 99/101 draws informativos screened (0.980, CI95 cluster-task [0.944, 1.0])
+  ≥ 0.90 ⇒ desfecho pré-declarado s1. Restrito a a′ genuinamente novos: 79/81.
+- Os 2 não-screened: (1) l_log_parser idx10 g600 s3000 — o residual de colisão já
+  declarado, 1 de 3 draws; (2) invoice_pricing idx18 g900 s4000 — quebra de sinergia
+  genuína em 1 de 3 draws (I=+1.57; os outros 2 screenam). Screening num ponto é
+  propriedade dominante-mas-não-certa da distribuição de alternativas.
+- PRESSÃO (mt6): as 3 quebras publicadas quebram de novo em TODOS os redraws (9/9)
+  ⇒ quebra é propriedade do ponto, não do draw. mt6 informativos: 42/51 screened.
+- Integrado no paper (abstract, §interaction novo parágrafo, §threats reescrito,
+  claims table + ledger linha 21, custo de protocolo). Ledger agora 21 itens.
+- Também nesta sessão: estatisticas_pivotais.py e margem_calibracao.py (regeneração
+  com drift-check; CI da margem canônico agora [−0.029, +0.079] — o publicado antes
+  veio de bootstrap ad hoc não versionado, corrigido no paper).
