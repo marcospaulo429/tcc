@@ -80,15 +80,18 @@ Because replay is \emph{exactly} deterministic (measured, not assumed ---
 and silently broken by vLLM's automatic prefix caching), every nonzero
 credit is signal.
 
-The headline finding: the interaction term is \emph{regime-dependent}.
-With budget slack the model action screens off the harness decision
-exactly --- $C_{HM} = C_M$ at every measured point (57/57 raw; 53/56 under
-the stricter reward-pivotal endpoint; \S\ref{sec:interaction} maps every
-count to its endpoint). Under budget pressure the shield cracks (8 breaks
-in 65 points, at recurring decision points), non-monotonically in pressure
-and co-occurring with reward saturation: interaction is detectable only
-inside a \emph{competence window} where the agent neither aces nor fails
-everything.
+The headline finding: whether interaction vanishes is a property of the
+(model, harness, task) \emph{triple}. On our primary triple it is
+regime-dependent: with budget slack the model action screens off the
+harness decision exactly --- $C_{HM} = C_M$ at every measured point (57/57
+raw; 53/56 under the stricter reward-pivotal endpoint;
+\S\ref{sec:interaction} maps every count to its endpoint); under pressure
+the shield cracks (8 breaks in 65 points, at recurring decision points ---
+though only 3 tasks break, so clustered inference is weak),
+non-monotonically and co-occurring with reward saturation: interaction is
+detectable only inside a \emph{competence window} where the agent neither
+aces nor fails everything. A stronger model breaks at a flat rate in both
+regimes (\S\ref{sec:threats}).
 
 We then test whether interaction-aware credit improves \emph{training}.
 Screening has a budget consequence (Proposition~\ref{prop:nfl}): under
@@ -711,7 +714,7 @@ double-counts; under pressure the shield breaks at recurring points ---
 and the contrast is a property of the (model, harness, task) triple. Better credit did not train a better harness:
 outcome-only wins at matched dose --- the closed branch of the
 no-free-lunch rule, confirmed the expensive way. The contributions: the
-infrastructure, the regime-dependence finding, the APC warning, the census
+infrastructure, the triple-dependence finding, the APC warning, the census
 gate, and a 29-item pre-registration ledger whose training negative is the
 design brief for the benchmark this field still needs.
 \appendix
@@ -1604,8 +1607,9 @@ V2/L information-destruction, S designed synergy, C controls.}
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{figures/f3_regime_dependence.pdf}
-\caption{\textbf{F3 --- Screening-off is regime-dependent, and the regime
-contrast is model-dependent.} Break rate of
+\caption{\textbf{F3 --- The slack/pressure contrast is itself a property
+of the triple: regime-dependent on the primary triple, flat or absent on
+others.} Break rate of
 $C_{HM} = C_M$ per configuration, raw and conditioned on non-saturated
 points. Slack: 0/57 raw (0/12 non-saturated). Pressure: 8/65 raw (6/19
 non-saturated, $p=0.037$). Qwen3-1.7B (purple) replicates slack; its
