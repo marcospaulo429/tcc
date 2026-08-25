@@ -878,3 +878,48 @@
   replay custa mais compute do que o sinal adiciona, e corrigir o viés
   remove o pouco sinal que o viés dava. Replay é para MEDIR, não para
   treinar. Integrado: Act 4, abstract, ledger 27 (partial), claims row.
+
+## 2026-08-25 — Piloto V2 mini-SWE (pré-reg 28 + adendos 28a/28b): GO nos 4 estágios
+- Objetivo: go/no-go da infraestrutura V2 (harness multi-decisão, tasks
+  multi-arquivo) antes das fases F2–F5 do REQUISITOS-HARNESS-V2.md.
+  Resultados NÃO entram nas claims do paper (infraestrutura).
+- Estágio 1 (CPU): pool 20/20 aprovadas (5 famílias × 4 variantes, repos
+  4–6 arquivos, canônica 100%, reward inicial em (0,1), determinismo 3×);
+  congelado em environment/tasks_swe.py.
+- Rodada 1 (protocolo JSON): NO-GO mecânico — 0/20 sucessos com reward
+  médio 0.802; Qwen3-4B greedy sem thinking NUNCA emite write_file com
+  conteúdo em JSON (0 em 437 tool_calls; probes mínimos confirmam: até com
+  ordem explícita responde run_tests/finish; loop determinístico de
+  read_file até o cap de turnos). Estágio 3 GO já na rodada 1 (5/5 reruns
+  byte-idênticos + 5/5 nulos exatos) — a maquinaria de replay V2 é sólida
+  independentemente do comportamento do modelo. Artefatos:
+  runs/piloto_v2_round1/.
+- Recalibração 28a (protocolo): texto plano LIST/READ/WRITE/TEST/FINISH
+  com WRITE em DUAS FASES (fase 2 pede bloco ```python``` em lista
+  temporária; contexto persistente evolui só pela serialização canônica —
+  invariante de replay preservado). thr 4500 (razão tokens reais/estimados
+  ≈1.12; overflows com 7000/5500). ACHADO REPORTÁVEL em si: a fronteira
+  modelo/harness inclui o PROTOCOLO DE AÇÃO — uma decisão de harness
+  (formato do envelope) muda a taxa de write de 0% para normal no mesmo
+  modelo. Conecta com a tese central: decisões do harness têm efeito
+  causal de primeira ordem.
+- Rodada 2: estágio 2 GO (10/20 = 0.50 na janela [0.30,0.70], malformado
+  0.0, mediana 8.3 s); estágio 3 GO (10/10).
+- Estágio 4 rodada 1: 2 tipos com flip < 3. Heurística de context_policy
+  só amostrou summarize→keep (dR=0 ou overflow de contexto — overflow é
+  consequência causal do flip sem R mensurável no serving 8k, reportado à
+  parte); retry sem candidatos (malformado 0.0 — não recalibrável sem
+  induzir malformação artificial).
+- Recalibração 28b (seleção): priorizar keep→summarize não-vácuo.
+  Resultado final estágio 4: GO — 3 tipos com flip: context_policy 3/8
+  (dR +0.25, +0.2 e −0.0833: ambos os sinais), observation_policy 4/5
+  (dR até +0.40 — compact_output AJUDA: menos ruído de traceback no
+  contexto), termination 1/5 (dR −0.0833). test_schedule 0/5 (negativo
+  honesto: defer_test não muda R porque o modelo roda TEST por conta).
+- VEREDITO FINAL: GO. Fases F2–F5 do V2 desbloqueadas (pool 60, Teste 0
+  V2 completo, census multi-decisão). Custo total do piloto: ~3 rodadas
+  × ~10 min de GPU + probes (≪ orçamento de 2h previsto).
+- Limitações do piloto: (i) episódios rápidos (mediana 8.3 s) sugerem
+  tasks ainda fáceis para o 4B em metade do pool; (ii) flips de
+  observation_policy concentrados no início do episódio (index 5);
+  (iii) retry nunca exercitado no V2 real.
