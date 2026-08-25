@@ -279,6 +279,66 @@ def _fila_dupla(traj, i: int, flip: dict, j: int, a_prime: dict) -> tuple[int, l
     return entry, fila
 
 
+def _censo_ponto(traj, r, llm, rows_path, *, temperature=0.8,
+                 seeds=tuple(range(2001, 2009)), a_prime_temp=0.8,
+                 falha="sem_a_prime"):
+    """Processa um ponto pivotal do screening: amostra a′ em j e mede os braços
+    M e HM. Usado pelo passe 1 (temp 0.8) e pelo escalonamento 29b (temp 1.2)."""
+    i = r["index"]
+    base = {"cfg": r["cfg"], "task_id": r["task_id"], "index": i,
+            "tipo": r["tipo"], "j": None, "a_prime_seed": None,
+            "a_prime_temp": a_prime_temp, "C_H": None,
+            "C_M": None, "C_HM": None, "I": None, "screened_exato": None}
+    j = next((k for k in range(i + 1, len(traj.decisions))
+              if traj.decisions[k].decision_point == "tool_call"), None)
+    if j is None:  # sem tool_call após o flip — excluído e reportado
+        append_row(rows_path, {**base, "error": "sem_par"})
+        return
+    print(f"[census t{a_prime_temp}] {r['cfg']} {r['task_id']} idx{i} "
+          f"({r['tipo']}) j={j}", flush=True)
+    base["j"] = j
+    dj = traj.decisions[j]
+    amostra = sample_alternative_v2(llm, dj.state_before["messages"],
+                                    _canon(dj.chosen_action),
+                                    temperature=temperature, seeds=seeds)
+    if not amostra["found"]:
+        append_row(rows_path, {**base, "error": falha})
+        return
+    a_prime = amostra["action"]
+    base["a_prime_seed"] = amostra["seed"]
+    R_orig = r["reward_original"]
+    base["C_H"] = round(R_orig - r["reward_replay"], 4)  # já medido no screening
+    # Adendo 29a: flip terminal (continue→terminate) encerra o episódio em i —
+    # a′ em j nunca executa no ramo counterfactual, logo R_HM ≡ R_H por
+    # determinismo (braço HM degenerado: o harness faz screening do modelo).
+    hm_analitico = r["tipo"] == "termination" and r["flip"] == "terminate"
+    base["hm_analitico"] = hm_analitico
+    R_M = R_HM = None
+    error = None
+    try:
+        entry_m, queue_m = build_flip_queue(traj, j, a_prime)
+        R_M = replay_from(traj, entry_m, llm, OUT / "census_trajs",
+                          override_actions=queue_m)["reward"]
+        if hm_analitico:
+            R_HM = r["reward_replay"]  # ≡ R_H, sem replay
+        else:
+            entry_hm, fila = _fila_dupla(traj, i, {"action": r["flip"]}, j, a_prime)
+            R_HM = replay_from(traj, entry_hm, llm, OUT / "census_trajs",
+                               override_actions=fila)["reward"]
+    except ValueError as exc:  # span com retry — pulado e reportado
+        error = str(exc)
+    except openai.BadRequestError as exc:
+        error = f"context_overflow: {exc}"[:200]
+    if R_M is not None:
+        base["C_M"] = round(R_orig - R_M, 4)
+    if R_HM is not None:
+        base["C_HM"] = round(R_orig - R_HM, 4)
+    if base["C_M"] is not None and base["C_HM"] is not None:
+        base["I"] = round(base["C_HM"] - base["C_H"] - base["C_M"], 4)
+        base["screened_exato"] = R_HM == R_M
+    append_row(rows_path, {**base, "error": error})
+
+
 def stage_census():
     trajs = _trajs_base()
     llm = LLMClient()
@@ -289,63 +349,49 @@ def stage_census():
     for r in sorted(scr, key=lambda r: (r["cfg"], r["task_id"], r["index"])):
         if (r["cfg"], r["task_id"], r["index"]) in feitos:
             continue
-        traj = trajs[(r["cfg"], r["task_id"])]
-        i = r["index"]
-        base = {"cfg": r["cfg"], "task_id": r["task_id"], "index": i,
-                "tipo": r["tipo"], "j": None, "a_prime_seed": None, "C_H": None,
-                "C_M": None, "C_HM": None, "I": None, "screened_exato": None}
-        j = next((k for k in range(i + 1, len(traj.decisions))
-                  if traj.decisions[k].decision_point == "tool_call"), None)
-        if j is None:  # sem tool_call após o flip — excluído e reportado
-            append_row(rows_path, {**base, "error": "sem_par"})
-            continue
-        print(f"[census] {r['cfg']} {r['task_id']} idx{i} ({r['tipo']}) j={j}",
-              flush=True)
-        base["j"] = j
-        dj = traj.decisions[j]
-        amostra = sample_alternative_v2(llm, dj.state_before["messages"],
-                                        _canon(dj.chosen_action))
-        if not amostra["found"]:
-            append_row(rows_path, {**base, "error": "sem_a_prime"})
-            continue
-        a_prime = amostra["action"]
-        base["a_prime_seed"] = amostra["seed"]
-        R_orig = r["reward_original"]
-        base["C_H"] = round(R_orig - r["reward_replay"], 4)  # já medido no screening
-        # Adendo 29a: flip terminal (continue→terminate) encerra o episódio em i —
-        # a′ em j nunca executa no ramo counterfactual, logo R_HM ≡ R_H por
-        # determinismo (braço HM degenerado: o harness faz screening do modelo).
-        hm_analitico = r["tipo"] == "termination" and r["flip"] == "terminate"
-        base["hm_analitico"] = hm_analitico
-        R_M = R_HM = None
-        error = None
-        try:
-            entry_m, queue_m = build_flip_queue(traj, j, a_prime)
-            R_M = replay_from(traj, entry_m, llm, OUT / "census_trajs",
-                              override_actions=queue_m)["reward"]
-            if hm_analitico:
-                R_HM = r["reward_replay"]  # ≡ R_H, sem replay
-            else:
-                entry_hm, fila = _fila_dupla(traj, i, {"action": r["flip"]}, j, a_prime)
-                R_HM = replay_from(traj, entry_hm, llm, OUT / "census_trajs",
-                                   override_actions=fila)["reward"]
-        except ValueError as exc:  # span com retry — pulado e reportado
-            error = str(exc)
-        except openai.BadRequestError as exc:
-            error = f"context_overflow: {exc}"[:200]
-        if R_M is not None:
-            base["C_M"] = round(R_orig - R_M, 4)
-        if R_HM is not None:
-            base["C_HM"] = round(R_orig - R_HM, 4)
-        if base["C_M"] is not None and base["C_HM"] is not None:
-            base["I"] = round(base["C_HM"] - base["C_H"] - base["C_M"], 4)
-            base["screened_exato"] = R_HM == R_M
-        append_row(rows_path, {**base, "error": error})
-
-    rows = load_rows(rows_path)
-    report = _report_census(rows)
+        _censo_ponto(trajs[(r["cfg"], r["task_id"])], r, llm, rows_path)
+    report = _report_census(_rows_census_mescladas())
     (OUT / "census_report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False))
     print(json.dumps(report, indent=2, ensure_ascii=False), flush=True)
+
+
+def stage_census_esc():
+    """Passe de escalonamento (adendo 29b): só os pontos sem_a_prime do passe 1,
+    temp 1.2, seeds 3001–3008; rows em census_esc_rows.jsonl."""
+    trajs = _trajs_base()
+    llm = LLMClient()
+    scr = {(r["cfg"], r["task_id"], r["index"]): r
+           for r in load_rows(OUT / "screening_rows.jsonl")
+           if not r["error"] and r["dR"] != 0}
+    alvo = [r for r in load_rows(OUT / "census_rows.jsonl")
+            if r.get("error") == "sem_a_prime"]
+    rows_path = OUT / "census_esc_rows.jsonl"
+    feitos = done_keys(load_rows(rows_path), ("cfg", "task_id", "index"))
+    for r0 in sorted(alvo, key=lambda r: (r["cfg"], r["task_id"], r["index"])):
+        chave = (r0["cfg"], r0["task_id"], r0["index"])
+        if chave in feitos:
+            continue
+        _censo_ponto(trajs[(r0["cfg"], r0["task_id"])], scr[chave], llm, rows_path,
+                     temperature=1.2, seeds=tuple(range(3001, 3009)),
+                     a_prime_temp=1.2, falha="sem_a_prime_esc")
+    report = _report_census(_rows_census_mescladas())
+    (OUT / "census_report.json").write_text(json.dumps(report, indent=2, ensure_ascii=False))
+    print(json.dumps(report, indent=2, ensure_ascii=False), flush=True)
+
+
+def _rows_census_mescladas() -> list[dict]:
+    """Mescla passe 1 + escalonamento: rows sem_a_prime do passe 1 são substituídas
+    pela row correspondente do escalonamento quando existir (adendo 29b)."""
+    esc = {(r["cfg"], r["task_id"], r["index"]): r
+           for r in load_rows(OUT / "census_esc_rows.jsonl")}
+    out = []
+    for r in load_rows(OUT / "census_rows.jsonl"):
+        chave = (r["cfg"], r["task_id"], r["index"])
+        if r.get("error") == "sem_a_prime" and chave in esc:
+            out.append(esc[chave])
+        else:
+            out.append(r)
+    return out
 
 
 def avalia_desfecho(por_tipo: dict) -> dict:
@@ -388,13 +434,20 @@ def _report_census(rows: list[dict]) -> dict:
     validos = [r for r in rows if not r["error"] and r["screened_exato"] is not None]
     excluidos = {"sem_par": sum(1 for r in rows if r["error"] == "sem_par"),
                  "sem_a_prime": sum(1 for r in rows if r["error"] == "sem_a_prime"),
+                 "sem_a_prime_esc": sum(1 for r in rows if r["error"] == "sem_a_prime_esc"),
                  "context_overflow": sum(1 for r in rows if r["error"]
                                          and str(r["error"]).startswith("context_overflow")),
                  "outros_erros": [r["error"] for r in rows if r["error"] and
-                                  r["error"] not in ("sem_par", "sem_a_prime") and
+                                  r["error"] not in ("sem_par", "sem_a_prime",
+                                                     "sem_a_prime_esc") and
                                   not str(r["error"]).startswith("context_overflow")]}
     por_tipo = _agrega(validos, lambda r: r["tipo"])
     por_tipo_cfg = _agrega(validos, lambda r: f'{r["tipo"]}|{r["cfg"]}')
+    # Adendo 29b: estratos por temperatura do a′ (0.8 = passe 1; 1.2 = escalonado)
+    por_estrato = _agrega(validos, lambda r: f't{r.get("a_prime_temp", 0.8)}')
+    taxas_estrato = {k: v["taxa_screening_exato"] for k, v in por_estrato.items()}
+    divergencia = (abs(taxas_estrato.get("t0.8", 0) - taxas_estrato.get("t1.2", 0))
+                   if len(taxas_estrato) == 2 else None)
     n_hm_analitico = sum(1 for r in validos if r.get("hm_analitico"))
     frac = round(sum(1 for r in validos if not r["screened_exato"])
                  / len(validos), 4) if validos else None
@@ -402,6 +455,8 @@ def _report_census(rows: list[dict]) -> dict:
              for t, v in por_tipo.items()}
     return {"n_rows": len(rows), "n_validos": len(validos), "excluidos": excluidos,
             "n_hm_analitico": n_hm_analitico,  # adendo 29a: braço HM degenerado
+            "por_estrato_temp": por_estrato,   # adendo 29b: sensibilidade por estrato
+            "divergencia_estratos": divergencia,
             "por_tipo": por_tipo, "por_tipo_cfg": por_tipo_cfg,
             "global": {"frac_nao_screened": frac,
                        "gate_f4f5": gate_f4f5(frac) if frac is not None else None,
@@ -425,8 +480,10 @@ def relatorio():
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", required=True,
-                    choices=["base", "nulos", "screening", "census", "relatorio"])
+                    choices=["base", "nulos", "screening", "census", "census_esc",
+                             "relatorio"])
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     {"base": stage_base, "nulos": stage_nulos, "screening": stage_screening,
-     "census": stage_census, "relatorio": relatorio}[args.stage]()
+     "census": stage_census, "census_esc": stage_census_esc,
+     "relatorio": relatorio}[args.stage]()
