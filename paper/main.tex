@@ -40,10 +40,15 @@ re-injection is impossible) screening stays dominant but incomplete
 (24/31), with every de-screened point showing the predicted mechanistic
 signature. The shield is real in both estimands; its completeness depends
 on the alternative's information access, and whether it holds at all is a
-property of the (model, harness, task) triple. Training with corrected
-credit fails three times for three identified, registered reasons ---
-culminating in a mis-specified cost objective whose true optimum is
-universal cheap failure, found by every signal. We release the apparatus
+property of the (model, harness, task) triple. Training closes with an
+identified answer rather than a confound: after three failures for three
+registered reasons, a fourth run under a repaired objective (verified
+margin against \emph{all} fixed attractors, profitable cost weight)
+yields the first positive training result and the first separation of the
+signals --- outcome-only wins at matched compute, and the corrected credit,
+being correctly zero where the model shields, removes exactly the gradient
+the single-layer bias was providing. Replay credit is worth its cost for
+measurement, not for training, on this stack. We release the apparatus
 and a 27-item internal registration ledger whose evidential force rests on
 its reported failures.
 \end{abstract}
@@ -165,6 +170,7 @@ Replay noise floor is exactly zero & 9{,}296/9{,}296 nulls exact, 3 models $\tim
 Floor survives an LLM-in-the-loop summarizer & 317/317 nulls exact (greedy summarizer cell) & confirmed (pre-reg 22) \\
 Deterministic taxonomy predicts stochastic estimand & temp $0.8$: 2/2 screened cover 0; 2/3 breaks exclude 0, predicted sign & confirmed (pre-reg 23, outcome s1) \\
 Training negative survives a verified margin & 9/9 trained runs find the true optimum of the mis-specified objective (cheap failure) & confirmed (pre-reg 24, outcome s2) \\
+Under a sane objective, replay credit loses to outcome at matched dose & Act 4: arms separate 3/3 seeds; corrected credit removes the gradient its bias provided & identified (pre-reg 27) \\
 vLLM APC breaks greedy determinism & floor $0.417$, 7/270 inexact & demonstrated \\
 Slack screening-off, 4B original pool & 0/57 raw; pivotal 53/56 = 0.946, CI95 $[0.87,1.00]$ task-clustered & internally consistent (pre-reg 10; endpoint re-specified post-hoc, \S\ref{sec:threats}) \\
 Screening survives $a'$ re-sampling & 99/101 informative slack draws (CI95 $[0.94,1.00]$); mt6 breaks persist 9/9 & confirmed (pre-reg 21) \\
@@ -951,6 +957,37 @@ same endpoint from roughly 9$\times$ fewer episodes (outcome
 buying per-episode signal at the price of replays, but on this landscape
 there was only one place to go.
 
+\paragraph{Act 4: sane objective --- the arms finally separate, and the
+bias is load-bearing.} The last run (registered with declared outcomes
+before any rollout) repairs the objective itself: we measured the third
+attractor (summarize-always) on all 52 tasks, then selected analytically
+--- from already-measured $(R, \text{tokens})$ pairs, before any training
+--- the cost weight $\lambda^{*} = 5$ from a fixed grid $\{2,5,10,25\}$
+and the 12 tasks on which thr600 \emph{strictly} dominates both fixed
+attractors. The verified held-out window: keep-always $0.392$, thr600
+$0.455$, summarize-always $-0.031$. Under this sane objective every
+pathology of Acts 1--3 disappears, training produces its first positive
+result, and --- for the first time in four acts --- \textbf{arms 2 and 3
+separate}: outcome-only reaches held-out $R_{\text{eff}} = 0.440$--$0.443$
+($R = 0.661$, escaping keep-always toward the thr600 ceiling), single-layer
+$C_H$ credit reaches $0.398$--$0.405$, and interaction-corrected
+$C_{HM}-C_M$ stays exactly at keep-always ($0.392$, indistinguishable from
+the untrained control) --- consistently in 3/3 seeds. Our registered
+secondary hypothesis predicted the opposite ordering (phantom credit should
+\emph{hurt} the $C_H$ arm); it failed, and the failure is the finding.
+\textbf{The double-counting bias is load-bearing}: at screened points the
+corrected signal is (correctly) zero, so the corrected arm receives almost
+no gradient precisely where the harness acts, while the biased $C_H$ ---
+whose value there is pure interaction --- pushes the policy off the
+keep-always attractor, in this landscape usefully. Meanwhile at matched
+LLM-call dose the replay tax is decisive: the credit arms trained on
+139/70 episodes against outcome-only's 280, and outcome-only won outright.
+The answer to the motivating question, on this stack, is now identified
+and quantified rather than confounded: \emph{per-decision replay credit
+costs more compute than its signal adds, and correcting its bias removes
+what little training signal the bias was providing.} Measurement remains
+the right use of the replays; billing them to the training loop is not.
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.72\linewidth]{figures/f5_training.pdf}
@@ -1332,7 +1369,7 @@ the training task distribution itself: no reward margin where policies
 differ, unreachable states where learned thresholds would fire. We offer the
 infrastructure, the
 regime-dependence finding, the APC determinism warning, and a
-pre-registration ledger of 26 predictions (including 4 failures and 11
+pre-registration ledger of 27 predictions (including 4 failures and 12
 partials) as the
 contributions, and the training negative as the design brief for the
 benchmark this field still needs.
@@ -1390,6 +1427,7 @@ failed and the six partial. Failed predictions are reported in the main text whe
 24 & Margin-verified training rerun: stage A selects tasks with measured thr600$>$keep margin (16/52, held-out margin $+0.435$); stage B 4 arms $\times$ 3 seeds at 1{,}600 calls; outcomes s1 (credit $>$ outcome) / s2 (escape, no ordering) / s3 (keep-always again) & s2: all 9 trained runs converge to a \emph{third} attractor (summarize-always, $R_{\text{eff}}=-0.143$, $R=0$) that truly dominates the declared objective; $\lambda$ mis-specification exposed & partial \\
 25 & D7 third environment: HumanEval+ (60 tasks, generator frozen pre-run); (a) floor $0.0$; (b) slack screening replicates; (c) pressure outcomes c1/c2/c3 & floor held (1{,}294/1{,}294); slack \emph{and} pressure: 42/42 pivotal screened, 0 breaks; (c) inconclusive by saturation as pre-specified (2 non-saturated) & partial \\
 26 & Estimand control: $a'_s$ from the summarized state (re-injection impossible), all 44 keep$\to$summarize pivotal instances; outcomes s1 ($\geq$0.90 screening) / s2 (0.75--0.90) / s3 ($<$0.75) on informative slack pairs & s2: 24/31 = 0.774, CI95 $[0.69,0.88]$; all 7 de-screened points show $C_M=0$, $C_{HM} \approx C_H$ (re-injection channel off); both in-population mt6 breaks screen under $a'_s$ & partial \\
+27 & Act 4 sane objective: analytic $\lambda^{*}$ from fixed grid + margin verified against all fixed attractors (12 tasks); outcomes s1 (credit $>$ outcome) / s2 (learning, no credit ordering) / s3 (collapse); secondary: corrected arm $\geq$ $C_H$ arm & s2, first positive: outcome $0.440 > C_H\ 0.405 > C_{HM}-C_M = \text{keep}\ 0.392$, 3/3 seeds; secondary \textbf{failed inverted} --- the bias is load-bearing (\S\ref{sec:training}) & partial \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:

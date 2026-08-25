@@ -863,3 +863,18 @@
   a′ₛ pobre: 24/31. Screening é real em ambos; a COMPLETUDE do escudo
   depende do acesso informacional da alternativa. Claim central reescopada
   no abstract e em threats. Ledger linha 26 (partial), claims row.
+
+## 2026-08-24 — C1d / Act 4 (pré-reg 27): objetivo são — PRIMEIRA separação dos braços
+- λ*=5 (grade {2,5,10,25}, analítico, pré-treino); pool 12 tasks onde thr600
+  domina ESTRITAMENTE keep E summ; janela held-out verificada: keep 0.392,
+  thr600 0.455, summ −0.031.
+- RESULTADO (3/3 seeds): outcome 0.440–0.443 (R=0.661, escapa do keep) >
+  ch 0.398–0.405 > chm_cm = keep = zero 0.392. Desfecho s2 + secundário
+  FALHOU INVERTIDO — e a inversão é o achado: o crédito corrigido, por ser
+  corretamente ZERO nos pontos screened, remove exatamente o gradiente que
+  o viés do C_H fornecia; a dose-match cobra o imposto do replay (70–139
+  episódios vs 280 do outcome) e o outcome vence limpo.
+- Resposta identificada à pergunta motivadora: neste stack, crédito por
+  replay custa mais compute do que o sinal adiciona, e corrigir o viés
+  remove o pouco sinal que o viés dava. Replay é para MEDIR, não para
+  treinar. Integrado: Act 4, abstract, ledger 27 (partial), claims row.
