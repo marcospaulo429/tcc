@@ -40,6 +40,9 @@ def parse_action(text: str) -> dict | None:
 
 class Episode:
     PHASES = ("context_policy", "tool_call", "termination")
+    MODEL_ACTIONS = MODEL_ACTIONS
+    SYSTEM_PROMPT = SYSTEM_PROMPT
+    _parse = staticmethod(parse_action)
 
     def __init__(self, task: dict, llm, harness: Harness, recorder: Recorder,
                  sandbox: Sandbox | None = None):
@@ -52,6 +55,9 @@ class Episode:
         self.n_give_ups = 0
 
     # -- helpers -----------------------------------------------------------
+    def _seed_workspace(self) -> None:
+        self.sandbox.write_file("solution.py", self.task["starter_code"])
+
     def _state_before(self, messages: list[dict], turn: int) -> dict:
         return {"messages": [dict(m) for m in messages],
                 "workspace": self.sandbox.snapshot(),
@@ -110,7 +116,7 @@ class Episode:
         else:
             action, costs = self._call_and_parse(messages, turn)
         obs = self._apply_model_action(action, messages)
-        self._record("model", "tool_call", state, MODEL_ACTIONS,
+        self._record("model", "tool_call", state, self.MODEL_ACTIONS,
                      {**action, "forced": bool(forced)}, obs, costs)
         tests = obs if action["action"] == "run_tests" else None
         return action, tests
@@ -120,14 +126,16 @@ class Episode:
         while True:
             out = self.llm.chat(messages)
             costs = {k: out[k] for k in ("prompt_tokens", "completion_tokens", "wall_time_s")}
-            action = parse_action(out["text"])
+            action = self._parse(out["text"])
             if action is not None:
                 return action, costs
             state = self._state_before(messages, turn)
-            r_action = self.harness.decide_retry(retries)
+            forced_r = self._consume_forced("retry")
+            r_action = forced_r["action"] if forced_r else self.harness.decide_retry(retries)
             self._record("harness", "retry", state,
                          [{"action": "retry_once"}, {"action": "give_up"}],
-                         {"action": r_action}, {"raw_text_len": len(out["text"])}, costs)
+                         {"action": r_action, "forced": bool(forced_r)},
+                         {"raw_text_len": len(out["text"])}, costs)
             if r_action == "give_up":
                 self.n_give_ups += 1
                 return {"action": "finish"}, {}
@@ -174,8 +182,8 @@ class Episode:
             elif resume.get("forced_action"):
                 self._forced_queue = [{**resume["forced_action"], "_point": entry}]
         else:
-            self.sandbox.write_file("solution.py", self.task["starter_code"])
-            messages = [{"role": "system", "content": SYSTEM_PROMPT},
+            self._seed_workspace()
+            messages = [{"role": "system", "content": self.SYSTEM_PROMPT},
                         {"role": "user", "content": self.task["prompt"]}]
             turn, entry = 0, "context_policy"
 

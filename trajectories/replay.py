@@ -14,6 +14,27 @@ from trajectories.recorder import Recorder
 from trajectories.schema import Trajectory
 
 
+def build_flip_queue(traj: Trajectory, index: int, flip_action: dict) -> tuple[int, list[dict]]:
+    """Fila forçada p/ flipar a decisão `index` mesmo em ponto não-canônico
+    (observation_policy/test_schedule do V2): entra no último ponto canônico <= index
+    e força as decisões originais do span, terminando no flip. Recusa quando um
+    tool_call FORÇADO é precedido por retry no original (a ação forçada pula o call
+    do modelo e o contexto perderia a troca de retry — prefixo não reconstruível).
+    Retorna (entry_index, forced_actions)."""
+    d = traj.decisions
+    entry = max(i for i in range(index + 1) if d[i].decision_point in Episode.PHASES)
+    queue = []
+    for k in range(entry, index + 1):
+        if d[k].decision_point == "tool_call" and k > 0 \
+                and d[k - 1].decision_point == "retry":
+            raise ValueError(
+                f"tool_call idx {k} precedido por retry — prefixo não reconstruível sob ação forçada")
+        action = flip_action if k == index else \
+            {kk: v for kk, v in d[k].chosen_action.items() if kk != "forced"}
+        queue.append({"point": d[k].decision_point, "action": action})
+    return entry, queue
+
+
 def replay_from(traj: Trajectory, index: int, llm, out_dir: str | Path,
                 override_action: dict | None = None,
                 override_actions: list[dict] | None = None) -> dict:
@@ -22,7 +43,8 @@ def replay_from(traj: Trajectory, index: int, llm, out_dir: str | Path,
     override_action (singular) mantém o comportamento anterior (fila de 1)."""
     d = traj.decisions[index]
     if d.decision_point not in Episode.PHASES:
-        raise NotImplementedError(f"replay a partir de '{d.decision_point}' não suportado")
+        raise NotImplementedError(
+            f"replay a partir de '{d.decision_point}' não suportado — use build_flip_queue")
     if override_actions:
         assert override_actions[0]["point"] == d.decision_point, \
             (f"primeira forced action ({override_actions[0]['point']}) deve casar o "
@@ -30,8 +52,14 @@ def replay_from(traj: Trajectory, index: int, llm, out_dir: str | Path,
 
     sandbox = Sandbox()
     sandbox.restore(d.state_before["workspace"])
-    harness = Harness(**traj.config["harness"])
-    episode = Episode(resolve_task(traj.task_id), llm, harness, Recorder(out_dir), sandbox)
+    hcfg = dict(traj.config["harness"])
+    if hcfg.pop("kind", None) == "v2":
+        from agent.harness_v2 import HarnessV2
+        from agent.loop_v2 import EpisodeV2
+        harness, ep_cls = HarnessV2(**hcfg), EpisodeV2
+    else:
+        harness, ep_cls = Harness(**hcfg), Episode
+    episode = ep_cls(resolve_task(traj.task_id), llm, harness, Recorder(out_dir), sandbox)
     try:
         result = episode.run(resume={
             "messages": d.state_before["messages"],
