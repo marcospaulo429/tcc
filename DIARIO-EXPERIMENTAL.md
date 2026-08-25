@@ -1138,3 +1138,39 @@ desfechos abaixo tornam qualquer resultado publicável.
   usa o decision_log da política (φ/ação) normalmente.
 - Implementação: rl/train_v2.py (collect_episode, calibrate,
   _replay_with_policy) + testes; commit antes de retomar a cadeia.
+
+### DESFECHO do pré-reg 32 (2026-08-26): ABORT no estágio A — critério registrado disparou
+- Calibração (3 políticas × 60 tasks, 20 min GPU) completou; emenda 32a em
+  ação: keep_always estoura o contexto em 40/60 tasks (R=0, tokens pagos →
+  mean_R_eff = −0.088). summarize_always: 0.534; default (thr4500): 0.331.
+- Sob a grade λ ∈ {1,2,5,10,25}: elegíveis 3/1/0/0/0 < 10 → ABORT
+  (runs/v2_train/pool_32_aborted.json).
+- DIAGNÓSTICO (análise sem GPU sobre os mesmos dados): em R cru o default é
+  o MELHOR (0.849 vs 0.810 summ / 0.332 keep) — o landscape TEM sala; a
+  grade de λ é que estava mal escalada. Herdamos {1..25} do V1, mas
+  episódios V2 custam ~3.500–8.000 prompt tokens/turno (vs ~600–900 do V1):
+  em λ=1, 0.03–0.08 de R_eff por 1k tokens engole a margem de R do default.
+  λ ∈ {0.02..0.2} → 10 tasks onde default domina estritamente ambos os
+  atratores. Lição registrada: λ deve ser escalado pela magnitude de tokens
+  do ambiente, não transportado entre stacks.
+
+### PRÉ-REGISTRO 33 (2026-08-26) — treino V2, estágio A re-seleção com λ re-escalado
+- MUDANÇA ÚNICA vs pré-reg 32: grade λ ∈ {0.02, 0.05, 0.1, 0.2, 0.25, 0.5};
+  empate em nº de elegíveis → MAIOR λ (precificação de custo mais forte com
+  a mesma sala). Todo o resto herda o pré-reg 32 na íntegra: mesma regra de
+  elegibilidade (default estritamente domina keep_always E summarize_always),
+  cap 16 / mínimo 10 (senão ABORT), ranks pares treino / ímpares held-out,
+  braços outcome/ch/chm_cm/zero × seeds 1–3, 1600 chamadas/célula, lr 0.1,
+  clip 1.0, CENTER_V2, k_credit 2, contabilidade dual (budget + fatias
+  episode-matched via experiments/v2_em.py), desfechos s1/s2/s3 e
+  secundário chm_cm ≥ ch, emenda 32a.
+- INSUMO: o MESMO calibrate_report.json do estágio A do 32 (R e
+  prompt_tokens por task são independentes de λ; nenhum episódio novo).
+  Nenhum dado de TREINO foi tocado — a re-seleção é analítica e anterior a
+  qualquer treino, exatamente o padrão do Ato 4 (seleção analítica de λ*).
+- Transparência: esta é uma correção pós-abort de desenho, não de resultado;
+  o abort do 32 permanece no ledger como desfecho. Previsão pelos dados de
+  calibração: λ* = 0.2, pool = 10 (margens mín. 0.009–0.31).
+- Riscos: (i) margens finas (10º = 0.0087) → separação de braços pode ficar
+  abaixo do ruído de 5 tasks held-out; (ii) λ pequeno enfraquece o preço do
+  custo no objetivo — mitigado pelo empate→maior λ; (iii) mesmos riscos do 32.
