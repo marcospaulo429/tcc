@@ -923,3 +923,60 @@
   tasks ainda fáceis para o 4B em metade do pool; (ii) flips de
   observation_policy concentrados no início do episódio (index 5);
   (iii) retry nunca exercitado no V2 real.
+
+## 2026-08-25 — Census multi-decisão V2 (pré-reg 29 + adendos 29a/29b): desfecho s3, gate F4–F5 ABRE
+
+### Setup
+- Pool 60 congelado (15 famílias × 4; 20 do piloto byte-idênticas; 40 novas
+  validadas 40/40 de primeira). Configs: v2_folga (thr4500/mt25/keep6) e
+  v2_pressao (thr2500/mt12/keep4). Cadeia sequencial: base → nulos →
+  screening → census → escalonamento (29b) → relatório.
+
+### Resultados por estágio (verificados nos rows crus; report == recomputado)
+- **Base (120 eps):** folga sucesso 0.483 (janela), 3 overflows de contexto
+  reportados; pressão sucesso 0.10 mas reward médio 0.811 (variância parcial
+  alta — mt12 corta episódios). Medianas 8.0 s / 1.7 s.
+- **Teste 0 V2: 117/117 nulos exatos** (incl. 3 trajs com retry). O piso zero
+  sobrevive à mudança de classe (multi-arquivo, 5 tipos de decisão, protocolo
+  plain-text, duas configs).
+- **Screening (693 replays): 114 pivotais; os 5 tipos são pivotais na folga**
+  — retry 2/2 (primeira vez no projeto), test_schedule 4 (dR até −0.64),
+  context 27/112, observation 25/108, termination 30/69. A objeção
+  "harness de 1 decisão" está respondida no dado.
+- **Census (48 pontos válidos):** screening por tipo — context 0.609 (n=23),
+  observation 0.667 (n=12), termination 0.100 (n=10, todos duais 29a),
+  test_schedule 0.333 (n=3). **Nenhum tipo ≥0.90. Desfecho s3** (quebra
+  geral). frac não-screened = 0.50 → **gate F4–F5 abre** (limiar 0.20).
+  I(H,M) ≠ 0 em 29/48, magnitudes até −0.73/+0.60.
+- Estratos de temperatura (29b): 0.8 → 0.538 (n=26); 1.2 → 0.455 (n=22);
+  divergência 0.084 < 0.15 → análise pooled é primária, como pré-registrado.
+
+### Dois adendos mecânicos (registrados antes de retomar, dados intactos)
+- **29a:** flip terminal (continue→terminate) torna o braço HM degenerado —
+  R_HM ≡ R_H por determinismo. Interpretação: dual do fenômeno central, o
+  HARNESS faz screening do MODELO. Os 10 pontos de termination do census são
+  todos deste tipo (screen 0.100 = o a′ quase sempre importa quando o episódio
+  continua, e nunca importa quando o harness o corta).
+- **29b:** o sampler a′ do V1 (temp 0.8) falha em 87/114 pontos no protocolo
+  plain-text — ações de 2–4 tokens têm distribuição quase determinística
+  (achado reportável: o envelope da ação afeta o ESTIMANDO, não só a taxa de
+  write). Escalonamento a temp 1.2 recupera 22; 65 pontos ficam sem a′ e são
+  contados como exclusão.
+
+### Interpretação (para o paper)
+- **O screening-off é regime-dependente também na direção construtiva:** no
+  stack V1 (single-file, 1 decisão dominante) a regra no-free-lunch fechou o
+  gate e 4 atos de treino confirmaram; no stack V2 (multi-arquivo, 5 decisões)
+  a mesma regra ABRE o gate — 50% de massa pivotal não-screened. A proposição
+  prop:nfl ganha os dois ramos demonstrados empiricamente.
+- Nota de validade: com n=48 e exclusão de 65 pontos sem a′, as taxas por tipo
+  têm IC largo; test_schedule (n=3) não sustenta claim próprio. s3 avaliado
+  conforme o literal do pré-reg (sem exigência n≥5); com filtro n≥5 o desfecho
+  não muda (context/observation/termination todos <0.75 com n≥10).
+- Treino F4–F5 continua FORA desta submissão (anti-escopo do V2): o gate
+  aberto é reportado como predição testável, não como licença executada.
+
+### Custo
+- Cadeia inteira: ~75 min de GPU (base 12 min, screening ~35 min, census+esc
+  ~25 min) — ordens de magnitude abaixo do orçamento de 7–12 dias do doc de
+  requisitos.
