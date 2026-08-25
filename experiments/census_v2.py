@@ -451,6 +451,20 @@ def _report_census(rows: list[dict]) -> dict:
     n_hm_analitico = sum(1 for r in validos if r.get("hm_analitico"))
     frac = round(sum(1 for r in validos if not r["screened_exato"])
                  / len(validos), 4) if validos else None
+    # Painel rodada 6: o gate é sensível a duas escolhas de contabilidade que
+    # o pré-registro 29 não fixou — denominador (pontos medidos vs. todos os
+    # pivotais) e inclusão dos duais 29a (não-screening definicional). Emitimos
+    # as quatro células em vez de adjudicar post hoc.
+    nao_scr = sum(1 for r in validos if not r["screened_exato"])
+    sem_duais = [r for r in validos if not r.get("hm_analitico")]
+    nao_scr_sd = sum(1 for r in sem_duais if not r["screened_exato"])
+    n_pivotal = len(rows)
+    gate_cells = {
+        "medidos_com_duais": _cell(nao_scr, len(validos)),
+        "medidos_sem_duais": _cell(nao_scr_sd, len(sem_duais)),
+        "pivotal_com_duais": _cell(nao_scr, n_pivotal),
+        "pivotal_sem_duais": _cell(nao_scr_sd, n_pivotal),
+    }
     taxas = {t: {"n": v["n_census"], "taxa": v["taxa_screening_exato"]}
              for t, v in por_tipo.items()}
     return {"n_rows": len(rows), "n_validos": len(validos), "excluidos": excluidos,
@@ -458,9 +472,16 @@ def _report_census(rows: list[dict]) -> dict:
             "por_estrato_temp": por_estrato,   # adendo 29b: sensibilidade por estrato
             "divergencia_estratos": divergencia,
             "por_tipo": por_tipo, "por_tipo_cfg": por_tipo_cfg,
+            "gate_por_contabilidade": gate_cells,
             "global": {"frac_nao_screened": frac,
                        "gate_f4f5": gate_f4f5(frac) if frac is not None else None,
                        **avalia_desfecho(taxas)}}
+
+
+def _cell(num: int, den: int) -> dict:
+    frac = round(num / den, 4) if den else None
+    return {"nao_screened": num, "n": den, "frac": frac,
+            "gate_abre": gate_f4f5(frac) if frac is not None else None}
 
 
 # -- relatório ----------------------------------------------------------------
