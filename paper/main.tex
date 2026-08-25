@@ -27,8 +27,10 @@ We present an apparatus that measures, on the same trajectory, the
 per-decision causal contributions $C(H)$, $C(M)$, and their interaction
 $I(H,M)$, via deterministic counterfactual replay with a \emph{measured}
 noise floor: 9{,}296 null replays across three models and three environments
-are all exact, under explicit serving premises whose violation we also
-measure (vLLM automatic prefix caching silently breaks greedy determinism).
+are all exact. The floor is an \emph{engineered condition}, not a
+discovery --- it holds under pinned serving premises whose violations we
+also measure (vLLM automatic prefix caching, a leaked memory address, and
+concurrent serving each break greedy determinism).
 The central finding is exact \emph{screening-off}: with budget slack, the
 model action screens off the harness decision --- $C_{HM} = C_M$ at 53 of 56
 reward-pivotal points --- so single-layer harness credit double-counts
@@ -39,9 +41,11 @@ recurring, model-specific decision points, so whether the shield holds is a
 property of the (model, harness, task) triple. Training the harness with
 interaction-corrected credit fails for an identified, pre-registered
 reason: the training distribution offers no reward margin where candidate
-policies differ. We release the apparatus, a 25-item pre-registration
+policies differ. We release the apparatus, a 26-item registration
 ledger including all failures, and the negative result as a design brief
-for cross-layer training benchmarks.
+for cross-layer training benchmarks. All registrations are internal
+(same-team commits preceding runs); their evidential force rests on the
+reported failures, not on the label.
 \end{abstract}
 
 \section{Introduction}
@@ -162,7 +166,7 @@ Floor survives an LLM-in-the-loop summarizer & 317/317 nulls exact (greedy summa
 Deterministic taxonomy predicts stochastic estimand & temp $0.8$: 2/2 screened cover 0; 2/3 breaks exclude 0, predicted sign & confirmed (pre-reg 23, outcome s1) \\
 Training negative survives a verified margin & 9/9 trained runs find the true optimum of the mis-specified objective (cheap failure) & confirmed (pre-reg 24, outcome s2) \\
 vLLM APC breaks greedy determinism & floor $0.417$, 7/270 inexact & demonstrated \\
-Slack screening-off, 4B original pool & 0/57 raw; pivotal 53/56 = 0.946, CI95 $[0.87,1.00]$ task-clustered & confirmed (pre-reg 10, re-specified) \\
+Slack screening-off, 4B original pool & 0/57 raw; pivotal 53/56 = 0.946, CI95 $[0.87,1.00]$ task-clustered & internally consistent (pre-reg 10; endpoint re-specified post-hoc, \S\ref{sec:threats}) \\
 Screening survives $a'$ re-sampling & 99/101 informative slack draws (CI95 $[0.94,1.00]$); mt6 breaks persist 9/9 & confirmed (pre-reg 21) \\
 Screening survives discovery/confirmation split & discovery (g600) 14/14; confirmation 39/42; strictly post-registration 27/30 & confirmed (split forced by ledger audit) \\
 Regime contrast not explained by selection composition & retained 8B points \emph{shallower} than 4B's (turn 0.65 vs.\ 1.55); direction disfavors the contrast & supported (\S\ref{sec:threats}) \\
@@ -397,7 +401,10 @@ default vLLM settings inherits this silent failure. Known discussions of
 serving nondeterminism focus on batching-induced kernel
 nondeterminism~\cite{he2025nondeterminism}; the APC effect is distinct ---
 it is cross-\emph{request} state, present even under strictly sequential
-requests --- and we have not seen it documented as a replay hazard.
+requests. Nondeterminism under APC has been noted in vLLM community
+discussions; our contribution is to quantify it as a \emph{replay hazard
+for causal attribution} (it moves the floor from $0.0$ to $0.417$, above
+most true credits) rather than to claim its discovery.
 The sequentiality premise was also stress-tested by accident: a scheduling
 error in our own pipeline briefly ran two experiment chains against the same
 server, and the very first affected cell produced a \emph{reproducible}
@@ -451,7 +458,11 @@ the harness decision at a point when the joint flip yields exactly the model
 flip's reward, $C_{HM} = C_M$ --- operationally: conditional on the model
 counterfactual, the harness flip has no marginal effect. We borrow the term
 from probabilistic causality~\cite{reichenbach1956} in this operational
-sense only; \S\ref{sec:formal} gives the deterministic reading. \textbf{With budget
+sense only; \S\ref{sec:formal} gives the deterministic reading.
+(Configuration names used throughout: g$N$ = slack, max 12 turns,
+summarize threshold $N$ tokens; mt$K$ = pressure, max $K$ turns at
+threshold 600; prefixes q8/q17 = Qwen3-8B/1.7B, mbpp/he = the external
+environments, cur = curated pool, ls = LLM summarizer.) \textbf{With budget
 slack} (max 12 turns;
 three budget configurations g450/g600/g900), the model action screens off the
 harness decision \emph{exactly}: $C_{HM} = C_M$ in \textbf{57/57} points ---
@@ -650,10 +661,22 @@ $C_{HM} = C_M$, it gives $0 = C_H + I$; (i) and (iii) follow by definition.
 \end{proof}
 
 Proposition~\ref{prop:dc} upgrades the empirical observation to a
-correction rule: the quantity a cross-layer trainer should bill the harness
-is $C_{HM} - C_M$ (one extra replay), which is exact in both regimes ---
-equal to $C_H$ where interaction is absent, and correctly zero where the
-model shields. Our training arm 3 uses precisely this signal.
+correction rule, with an honest scope note. $C_H$ and $C_{HM} - C_M$ are
+the two orderings of a two-player marginal-contribution calculation, and
+which one a trainer should bill is a modeling choice tied to the training
+configuration: $C_H$ is the advantage against a \emph{fixed} model policy
+(the model replays its factual actions and adapts downstream), appropriate
+when only the harness trains; $C_{HM} - C_M$ is the harness's marginal
+contribution in the world where the model deviates, the relevant wedge for
+\emph{joint} training, where billing the harness for effects the model's
+own update will absorb double-charges the same reward; a Shapley
+symmetrization would bill the average, $C_H + I/2$. Our contribution is
+not to legislate the ordering but to measure the wedge between them ---
+which is exactly $I$, and which our census shows is (a) usually the
+\emph{whole} of $C_H$ at screened points and (b) obtainable for one extra
+replay. Our training arm 3 uses $C_{HM} - C_M$; arm 2 uses $C_H$; the
+comparison never separated (\S\ref{sec:training}), so the practical import
+of the choice remains empirically open --- what is settled is its size.
 
 \begin{lemma}[Coalescence]
 \label{lem:coalesce}
@@ -911,8 +934,11 @@ The trained arms are \emph{right}: on this pool of long, hard tasks under
 $\lambda = 25$, universal cheap failure is the true optimum of the declared
 objective --- solving a task costs roughly its reward in tokens. Training
 worked; the objective was mis-specified. The declared outcome bin is s2
-(all arms escape keep-always, no credit-vs-outcome ordering), and the
-design lesson finalizes into its strongest form: verifying a margin between
+(all arms escape keep-always, no credit-vs-outcome ordering), and we own
+an omission: summarize-always is a fixed policy whose $R_{\text{eff}}$ was
+computable from the stage-A machinery \emph{before} stage B ran --- the
+dominance of the third attractor was checkable analytically and we did not
+check it. The design lesson finalizes into its strongest form: verifying a margin between
 two named policies is not enough --- \textbf{the margin must be verified
 against every fixed attractor expressible by the policy class} (here
 summarize-always dominates both named references), and the cost weight
