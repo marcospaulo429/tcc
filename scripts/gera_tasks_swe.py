@@ -27,10 +27,20 @@ FAMILIA_MODULES = (
     "scripts.miniswe.familia_ledger",
     "scripts.miniswe.familia_graphlib",
     "scripts.miniswe.familia_statemachine",
+    "scripts.miniswe.familia_cache",
+    "scripts.miniswe.familia_csvtable",
+    "scripts.miniswe.familia_datas",
+    "scripts.miniswe.familia_urlrouter",
+    "scripts.miniswe.familia_expressoes",
+    "scripts.miniswe.familia_inventario",
+    "scripts.miniswe.familia_agendador",
+    "scripts.miniswe.familia_versoes",
+    "scripts.miniswe.familia_templates",
+    "scripts.miniswe.familia_planilha",
 )
 REQUIRED_KEYS = {"task_id", "family", "prompt", "repo_files", "canonical_files",
                  "test_code", "bug_file"}
-MIN_POOL = 16
+MIN_POOL = 52  # pré-reg 29: 20 do piloto + >=32 novas
 
 
 def _run(files: dict[str, str], test_code: str) -> tuple[dict, float]:
