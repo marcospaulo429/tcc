@@ -1,9 +1,8 @@
 """Loop V2 + replay com LLM fake: 5 tipos de decisão, replay nulo exato, flip por fila."""
 import itertools
-import json
 
 from agent.harness_v2 import HarnessV2
-from agent.loop_v2 import EpisodeV2, parse_action_v2
+from agent.loop_v2 import EpisodeV2, parse_action_v2, serialize_action_v2
 from environment.tasks_swe import TASKS, get_task
 from trajectories.recorder import Recorder
 from trajectories.replay import build_flip_queue, replay_from
@@ -30,12 +29,13 @@ def _script(task, fix: bool):
     content = (task["canonical_files"][task["bug_file"]] if fix
                else task["repo_files"][task["bug_file"]])
     return [
-        "isto não é um JSON de ação",  # dispara retry
-        '{"action": "list_files"}',
-        json.dumps({"action": "read_file", "path": task["bug_file"]}),
-        '{"action": "run_tests"}',
-        json.dumps({"action": "write_file", "path": task["bug_file"], "content": content}),
-        '{"action": "finish"}',
+        "isto não é uma ação válida",  # dispara retry
+        "LIST",
+        f"READ {task['bug_file']}",
+        "TEST",
+        f"WRITE {task['bug_file']}",  # fase 1: sem conteúdo
+        f"```python\n{content}```",   # fase 2: bloco com o conteúdo
+        "FINISH",
     ]
 
 
@@ -49,10 +49,17 @@ def _run(tmp_path, sub, fix=True):
 
 
 def test_parse_v2_canonico():
-    assert parse_action_v2('{"action": "list_files", "lixo": 1}') == {"action": "list_files"}
-    assert parse_action_v2('{"action": "read_file"}') is None
-    assert parse_action_v2('{"action": "write_file", "path": "a.py"}') is None
+    assert parse_action_v2("LIST") == {"action": "list_files"}
+    assert parse_action_v2("READ a.py") == {"action": "read_file", "path": "a.py"}
+    assert parse_action_v2("READ") is None
+    assert parse_action_v2("WRITE a.py") == {"action": "write_file", "path": "a.py"}  # parcial
+    assert parse_action_v2("WRITE a.py\n```python\nx = 1\n```") == {
+        "action": "write_file", "path": "a.py", "content": "x = 1\n"}
     assert parse_action_v2("nada") is None
+    # round-trip: serialização canônica é parseável de volta
+    a = {"action": "write_file", "path": "a.py", "content": "x = 1"}
+    assert parse_action_v2(serialize_action_v2(a)) == {
+        "action": "write_file", "path": "a.py", "content": "x = 1\n"}
 
 
 def test_episode_v2_cobre_5_tipos_e_reward(tmp_path):

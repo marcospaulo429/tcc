@@ -8,6 +8,7 @@ SUMMARY_PROMPT = (
     "continuar a task. Preserve exatamente constantes numéricas, nomes de arquivos, "
     "assinaturas de função e o estado atual dos testes. Responda apenas com o resumo, "
     "sem comentários.")
+WORKSPACE_NOTE_V1 = "O arquivo solution.py reflete todas as edições feitas até aqui."
 
 
 def estimate_tokens(messages: list[dict]) -> int:
@@ -15,7 +16,8 @@ def estimate_tokens(messages: list[dict]) -> int:
 
 
 def summarize_messages(messages: list[dict], keep_last: int = KEEP_LAST,
-                       task_chars: int = TASK_CHARS) -> list[dict]:
+                       task_chars: int = TASK_CHARS,
+                       workspace_note: str = WORKSPACE_NOTE_V1) -> list[dict]:
     """Resumo determinístico por regra (sem LLM): preserva system, trunca a task a
     task_chars e mantém as últimas keep_last mensagens. Perda de informação REAL —
     detalhes de spec fora dos primeiros task_chars são descartados do contexto."""
@@ -31,8 +33,7 @@ def summarize_messages(messages: list[dict], keep_last: int = KEEP_LAST,
         n_tests = sum(1 for m in omitted if "Resultado dos testes" in (m.get("content") or ""))
         out.append({"role": "user", "content": (
             f"[contexto resumido pelo harness: {len(omitted)} mensagens omitidas, "
-            f"das quais {n_tests} eram resultados de testes. O arquivo solution.py "
-            f"reflete todas as edições feitas até aqui.]")})
+            f"das quais {n_tests} eram resultados de testes. {workspace_note}]")})
     return out + tail
 
 
@@ -66,6 +67,8 @@ def summarize_is_vacuous(messages: list[dict], keep_last: int = KEEP_LAST,
 
 
 class Harness:
+    WORKSPACE_NOTE = WORKSPACE_NOTE_V1
+
     def __init__(self, summarize_threshold_tokens=1200, max_turns=6, keep_last=KEEP_LAST,
                  task_chars=TASK_CHARS, summarizer="rule"):
         assert summarizer in ("rule", "llm")
@@ -84,7 +87,8 @@ class Harness:
         if self.summarizer == "llm":
             assert llm is not None, "summarizer llm exige o cliente LLM"
             return llm_summarize_messages(messages, llm, self.keep_last)
-        return summarize_messages(messages, self.keep_last, self.task_chars)
+        return summarize_messages(messages, self.keep_last, self.task_chars,
+                                  self.WORKSPACE_NOTE)
 
     def decide_context_policy(self, messages: list[dict]) -> str:
         if estimate_tokens(messages) > self.summarize_threshold_tokens:

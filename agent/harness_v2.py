@@ -8,7 +8,10 @@ from .harness import Harness
 
 
 class HarnessV2(Harness):
-    def __init__(self, summarize_threshold_tokens=4000, max_turns=25, keep_last=6,
+    # Recalibração rodada 1 (pré-reg 28): nota de resumo correta p/ repo multi-arquivo
+    WORKSPACE_NOTE = "Os arquivos do repositório refletem todas as edições feitas até aqui."
+
+    def __init__(self, summarize_threshold_tokens=4500, max_turns=25, keep_last=6,
                  task_chars=0, summarizer="rule", observation_policy="full_output",
                  test_schedule="auto_test"):
         assert observation_policy in ("full_output", "compact_output")
