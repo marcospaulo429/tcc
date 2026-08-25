@@ -35,8 +35,13 @@ The central finding is exact \emph{screening-off}: with budget slack, the
 model action screens off the harness decision --- $C_{HM} = C_M$ at 53 of 56
 reward-pivotal points --- so single-layer harness credit double-counts
 exactly: $C(H) = -I(H,M)$ at screened points, and $C_{HM} - C_M$ is the
-one-extra-replay correction. The result survives pre-registered re-sampling
-of the alternative action, and it is not universal: screening breaks at
+one-extra-replay correction. The result survives re-sampling
+of the alternative action; a registered estimand-control cell ($a'$ sampled
+from the \emph{summarized} state, so re-injection of destroyed information
+is impossible) keeps screening dominant but incomplete (24/31), so the
+\emph{completeness} of the shield is partly a property of the alternative's
+information access --- we scope the claim accordingly. Screening is also not
+universal across stacks: it breaks at
 recurring, model-specific decision points, so whether the shield holds is a
 property of the (model, harness, task) triple. Training the harness with
 interaction-corrected credit fails for an identified, pre-registered
@@ -168,6 +173,7 @@ Training negative survives a verified margin & 9/9 trained runs find the true op
 vLLM APC breaks greedy determinism & floor $0.417$, 7/270 inexact & demonstrated \\
 Slack screening-off, 4B original pool & 0/57 raw; pivotal 53/56 = 0.946, CI95 $[0.87,1.00]$ task-clustered & internally consistent (pre-reg 10; endpoint re-specified post-hoc, \S\ref{sec:threats}) \\
 Screening survives $a'$ re-sampling & 99/101 informative slack draws (CI95 $[0.94,1.00]$); mt6 breaks persist 9/9 & confirmed (pre-reg 21) \\
+Screening completeness depends on the estimand & $a'_s$ (summarized state): 24/31 slack, CI95 $[0.69,0.88]$; de-screened points match the re-injection signature & measured; claim scoped (pre-reg 26) \\
 Screening survives discovery/confirmation split & discovery (g600) 14/14; confirmation 39/42; strictly post-registration 27/30 & confirmed (split forced by ledger audit) \\
 Regime contrast not explained by selection composition & retained 8B points \emph{shallower} than 4B's (turn 0.65 vs.\ 1.55); direction disfavors the contrast & supported (\S\ref{sec:threats}) \\
 $C(H) = -I$ at screened points & algebra (Prop.~\ref{prop:dc}); exact in all measured slack points & identity \\
@@ -1186,8 +1192,31 @@ estimand: $a'$ is a \emph{single} sample per point (fixed seed schedule,
 (\S\ref{sec:interaction}) measures sensitivity to that draw directly and
 finds the slack result stable ($99/101$) and the pressure breaks
 draw-invariant ($9/9$). What remains unmeasured is coverage of the
-alternative \emph{distribution} beyond $k=3$ redraws at temperature $0.8$,
-and the alternative estimand with $a'$ conditioned on the summarized state.
+alternative \emph{distribution} beyond $k=3$ redraws at temperature $0.8$.
+The alternative estimand --- $a'_s$ conditioned on the \emph{summarized}
+state, so that re-injection is impossible by construction --- we ran as a
+registered follow-up (declared outcomes; all 44 keep$\to$summarize pivotal
+instances, one seed schedule, 2 replays each, zero sampling failures, all
+44 $a'_s$ distinct from the published $a'$). The result splits cleanly:
+screening under $a'_s$ holds at 24/31 informative slack points (0.774,
+task-clustered CI95 $[0.69, 0.88]$ --- the pre-declared ``partial'' bin,
+down from 53/56 under $a'$), and \textbf{all seven de-screened points have
+the same signature}: $C_M(a'_s) = 0$ and $C_{HM}(a'_s) \approx C_H$ ---
+exactly what turning off the re-injection channel predicts. The two
+estimands therefore bracket the phenomenon: with an
+information-complete alternative the model absorbs essentially everything
+(53/56); with an information-poor alternative the harness flip's damage
+reappears in the joint branch at about a quarter of the points. Screening
+is real in both estimands but its \emph{completeness} is partly a property
+of the alternative's information access --- the headline claim
+is conditional on the estimand, and we scope it so. Under pressure the
+picture inverts symmetrically: both published mt6 break points in this
+direction (\texttt{l\_log\_parser} idx~7, \texttt{api\_router} idx~0)
+\emph{screen} under $a'_s$ --- so break-ness, too, is a property of the
+(point, alternative) pair rather than of the point alone, consistent with
+the stochastic cell where the weakest break dissolved under re-sampling.
+(The third published break is a restore-direction flip, outside this
+estimand's population by construction.)
 
 \paragraph{Selection into measurement.} A point enters the interaction
 census only if the sampler finds a parseable $a' \neq a$ within the 8-seed
@@ -1308,7 +1337,7 @@ the training task distribution itself: no reward margin where policies
 differ, unreachable states where learned thresholds would fire. We offer the
 infrastructure, the
 regime-dependence finding, the APC determinism warning, and a
-pre-registration ledger of 25 predictions (including 4 failures and 10
+pre-registration ledger of 26 predictions (including 4 failures and 11
 partials) as the
 contributions, and the training negative as the design brief for the
 benchmark this field still needs.
@@ -1365,6 +1394,7 @@ failed and the six partial. Failed predictions are reported in the main text whe
 23 & Stochastic protocol at temp $0.8$: 5 mt6 points $\times$ 12 seeds $\times$ 3 arms; s1 = screened cover 0 (2/2) and breaks exclude 0 ($\geq$2/3) & s1: screened 2/2 cover 0; breaks 2/3 exclude 0 with predicted sign; weakest deterministic break ($0.09$) dissolves & confirmed \\
 24 & Margin-verified training rerun: stage A selects tasks with measured thr600$>$keep margin (16/52, held-out margin $+0.435$); stage B 4 arms $\times$ 3 seeds at 1{,}600 calls; outcomes s1 (credit $>$ outcome) / s2 (escape, no ordering) / s3 (keep-always again) & s2: all 9 trained runs converge to a \emph{third} attractor (summarize-always, $R_{\text{eff}}=-0.143$, $R=0$) that truly dominates the declared objective; $\lambda$ mis-specification exposed & partial \\
 25 & D7 third environment: HumanEval+ (60 tasks, generator frozen pre-run); (a) floor $0.0$; (b) slack screening replicates; (c) pressure outcomes c1/c2/c3 & floor held (1{,}294/1{,}294); slack \emph{and} pressure: 42/42 pivotal screened, 0 breaks; (c) inconclusive by saturation as pre-specified (2 non-saturated) & partial \\
+26 & Estimand control: $a'_s$ from the summarized state (re-injection impossible), all 44 keep$\to$summarize pivotal instances; outcomes s1 ($\geq$0.90 screening) / s2 (0.75--0.90) / s3 ($<$0.75) on informative slack pairs & s2: 24/31 = 0.774, CI95 $[0.69,0.88]$; all 7 de-screened points show $C_M=0$, $C_{HM} \approx C_H$ (re-injection channel off); both in-population mt6 breaks screen under $a'_s$ & partial \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:

@@ -847,3 +847,19 @@
   tab:nulls, claims, ledger linha 25 (25 itens), drift-checks atualizados
   (reconcilia_nulos, estatisticas_pivotais he 21/21×2). make reproduce
   verde, 563 testes, 0 refs quebradas.
+
+## 2026-08-24 — Teste 6 (pré-reg 26): estimando a′ₛ — DESFECHO s2, claim reescopada
+- Motivação: 3/5 reviewers da rodada 4 apontaram a célula como decisiva
+  ("o headline pode estar embutido no estimando").
+- População: 44 instâncias pivotais keep→summarize dos 4 census; a′ₛ amostrado
+  do estado SUMARIZADO (re-injeção impossível por construção); 0 falhas de
+  amostragem, 0 timeouts, 44/44 a′ₛ distintos do a′ publicado.
+- SLACK: 24/31 informativos screened (0.774, CI cluster-task [0.69, 0.88]) —
+  bin s2 pré-declarado. Os 7 de-screened têm TODOS a mesma assinatura
+  C_M=0, C_HM≈C_H — exatamente o canal de re-injeção desligado (validação
+  mecanística). PRESSÃO: os 2 breaks keep→summarize de mt6 SCREENAM sob a′ₛ
+  → break-ness também é propriedade do par (ponto, alternativa).
+- Leitura: os dois estimandos BRACKETAM o fenômeno — a′ completo: 53/56;
+  a′ₛ pobre: 24/31. Screening é real em ambos; a COMPLETUDE do escudo
+  depende do acesso informacional da alternativa. Claim central reescopada
+  no abstract e em threats. Ledger linha 26 (partial), claims row.
