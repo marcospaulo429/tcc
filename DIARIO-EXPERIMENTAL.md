@@ -1028,3 +1028,26 @@ parado em N produziria (nenhuma dependência futura). Só a avaliação held-out
 Pré-reg 30 fica RESERVADO para os controles de estimando V2 (re-amostragem
 de a′ + a′_s no census), conforme PROXIMOS-PASSOS.md; 31 é registrado antes
 por ser o item nº 1 do AC.
+
+### DESFECHO pré-reg 31 (2026-08-26, mesmo dia): o1 — a leitura do Ato 4 SOBREVIVE
+- Fidelity gate: re-eval do θ final outcome s1 reproduziu held-out R_eff
+  0.4402141608 com IGUALDADE EXATA (38 chamadas). Determinismo do protocolo
+  de avaliação confirmado dias depois do c1d, mesmo servidor.
+- **ch-match (primário, N=139/139/137):** outcome_em = 0.4100 / 0.4498 /
+  0.3984 vs ch = 0.4046 / 0.4046 / 0.3984. outcome_em > máx(ch) em 2/3
+  seeds → **o1**. No s3, outcome_em = ch com igualdade EXATA (as duas
+  políticas greedy convergiram ao mesmo comportamento held-out).
+  outcome_em ≥ ch em 3/3.
+- **chm-match (secundário, N=70/68/70):** 0.4096 / 0.4372 / 0.3917 vs
+  keep=0.3917. Acima do atrator em 2/3 (s3 = keep, igualdade exata) —
+  mesmo com METADE dos episódios, outcome escapa do keep onde o braço
+  corrigido nunca escapou.
+- Nuance honesta: variância entre seeds maior no corte 139 (0.398–0.450)
+  que no run completo (0.440–0.443) — esperado com menos dados; s2
+  episode-matched (0.4498) supera até o run completo (não-monotonia de
+  REINFORCE).
+- **Conclusão: a vitória do outcome-only no Ato 4 NÃO é artefato de tamanho
+  de amostra.** Episode-matched, o outcome ainda ≥ C_H em 3/3 e > em 2/3;
+  a leitura "viés load-bearing + imposto do replay" fica identificada sem o
+  confound R1-W1. Custo: 44 chamadas × 7 células ≈ 260 chamadas LLM, ~12 min.
+- Artefatos: runs/ato4_em/ (summary.json + 7 células), experiments/ato4_em.py.
