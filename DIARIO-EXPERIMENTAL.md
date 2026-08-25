@@ -980,3 +980,51 @@
 - Cadeia inteira: ~75 min de GPU (base 12 min, screening ~35 min, census+esc
   ~25 min) — ordens de magnitude abaixo do orçamento de 7–12 dias do doc de
   requisitos.
+
+## 2026-08-26 — PRÉ-REGISTRO 31: braço outcome-only EPISODE-MATCHED no Ato 4 (confound R1-W1 do painel rodada 7)
+
+### Motivação (registrada antes de qualquer dado)
+No Ato 4 (pré-reg 27), o outcome-only venceu a dose-matched de chamadas LLM,
+mas treinou com 279–284 episódios contra 137–139 (ch) e 68–70 (chm_cm). O
+painel (R1-W1) aponta o confound: a vitória pode ser (a) "o viés do C_H é
+load-bearing mas o imposto do replay domina" OU (b) puro tamanho de amostra.
+Controle: outcome-only com o MESMO nº de episódios dos braços de crédito.
+
+### Desenho (custo ~42 episódios greedy, sem treino novo)
+O treino é determinístico dado (arm, seed): θ é atualizado sequencialmente e
+train_log.jsonl grava θ após cada episódio. Logo o braço episode-matched é o
+θ do run outcome existente FATIADO no episódio N — idêntico ao que um run
+parado em N produziria (nenhuma dependência futura). Só a avaliação held-out
+é nova.
+- **Fatias (por seed):** ch-match N = 139/139/137 (s1/s2/s3) → θ = linha
+  episode_idx N−1 de runs/c1d_outcome_s{s}/train_log.jsonl.
+  chm_cm-match N = 70/68/70 (secundário).
+- **Avaliação:** rl.train_c1.evaluate, held-out = 6 tasks de
+  runs/c1d_margem/pool.json (resolvidas via environment.registry), greedy,
+  center=CENTER_C1B, λ=5.0, seed = seed do braço (1/2/3) — protocolo
+  idêntico ao c1d.
+- **Fidelity check (gate de validade):** re-avaliar θ final do outcome s1
+  (linha 283); deve reproduzir heldout mean_R_eff = 0.440. Se divergir,
+  ABORTA e investiga não-determinismo do serving antes de interpretar.
+- Referências fixas (do c1d, não recomputadas): outcome full 0.440–0.443;
+  ch 0.398–0.405; chm_cm = keep = zero = 0.392.
+
+### Desfechos declarados (primário = ch-match)
+- **o1 (leitura do Ato 4 sobrevive):** outcome_em > 0.405 (máx do ch) em
+  ≥2/3 seeds → a vitória do outcome NÃO é tamanho de amostra; "bias is
+  load-bearing + imposto do replay" fica identificado sem confound.
+- **o2 (leitura de amostra):** outcome_em < ch por-seed em ≥2/3 seeds → a
+  vitória do Ato 4 era contabilidade de episódios; por-episódio o crédito
+  C_H é MELHOR sinal que outcome — reescreve a conclusão do Ato 4 (o
+  imposto do replay vira a história inteira, não o viés load-bearing).
+- **o3 (intermediário):** outcome_em ∈ [0.392, 0.405] em ≥2/3 seeds →
+  outcome precisa de mais episódios que o crédito p/ escapar do atrator
+  keep; nuance reportada, conclusão do Ato 4 enfraquecida mas não invertida.
+- Secundário (chm_cm-match, 70/68/70): mesmas comparações contra 0.392.
+- Sem teste de hipótese formal (3 seeds, 6 tasks): reportar per-seed e
+  per-task, mesma convenção do Ato 4.
+
+### Numeração
+Pré-reg 30 fica RESERVADO para os controles de estimando V2 (re-amostragem
+de a′ + a′_s no census), conforme PROXIMOS-PASSOS.md; 31 é registrado antes
+por ser o item nº 1 do AC.
