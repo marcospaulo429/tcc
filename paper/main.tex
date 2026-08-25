@@ -514,9 +514,13 @@ the biased $C_H$ --- whose value there is pure interaction --- pushes the
 policy off the keep-always attractor, in this landscape usefully. At
 matched LLM-call dose the replay tax is decisive: the credit arms trained
 on 139/70 episodes against outcome-only's 280, and outcome-only won
-outright. (One flagged missing control: an \emph{episode-matched}
-outcome-only arm would separate the load-bearing-bias reading from a pure
-sample-size reading.) The answer to the motivating question is identified,
+outright. The flagged confound --- sample size, not signal quality ---
+was closed by a registered \emph{episode-matched} control (pre-reg 31):
+the outcome-only $\theta$-trajectory stopped at the credit arms' episode
+counts still reaches $0.398$--$0.450$, $\geq$ the $C_H$ arm in 3/3 seeds
+(strictly above in 2/3; one seed ties \emph{exactly}), and beats the
+corrected arm's attractor in 2/3 seeds at half its episodes. The answer
+to the motivating question is identified,
 not confounded: \emph{per-decision replay credit costs more compute than
 its signal adds, and correcting its bias removes what little training
 signal the bias was providing.} Measurement remains the right use of the
@@ -726,7 +730,7 @@ Replay noise floor is exactly zero & 9{,}296/9{,}296 nulls exact, 3 models $\tim
 Floor survives an LLM-in-the-loop summarizer & 317/317 nulls exact (greedy summarizer cell) & confirmed (pre-reg 22) \\
 Deterministic taxonomy predicts stochastic estimand & temp $0.8$: 2/2 screened cover 0; 2/3 breaks exclude 0, predicted sign & confirmed (pre-reg 23, outcome s1) \\
 Training negative survives a verified margin & 9/9 trained runs find the true optimum of the mis-specified objective (cheap failure) & confirmed (pre-reg 24, outcome s2) \\
-Under a sane objective, replay credit loses to outcome at matched dose & Act 4: arms separate 3/3 seeds; corrected credit removes the gradient its bias provided & identified (pre-reg 27) \\
+Under a sane objective, replay credit loses to outcome at matched dose & Act 4: arms separate 3/3 seeds; corrected credit removes the gradient its bias provided; episode-matched control: outcome $\geq C_H$ 3/3 seeds at equal episodes & identified (pre-reg 27, 31) \\
 Zero floor survives an agent-class change & V2 mini-SWE (multi-file, 5 decision types, plain-text protocol): 117/117 nulls exact & confirmed (pre-reg 29) \\
 All five harness decision types are reward-pivotal & V2 screening: 114 pivotal points across all 5 types (incl.\ retry 2/2, test-schedule $\Delta R$ to $-0.64$) & confirmed (pre-reg 29) \\
 The census gate has both branches & V1 stack: closed, confirmed by 4 training acts; V2 stack: outcome s3 (no type screens $\geq$0.90); gate opens under 3/4 accountings (0.50 measured w/ duals to 0.13 pivotal w/o duals, \S\ref{sec:v2}) & measured; accounting-sensitive (pre-reg 29) \\
@@ -1693,6 +1697,7 @@ failed and the eleven partial. Failed predictions are reported in the main text 
 27 & Act 4 sane objective: analytic $\lambda^{*}$ from fixed grid + margin verified against all fixed attractors (12 tasks); outcomes s1 (credit $>$ outcome) / s2 (learning, no credit ordering) / s3 (collapse); secondary: corrected arm $\geq$ $C_H$ arm & s2, first positive: outcome $0.440 > C_H\ 0.405 > C_{HM}-C_M = \text{keep}\ 0.392$, 3/3 seeds; secondary \textbf{failed inverted} --- the bias is load-bearing (\S\ref{sec:training}) & partial \\
 28 & V2 mini-SWE pilot, 4 staged gates: pool $\geq$16 validated tasks; success in $[0.30,0.70]$ with $<$15\% malformed; determinism (5/5 reruns byte-identical, 5/5 nulls exact); $\geq$3 of 5 harness decision types pivotal. Two recalibrations pre-registered before re-run (28a: plain-text action protocol after the JSON envelope yielded 0 write actions in 437 calls --- itself a reportable harness effect; 28b: flip-candidate selection) & GO on all 4: pool 20/20; success 0.50, 0\% malformed; determinism exact; 3 types pivotal (context 3/8, observation 4/5, termination 1/5; test-schedule 0/5 reported as non-pivotal) & held \\
 29 & V2 multi-decision census on a frozen 60-task pool, 2 configs (slack/pressure): Teste 0 V2 floor; per-type selective screening; $C_H/C_M/C_{HM}/I$ at pivotal points; declared outcomes s1 (screening is type-dependent) / s2 (screening dominates all types) / s3 (general break); \textbf{pre-registered training gate}: F4--F5 only if $\geq$20\% non-screened pivotal mass (Corollary~\ref{cor:gate} applied prospectively). Addenda 29a (terminal flips make the HM arm analytically degenerate) and 29b ($a'$ sampler escalation to temp 1.2, stratified analysis, 0.15 divergence rule) registered mid-run before resuming & floor 117/117 exact; all 5 types pivotal (114 points); outcome \textbf{s3}: no type screens $\geq$0.90 (context 0.609, observation 0.667, termination 0.100, test-schedule 0.333); gate opens under 3/4 accountings (0.50 measured to 0.13 pivotal-denominator w/o degenerate duals --- the registration under-specified the accounting, reported in \S\ref{sec:v2}); strata diverge by 0.084 $<$ 0.15 (pooled primary) & held (amended mid-run) \\
+31 & Episode-matched outcome-only control for Act 4 (the flagged confound): the deterministic outcome-only $\theta$-trajectory sliced at the credit arms' episode counts (139/139/137 and 70/68/70), evaluated under the identical held-out protocol; validity gate: re-evaluating the final $\theta$ must reproduce $0.4402$ exactly; declared outcomes o1 (outcome$_{\text{em}} >$ max $C_H$ in $\geq$2/3 seeds: reading survives) / o2 (below per-seed $C_H$ in $\geq$2/3: sample-size artifact) / o3 (attractor-level) & gate passed (exact equality); \textbf{o1}: $0.410/0.450/0.398$ vs $C_H$ $0.405/0.405/0.398$ --- $\geq C_H$ 3/3 seeds, strictly above 2/3, seed 3 ties exactly; at 70/68/70 episodes outcome still beats the corrected arm's attractor 2/3 & confirmed \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
