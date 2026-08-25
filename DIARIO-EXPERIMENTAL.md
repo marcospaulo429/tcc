@@ -834,3 +834,16 @@
 - Integrado: Act 3 em §training, ledger linha 24 (partial), claims row,
   contagens 24 itens. Commit 1ebfa34. D7 (HumanEval+) disparou em seguida
   automaticamente.
+
+## 2026-08-24 — D7 (pré-reg 25): terceiro ambiente HumanEval+ — replicação limpa
+- Pool congelado antes de rodar (60 tasks, 164 processadas, 0 descartadas,
+  canônicas 100% no sandbox; fix de formato: assinaturas sem anotações typing).
+- (a) piso 0.0: 1.080 nulos dedicados + 214 attached, todos exatos.
+- (b)+(c): screening 76/76 pontos, 42/42 PIVOTAIS screened, 0 quebras nas
+  duas configs; pressão inconclusiva por saturação (2 não-saturados < 5,
+  gate pré-declarado) — desfecho c3, partial, mesmo padrão do MBPP+.
+- Totais canônicos: 9.296 nulos (7.728+1.568), ever-run 9.728; agora
+  3 modelos × 3 ambientes. Integrado: validade externa, tab:synthesis,
+  tab:nulls, claims, ledger linha 25 (25 itens), drift-checks atualizados
+  (reconcilia_nulos, estatisticas_pivotais he 21/21×2). make reproduce
+  verde, 563 testes, 0 refs quebradas.

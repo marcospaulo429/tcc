@@ -10,10 +10,10 @@ import json
 import os
 import sys
 
-PAPER_DEDICATED = 6648
-PAPER_ATTACHED = 1354
-PAPER_TOTAL = PAPER_DEDICATED + PAPER_ATTACHED  # 8.002
-PAPER_EVER_RUN = PAPER_TOTAL + 432              # + pré-fix ASLR → 8.434 (2 inexatos)
+PAPER_DEDICATED = 7728
+PAPER_ATTACHED = 1568
+PAPER_TOTAL = PAPER_DEDICATED + PAPER_ATTACHED  # 9.296
+PAPER_EVER_RUN = PAPER_TOTAL + 432              # + pré-fix ASLR → 9.728 (2 inexatos)
 
 
 def _load(path):

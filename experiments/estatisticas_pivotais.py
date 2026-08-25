@@ -28,6 +28,7 @@ PAPER_REPLICATIONS = {
     "teste3_q8_mt6": (27, 21),
     "teste3_q4cur_g600": (8, 4), "teste3_q4cur_mt6": (13, 11),
     "teste3_v5cur_g600": (15, 12), "teste3_v5cur_mt6": (22, 19),
+    "teste3_he_g600": (21, 21), "teste3_he_mt6": (21, 21),
 }
 PAPER = {"pivotal": 56, "screened": 53, "uniq": 22, "uniq_screened": 19,
          "tasks": 16, "tasks_full": 13}
