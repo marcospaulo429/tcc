@@ -25,32 +25,27 @@ LLM agents interleave decisions from two layers: the \emph{model} (tool
 calls) and the \emph{harness} (context management, retries, termination).
 We present an apparatus that measures, on the same trajectory, the
 per-decision causal contributions $C(H)$, $C(M)$, and their interaction
-$I(H,M)$, via deterministic counterfactual replay with a \emph{measured}
-noise floor: 9{,}296 null replays across three models and three environments
-are all exact. The floor is an \emph{engineered condition}, not a
-discovery --- it holds under pinned serving premises whose violations we
-also measure (vLLM automatic prefix caching, a leaked memory address, and
-concurrent serving each break greedy determinism).
-The central finding is exact \emph{screening-off}: with budget slack, the
-model action screens off the harness decision --- $C_{HM} = C_M$ at 53 of 56
-reward-pivotal points --- so single-layer harness credit double-counts
-exactly: $C(H) = -I(H,M)$ at screened points, and $C_{HM} - C_M$ is the
-one-extra-replay correction. The result survives re-sampling
-of the alternative action; a registered estimand-control cell ($a'$ sampled
-from the \emph{summarized} state, so re-injection of destroyed information
-is impossible) keeps screening dominant but incomplete (24/31), so the
-\emph{completeness} of the shield is partly a property of the alternative's
-information access --- we scope the claim accordingly. Screening is also not
-universal across stacks: it breaks at
-recurring, model-specific decision points, so whether the shield holds is a
-property of the (model, harness, task) triple. Training the harness with
-interaction-corrected credit fails for an identified, pre-registered
-reason: the training distribution offers no reward margin where candidate
-policies differ. We release the apparatus, a 26-item registration
-ledger including all failures, and the negative result as a design brief
-for cross-layer training benchmarks. All registrations are internal
-(same-team commits preceding runs); their evidential force rests on the
-reported failures, not on the label.
+$I(H,M)$, via counterfactual replay against an engineered zero noise floor
+(9{,}296 null replays, three models, three environments, all exact; the
+serving violations that break it --- vLLM prefix caching among them ---
+are measured, not assumed away).
+The central finding is \emph{screening-off}: with budget slack, the model
+action absorbs the harness decision's damage --- $C_{HM} = C_M$ at 53/56
+reward-pivotal points --- so single-layer harness credit is pure
+interaction, $C(H) = -I(H,M)$, and $C_{HM} - C_M$ is the one-extra-replay
+correction. Two registered controls bracket the phenomenon: under
+re-sampling of the alternative action the result is stable (99/101); under
+an information-poor alternative (sampled from the summarized state, so
+re-injection is impossible) screening stays dominant but incomplete
+(24/31), with every de-screened point showing the predicted mechanistic
+signature. The shield is real in both estimands; its completeness depends
+on the alternative's information access, and whether it holds at all is a
+property of the (model, harness, task) triple. Training with corrected
+credit fails three times for three identified, registered reasons ---
+culminating in a mis-specified cost objective whose true optimum is
+universal cheap failure, found by every signal. We release the apparatus
+and a 27-item internal registration ledger whose evidential force rests on
+its reported failures.
 \end{abstract}
 
 \section{Introduction}
