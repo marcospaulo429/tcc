@@ -1118,3 +1118,23 @@ desfechos abaixo tornam qualquer resultado publicável.
   episódios/célula — a contabilidade dual mitiga; (iii) saturação de
   reward em parte do pool 60 (metade fácil demais p/ 4B) — a seleção por
   margem endereça.
+
+### Emenda 32a (2026-08-26, registrada ANTES de retomar; nenhum dado do estágio A foi produzido)
+- FATO: calibrate abortou na 1ª task com BadRequestError — keep_always
+  estoura o max_model_len 8192 do serving (fenômeno já conhecido: 3
+  overflows na base do census; lá, replays com overflow eram EXCLUÍDOS por
+  "consequência causal sem R mensurável").
+- REGRA NOVA (só para treino/calibração/avaliação do pré-reg 32): overflow
+  de contexto = episódio FALHO com R=0 e tokens = tokens de prompt
+  efetivamente pagos até o estouro. Justificativa: no treino o agente vive
+  NESTA config de serving (RNF2: cap 8k é parte do ambiente); uma política
+  que estoura o contexto falha a task de verdade — é exatamente o custo
+  causal que λ deve precificar. A regra de EXCLUSÃO do census permanece
+  válida lá (estimando de medição ≠ estimando de treino; documentado).
+- Replays de crédito que estouram sob o flip: mesmo tratamento (R=0 do
+  replay) — o flip causou o estouro; crédito mede a consequência.
+- Episódio com overflow não tem trajetória completa → braços de crédito
+  não amostram pontos nesse episódio (sem replay possível); braço outcome
+  usa o decision_log da política (φ/ação) normalmente.
+- Implementação: rl/train_v2.py (collect_episode, calibrate,
+  _replay_with_policy) + testes; commit antes de retomar a cadeia.
