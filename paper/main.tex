@@ -23,34 +23,36 @@ Per-Decision Cross-Layer Causal Credit in LLM Agents}
 \begin{abstract}
 LLM agents interleave decisions from two layers: the \emph{model} (tool
 calls) and the \emph{harness} (context management, retries, termination).
-We present an apparatus that measures, on the same trajectory, the
-per-decision causal contributions $C(H)$, $C(M)$, and their interaction
-$I(H,M)$, via counterfactual replay against an engineered zero noise floor
+Should an agent trainer pay for per-decision cross-layer credit, or is the
+outcome scalar enough? We show this question is \emph{decidable before
+training}, and build the instrument that decides it. The instrument is
+deterministic counterfactual replay with an engineered zero noise floor
 (9{,}296 null replays, three models, three environments, all exact; the
 serving violations that break it --- vLLM prefix caching among them ---
-are measured, not assumed away).
-The central finding is \emph{screening-off}: with budget slack, the model
-action absorbs the harness decision's damage --- $C_{HM} = C_M$ at 53/56
-reward-pivotal points --- so single-layer harness credit is pure
-interaction, $C(H) = -I(H,M)$, and $C_{HM} - C_M$ is the one-extra-replay
-correction. Two registered controls bracket the phenomenon: under
-re-sampling of the alternative action the result is stable (99/101); under
-an information-poor alternative (sampled from the summarized state, so
-re-injection is impossible) screening stays dominant but incomplete
-(24/31), with every de-screened point showing the predicted mechanistic
-signature. The shield is real in both estimands; its completeness depends
-on the alternative's information access, and whether it holds at all is a
-property of the (model, harness, task) triple. Training closes with an
-identified answer rather than a confound: after three failures for three
-registered reasons, a fourth run under a repaired objective (verified
-margin against \emph{all} fixed attractors, profitable cost weight)
-yields the first positive training result and the first separation of the
-signals --- outcome-only wins at matched compute, and the corrected credit,
-being correctly zero where the model shields, removes exactly the gradient
-the single-layer bias was providing. Replay credit is worth its cost for
-measurement, not for training, on this stack. We release the apparatus
-and a 27-item internal registration ledger whose evidential force rests on
-its reported failures.
+are measured, not assumed away), which yields the per-decision
+contributions $C(H)$, $C(M)$, and their interaction $I(H,M)$ on the same
+trajectory. The central empirical finding is \emph{screening-off}: with
+budget slack, the model action absorbs the harness decision's damage ---
+$C_{HM} = C_M$ at 53/56 reward-pivotal points --- so single-layer harness
+credit is pure interaction, $C(H) = -I(H,M)$, and $C_{HM} - C_M$ is the
+one-extra-replay correction. Screening is regime-dependent (it cracks
+under budget pressure, inside a competence window) and
+estimand-dependent (registered controls: stable under re-sampling, 99/101;
+dominant but incomplete under an information-poor alternative, 24/31).
+Its consequence is a budget identity we state as a proposition: under
+dose-matching, every screened point contributes exactly zero training
+signal at positive replay cost, so the value of replay credit is bounded
+by the non-screened pivotal mass times its effect size, minus the replay
+tax --- quantities a cheap pre-training census measures. Four
+pre-registered training acts then confirm the rule the hard way: after
+three failures for three identified reasons, a repaired objective yields
+the first arm separation --- outcome-only wins at matched compute, and
+corrected credit, being correctly zero where the model shields, removes
+exactly the gradient the single-layer bias was providing. Replay credit
+is worth its cost for measurement, and its value for training is a
+measurable property of the stack, not an article of faith. We release the
+apparatus and a 29-item internal registration ledger whose evidential
+force rests on its reported failures.
 \end{abstract}
 
 \section{Introduction}
@@ -91,17 +93,27 @@ agent neither aces nor fails everything. The practical corollary is negative
 for naive pipelines: in the slack regime, single-layer harness credit
 systematically double-counts effects the model absorbs.
 
-We then test whether interaction-aware credit improves \emph{training} of the
-harness layer, with pre-registered predictions, dose-matched controls, and
-three seeds per arm --- twice. The honest outcome is a two-stage identified
-negative: optimization instability first, and, after a pre-registered fix,
-stable training that still fails to discover a threshold policy which is
-expressible by the policy class and dominant on held-out tasks. A
-pre-registered audit exonerates the credit estimator; the binding constraint
-is the training task distribution itself, not attribution. We report this as
-a design lesson for
-cross-layer training
-benchmarks, not as a method contribution.
+We then test whether interaction-aware credit improves \emph{training} of
+the harness layer --- and here the paper's pieces lock together. Screening
+has a budget consequence we state formally
+(Proposition~\ref{prop:nfl}): under dose-matched compute, every screened
+point contributes \emph{exactly zero} training signal at strictly positive
+replay cost, so the value of cross-layer replay credit is bounded by the
+non-screened pivotal mass times its effect size, minus the replay tax ---
+and both factors are measurable \emph{before any training} by the same
+census that established screening. Whether credit can pay for itself is
+therefore a pre-registrable gate, not a bet
+(Corollary~\ref{cor:gate}). Our four training acts, run with
+pre-registered predictions, dose-matched controls, and three seeds per
+arm, are the hard-way validation of this rule: three identified failures
+(optimization instability; a training distribution that never visits the
+states where policies differ; a mis-specified cost objective whose true
+optimum is universal cheap failure), then, under a repaired objective, the
+first arm separation --- outcome-only wins at matched dose, and the
+corrected credit, being correctly zero where the model shields, removes
+exactly the gradient the single-layer bias was providing. On this stack
+the gate was closed, and four acts of training compute confirmed what the
+census already knew.
 
 \paragraph{Contributions.}
 \begin{enumerate}
@@ -124,6 +136,13 @@ and the saturation profiles of both auxiliary models, and the two empirical
 mechanisms: a structural component (the sampled $a'$ re-injects destroyed
 information, 23/24 annotated points) and a closed-loop component (the live
 downstream harness re-triggers the intervened decision, 22/52 points).
+\item \textbf{A no-free-lunch proposition and a pre-registrable decision
+rule}: under dose-matching, screened points contribute zero training signal
+at positive replay cost, bounding the training value of replay credit by
+census-measurable quantities (non-screened pivotal mass, effect size,
+replay tax) --- converting the census from diagnostic to decision
+procedure: measure first, train only if the gate opens
+(Proposition~\ref{prop:nfl}, Corollary~\ref{cor:gate}).
 \item \textbf{A replication record that scopes the finding}: the shield is
 a property of the (model, harness, task) triple, not of the pipeline ---
 the 8B breaks screening on hardened tasks where the 4B's original-pool
@@ -155,8 +174,9 @@ the failure in the training task distribution, not in credit quality.
 
 This is a measurement-and-falsification paper, not a method paper: the
 deliverables are the apparatus, the double-counting identity and its
-correction rule, the replication record, and the benchmark design brief the
-negative result licenses. Table~\ref{tab:claims} maps every claim to its
+correction rule, the no-free-lunch bound and the census gate it licenses,
+the replication record, and the benchmark design brief the negative result
+supports. Table~\ref{tab:claims} maps every claim to its
 evidence and epistemic status; the reader can audit each row against the
 pre-registration ledger (Table~\ref{tab:ledger}).
 
@@ -1429,8 +1449,9 @@ with the estimator exonerated by audit --- locates the binding constraint in
 the training task distribution itself: no reward margin where policies
 differ, unreachable states where learned thresholds would fire. We offer the
 infrastructure, the
-regime-dependence finding, the APC determinism warning, and a
-pre-registration ledger of 27 predictions (including 4 failures and 12
+regime-dependence finding, the APC determinism warning, the no-free-lunch
+bound with its census gate, and a
+pre-registration ledger of 29 predictions (including 4 failures and 11
 partials) as the
 contributions, and the training negative as the design brief for the
 benchmark this field still needs.
@@ -1452,8 +1473,8 @@ pilot runs that preceded the formal ledger are preserved in the artifact
 tree). Its
 evidential force rests on the recorded failures, not on the registration
 mechanism itself. Table~\ref{tab:ledger} lists
-all 21 pre-registrations with their outcomes, including the four that
-failed and the six partial. Failed predictions are reported in the main text where they occur.
+all 29 pre-registrations with their outcomes, including the four that
+failed and the eleven partial. Failed predictions are reported in the main text where they occur.
 
 \begin{table}[h]
 \centering\scriptsize
@@ -1489,6 +1510,8 @@ failed and the six partial. Failed predictions are reported in the main text whe
 25 & D7 third environment: HumanEval+ (60 tasks, generator frozen pre-run); (a) floor $0.0$; (b) slack screening replicates; (c) pressure outcomes c1/c2/c3 & floor held (1{,}294/1{,}294); slack \emph{and} pressure: 42/42 pivotal screened, 0 breaks; (c) inconclusive by saturation as pre-specified (2 non-saturated) & partial \\
 26 & Estimand control: $a'_s$ from the summarized state (re-injection impossible), all 44 keep$\to$summarize pivotal instances; outcomes s1 ($\geq$0.90 screening) / s2 (0.75--0.90) / s3 ($<$0.75) on informative slack pairs & s2: 24/31 = 0.774, CI95 $[0.69,0.88]$; all 7 de-screened points show $C_M=0$, $C_{HM} \approx C_H$ (re-injection channel off); both in-population mt6 breaks screen under $a'_s$ & partial \\
 27 & Act 4 sane objective: analytic $\lambda^{*}$ from fixed grid + margin verified against all fixed attractors (12 tasks); outcomes s1 (credit $>$ outcome) / s2 (learning, no credit ordering) / s3 (collapse); secondary: corrected arm $\geq$ $C_H$ arm & s2, first positive: outcome $0.440 > C_H\ 0.405 > C_{HM}-C_M = \text{keep}\ 0.392$, 3/3 seeds; secondary \textbf{failed inverted} --- the bias is load-bearing (\S\ref{sec:training}) & partial \\
+28 & V2 mini-SWE pilot, 4 staged gates: pool $\geq$16 validated tasks; success in $[0.30,0.70]$ with $<$15\% malformed; determinism (5/5 reruns byte-identical, 5/5 nulls exact); $\geq$3 of 5 harness decision types pivotal. Two recalibrations pre-registered before re-run (28a: plain-text action protocol after the JSON envelope yielded 0 write actions in 437 calls --- itself a reportable harness effect; 28b: flip-candidate selection) & GO on all 4: pool 20/20; success 0.50, 0\% malformed; determinism exact; 3 types pivotal (context 3/8, observation 4/5, termination 1/5; test-schedule 0/5 reported as non-pivotal) & held \\
+29 & V2 multi-decision census on a frozen 60-task pool, 2 configs (slack/pressure): Teste 0 V2 floor; per-type selective screening; $C_H/C_M/C_{HM}/I$ at pivotal points; declared outcomes s1 (screening is type-dependent) / s2 (screening dominates all types) / s3 (general break); \textbf{pre-registered training gate}: F4--F5 only if $\geq$20\% non-screened pivotal mass (Corollary~\ref{cor:gate} applied prospectively) & \todo{census em execução --- preencher com o desfecho} & pending \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
