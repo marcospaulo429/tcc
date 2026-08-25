@@ -312,15 +312,23 @@ def stage_census():
         base["a_prime_seed"] = amostra["seed"]
         R_orig = r["reward_original"]
         base["C_H"] = round(R_orig - r["reward_replay"], 4)  # já medido no screening
+        # Adendo 29a: flip terminal (continue→terminate) encerra o episódio em i —
+        # a′ em j nunca executa no ramo counterfactual, logo R_HM ≡ R_H por
+        # determinismo (braço HM degenerado: o harness faz screening do modelo).
+        hm_analitico = r["tipo"] == "termination" and r["flip"] == "terminate"
+        base["hm_analitico"] = hm_analitico
         R_M = R_HM = None
         error = None
         try:
             entry_m, queue_m = build_flip_queue(traj, j, a_prime)
             R_M = replay_from(traj, entry_m, llm, OUT / "census_trajs",
                               override_actions=queue_m)["reward"]
-            entry_hm, fila = _fila_dupla(traj, i, {"action": r["flip"]}, j, a_prime)
-            R_HM = replay_from(traj, entry_hm, llm, OUT / "census_trajs",
-                               override_actions=fila)["reward"]
+            if hm_analitico:
+                R_HM = r["reward_replay"]  # ≡ R_H, sem replay
+            else:
+                entry_hm, fila = _fila_dupla(traj, i, {"action": r["flip"]}, j, a_prime)
+                R_HM = replay_from(traj, entry_hm, llm, OUT / "census_trajs",
+                                   override_actions=fila)["reward"]
         except ValueError as exc:  # span com retry — pulado e reportado
             error = str(exc)
         except openai.BadRequestError as exc:
@@ -387,11 +395,13 @@ def _report_census(rows: list[dict]) -> dict:
                                   not str(r["error"]).startswith("context_overflow")]}
     por_tipo = _agrega(validos, lambda r: r["tipo"])
     por_tipo_cfg = _agrega(validos, lambda r: f'{r["tipo"]}|{r["cfg"]}')
+    n_hm_analitico = sum(1 for r in validos if r.get("hm_analitico"))
     frac = round(sum(1 for r in validos if not r["screened_exato"])
                  / len(validos), 4) if validos else None
     taxas = {t: {"n": v["n_census"], "taxa": v["taxa_screening_exato"]}
              for t, v in por_tipo.items()}
     return {"n_rows": len(rows), "n_validos": len(validos), "excluidos": excluidos,
+            "n_hm_analitico": n_hm_analitico,  # adendo 29a: braço HM degenerado
             "por_tipo": por_tipo, "por_tipo_cfg": por_tipo_cfg,
             "global": {"frac_nao_screened": frac,
                        "gate_f4f5": gate_f4f5(frac) if frac is not None else None,
