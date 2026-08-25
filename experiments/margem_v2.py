@@ -1,12 +1,15 @@
-"""Estágio A do pré-reg 32 — seleção analítica de λ* e pool de treino V2.
+"""Estágio A dos pré-regs 32/33 — seleção analítica de λ* e pool de treino V2.
 
-Regra pré-registrada (DIARIO 2026-08-26, pré-reg 32, commitada ANTES de rodar):
+Regra pré-registrada (DIARIO 2026-08-26; pré-reg 33 corrige APENAS a grade de λ
+e o desempate — registrado no ledger antes de gerar o pool; desfecho do 32 foi
+ABORT com a grade {1..25}, mal escalada para as magnitudes de tokens do V2):
 - Insumo: calibrate_report.json (3 políticas fixas × 60 tasks, R e prompt_tokens
   por task → R_eff(λ) recomputável para qualquer λ sem GPU).
-- Grade λ ∈ {1, 2, 5, 10, 25}. Task ELEGÍVEL sob λ: default (thr4500) domina
-  ESTRITAMENTE keep_always E summarize_always em R_eff(λ).
-- λ* = λ que maximiza elegíveis (empate → menor λ). Pool = elegíveis por margem
-  mínima de dominância desc, cap 16, mínimo 10 (senão ABORTA — reportável).
+- Grade λ ∈ {0.02, 0.05, 0.1, 0.2, 0.25, 0.5}. Task ELEGÍVEL sob λ: default
+  (thr4500) domina ESTRITAMENTE keep_always E summarize_always em R_eff(λ).
+- λ* = λ que maximiza elegíveis (empate → MAIOR λ: precificação mais forte com
+  a mesma sala). Pool = elegíveis por margem mínima de dominância desc, cap 16,
+  mínimo 10 (senão ABORTA — reportável).
 - Ranks pares = treino, ímpares = held-out.
 
 Saída: pool.json {lambda_grid, lambda_star, viable, n, ranked, train, heldout}.
@@ -15,7 +18,7 @@ import argparse
 import json
 from pathlib import Path
 
-LAMBDA_GRID = (1.0, 2.0, 5.0, 10.0, 25.0)
+LAMBDA_GRID = (0.02, 0.05, 0.1, 0.2, 0.25, 0.5)
 CAP = 16
 MIN_POOL = 10
 
@@ -41,7 +44,7 @@ def select(report: dict) -> dict:
                 rows.append((tid, margin))
         eligible_by_lambda[lam] = rows
     lambda_star = max(LAMBDA_GRID,
-                      key=lambda lam: (len(eligible_by_lambda[lam]), -lam))
+                      key=lambda lam: (len(eligible_by_lambda[lam]), lam))
     ranked = sorted(eligible_by_lambda[lambda_star],
                     key=lambda r: (-r[1], r[0]))[:CAP]
     result = {"lambda_grid": list(LAMBDA_GRID), "lambda_star": lambda_star,
@@ -69,7 +72,7 @@ def main() -> None:
                       ("lambda_star", "viable", "n")} |
                      {"aborted": result.get("aborted", False)}, indent=2))
     if result.get("aborted"):
-        raise SystemExit("ABORTA (pré-reg 32): elegíveis < 10 sob todos os λ — "
+        raise SystemExit("ABORTA (pré-reg 33): elegíveis < 10 sob todos os λ — "
                          "landscape sem sala p/ política treinável; reportável.")
 
 
