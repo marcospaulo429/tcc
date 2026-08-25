@@ -1,11 +1,14 @@
 """Testes do treino V2 (rl/policy_v2.py + rl/train_v2.py) — SEM servidor: LLM fake determinístico."""
 import math
 
+import httpx2 as httpx  # openai 3.x depende de httpx2 (fork), não de httpx
+import openai
 import pytest
 
 from environment.tasks_swe import TASKS
 from rl.policy_v2 import CENTER_V2, LogisticContextPolicyV2
-from rl.train_v2 import _replay_with_policy, collect_episode, credit_for_point, train
+from rl.train_v2 import (_replay_with_policy, calibrate, collect_episode,
+                         credit_for_point, train)
 from trajectories.schema import load_trajectory
 
 TASK = TASKS[0]  # registrada no registry (necessário p/ replay)
@@ -36,6 +39,28 @@ class ScriptedFakeLLM:
 def _msgs(n_chars_task=300):
     return [{"role": "system", "content": "s" * 200},
             {"role": "user", "content": "t" * n_chars_task}]
+
+
+def _overflow_error():
+    req = httpx.Request("POST", "http://fake/v1/chat/completions")
+    resp = httpx.Response(400, request=req,
+                          json={"error": {"message": "maximum context length exceeded"}})
+    return openai.BadRequestError("maximum context length exceeded",
+                                  response=resp, body=None)
+
+
+class OverflowFakeLLM(ScriptedFakeLLM):
+    """Levanta BadRequestError (overflow de contexto) na fail_at-ésima chamada (1-based)."""
+
+    def __init__(self, script, fail_at):
+        super().__init__(script)
+        self.fail_at = fail_at
+
+    def chat(self, messages, **kw):
+        if self.call_count + 1 == self.fail_at:
+            self.call_count += 1
+            raise _overflow_error()
+        return super().chat(messages, **kw)
 
 
 # -- política V2 -----------------------------------------------------------------
@@ -218,3 +243,60 @@ def test_replay_with_policy_reconstructs_counters(tmp_path):
     assert phi[2] == pytest.approx(3 / 25)
     assert phi[3] == pytest.approx(f)  # frac do TEST original reconstruída
     assert phi[4] == pytest.approx(1 / 3)  # write do prefixo contado
+
+
+# -- emenda 32a: overflow de contexto = episódio falho (R=0, tokens pagos) ----------
+
+def test_collect_episode_overflow_is_failed_episode(tmp_path):
+    llm = OverflowFakeLLM(["LIST"], fail_at=2)  # 1ª chamada paga, 2ª estoura
+    pol = LogisticContextPolicyV2(theta=[0.0] * 5, greedy=True)  # keep sempre
+    ep = collect_episode(TASK, llm, pol, tmp_path / "ep", episode_seed=21)
+    assert ep["context_overflow"] is True
+    assert ep["R"] == 0.0 and ep["trajectory"] is None
+    assert ep["prompt_tokens_total"] == 100  # só a chamada que retornou foi paga
+    assert ep["R_eff"] == pytest.approx(-100 / 100000)
+    assert ep["llm_calls"] == 2 == llm.call_count  # a chamada que estourou conta
+    # cp_points vêm do decision_log da política (2 turnos iniciados), sem index
+    assert len(ep["cp_points"]) == 2
+    assert all(pt["index"] is None for pt in ep["cp_points"])
+    assert all("phi" in pt and "action" in pt for pt in ep["cp_points"])
+
+
+def test_train_outcome_survives_overflow_and_updates_theta(tmp_path):
+    import json
+    llm = OverflowFakeLLM(["FINISH"], fail_at=2)  # ep 0 normal, ep 1 estoura
+    summary = train([TASK], llm, arm="outcome", budget_calls=10**9, seed=4,
+                    out_dir=tmp_path / "train", max_episodes=2)
+    assert summary["episodes"] == 2
+    assert summary["theta"] != [0.0] * 5  # decision_log do overflow alimentou o grad
+    rows = [json.loads(line) for line in
+            (tmp_path / "train" / "train_log.jsonl").read_text().splitlines()]
+    assert rows[0]["context_overflow"] is False
+    assert rows[1]["context_overflow"] is True
+    assert rows[1]["R"] == 0.0 and rows[1]["grad_norm"] > 0
+
+
+def test_train_ch_skips_credit_on_overflow_episode(tmp_path):
+    import json
+    llm = OverflowFakeLLM(["FINISH"], fail_at=1)  # estoura já na 1ª chamada
+    summary = train([TASK], llm, arm="ch", budget_calls=10**9, seed=5,
+                    out_dir=tmp_path / "train", max_episodes=1)
+    assert summary["episodes"] == 1
+    assert llm.call_count == 1  # nenhum replay tentado
+    rows = [json.loads(line) for line in
+            (tmp_path / "train" / "train_log.jsonl").read_text().splitlines()]
+    assert rows[0]["context_overflow"] is True
+    assert rows[0]["credits"] == [] and rows[0]["grad_norm"] == 0.0
+    assert summary["theta"] == [0.0] * 5
+
+
+def test_calibrate_survives_overflow_and_marks_task(tmp_path):
+    llm = OverflowFakeLLM(["FINISH"], fail_at=1)  # keep_always/1ª task estoura
+    report = calibrate([TASK], llm, tmp_path / "cal", lambda_cost=1.0)
+    ka = report["policies"]["keep_always"]["per_task"][0]
+    assert ka["context_overflow"] is True
+    assert ka["R"] == 0.0 and ka["prompt_tokens_total"] == 0
+    assert ka["R_eff"] == 0.0
+    for name in ("summarize_always", "default"):
+        pt = report["policies"][name]["per_task"][0]
+        assert pt["context_overflow"] is False and pt["prompt_tokens_total"] > 0

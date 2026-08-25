@@ -22,6 +22,8 @@ import math
 import random
 from pathlib import Path
 
+import openai
+
 from agent.harness_v2 import HarnessV2
 from agent.loop_v2 import EpisodeV2
 from environment.registry import resolve_task
@@ -68,6 +70,23 @@ class PolicyEpisodeV2(EpisodeV2):
         return super()._step_context_policy(messages, turn)
 
 
+class _TokenTally:
+    """Embrulha o CountingLLM só para acumular prompt_tokens pagos — quando o
+    episódio morre em overflow de contexto (emenda 32a), sabemos o custo até ali."""
+
+    def __init__(self, llm):
+        self._llm = llm
+        self.prompt_tokens = 0
+
+    def config(self) -> dict:
+        return self._llm.config()
+
+    def chat(self, messages, **kw) -> dict:
+        resp = self._llm.chat(messages, **kw)
+        self.prompt_tokens += resp.get("prompt_tokens", 0)
+        return resp
+
+
 # -- coleta ------------------------------------------------------------------
 
 def collect_episode(task: dict, llm, policy: LogisticContextPolicyV2, out_dir,
@@ -76,9 +95,18 @@ def collect_episode(task: dict, llm, policy: LogisticContextPolicyV2, out_dir,
     policy.reseed(episode_seed)
     policy.decision_log = []
     calls0 = llm.call_count
-    ep = PolicyEpisodeV2(task, llm, policy, Recorder(out_dir))
+    tally = _TokenTally(llm)
+    ep = PolicyEpisodeV2(task, tally, policy, Recorder(out_dir))
     try:
         result = ep.run()
+    except openai.BadRequestError:
+        # emenda 32a: overflow de contexto = episódio FALHO, R=0, paga o que pagou
+        return {"trajectory": None, "R": 0.0,
+                "R_eff": r_eff(0.0, tally.prompt_tokens, lambda_cost),
+                "llm_calls": llm.call_count - calls0,
+                "prompt_tokens_total": tally.prompt_tokens,
+                "cp_points": [{"index": None, **log} for log in policy.decision_log],
+                "context_overflow": True}
     finally:
         ep.sandbox.cleanup()
     traj = load_trajectory(result["trajectory_path"])
@@ -110,7 +138,8 @@ def _replay_with_policy(traj: Trajectory, index: int, llm, harness, out_dir,
 
     sandbox = Sandbox()
     sandbox.restore(d.state_before["workspace"])
-    episode = PolicyEpisodeV2(resolve_task(traj.task_id), llm, harness,
+    tally = _TokenTally(llm)
+    episode = PolicyEpisodeV2(resolve_task(traj.task_id), tally, harness,
                               Recorder(out_dir), sandbox)
     for dd in traj.decisions[:index]:
         if dd.decision_point == "tool_call":
@@ -125,6 +154,9 @@ def _replay_with_policy(traj: Trajectory, index: int, llm, harness, out_dir,
             "last_action": d.state_before.get("last_action"),
             "tests_passed": d.state_before.get("tests_passed", False),
         })
+    except openai.BadRequestError:
+        # emenda 32a: o flip causou o estouro → consequência causal, R=0 do replay
+        return {"reward": 0.0, "context_overflow": True}, tally.prompt_tokens
     finally:
         sandbox.cleanup()
     rtraj = load_trajectory(result["trajectory_path"])
@@ -221,6 +253,8 @@ def train(tasks: list[dict], llm, arm: str, budget_calls: int, seed: int, out_di
                 g = policy.grad_logp(pt["phi"], pt["action"])
                 grad_sum = [s + adv * gi for s, gi in zip(grad_sum, g)]
             baseline = beta * baseline + (1 - beta) * ep["R_eff"]
+        elif ep.get("context_overflow"):
+            sampled = []  # sem trajetória → sem replay; braços de crédito não amostram
         else:
             traj = load_trajectory(ep["trajectory"])
             pts = ep["cp_points"]
@@ -242,7 +276,8 @@ def train(tasks: list[dict], llm, arm: str, budget_calls: int, seed: int, out_di
             "seed": episode_seed, "R": ep["R"], "R_eff": ep["R_eff"],
             "calls_cum": llm.call_count, "theta": theta,
             "grad_norm": gnorm,
-            "credits": credits, "arm": arm})
+            "credits": credits, "arm": arm,
+            "context_overflow": bool(ep.get("context_overflow", False))})
         episode_idx += 1
     stopped_by = "budget_calls" if llm.call_count >= budget_calls else "max_episodes"
     return {"arm": arm, "seed": seed, "lambda_cost": lambda_cost,
@@ -267,7 +302,8 @@ def evaluate(tasks: list[dict], llm, policy_theta: list[float], seed: int, out_d
         ep = collect_episode(task, llm, policy, Path(out_dir) / "eval",
                              seed * 100003 + i, lambda_cost)
         per_task.append({"task_id": task["task_id"], "R": ep["R"], "R_eff": ep["R_eff"],
-                         "prompt_tokens_total": ep["prompt_tokens_total"]})
+                         "prompt_tokens_total": ep["prompt_tokens_total"],
+                         "context_overflow": bool(ep.get("context_overflow", False))})
     n = len(per_task) or 1
     return {"mean_R": sum(t["R"] for t in per_task) / n,
             "mean_R_eff": sum(t["R_eff"] for t in per_task) / n,
@@ -289,16 +325,25 @@ def calibrate(tasks: list[dict], llm, out_dir, lambda_cost: float,
     for name, harness in fixed.items():
         per_task = []
         for task in tasks:
-            episode = EpisodeV2(task, llm, harness, Recorder(out_dir / "calibrate" / name))
+            tally = _TokenTally(llm)
+            episode = EpisodeV2(task, tally, harness, Recorder(out_dir / "calibrate" / name))
             try:
                 result = episode.run()
+            except openai.BadRequestError:
+                # emenda 32a: overflow = task falha, R=0, tokens pagos até o estouro
+                per_task.append({"task_id": task["task_id"], "R": 0.0,
+                                 "R_eff": r_eff(0.0, tally.prompt_tokens, lambda_cost),
+                                 "prompt_tokens_total": tally.prompt_tokens,
+                                 "context_overflow": True})
+                continue
             finally:
                 episode.sandbox.cleanup()
             traj = load_trajectory(result["trajectory_path"])
             tokens = _prompt_tokens(traj.decisions)
             per_task.append({"task_id": task["task_id"], "R": result["reward"],
                              "R_eff": r_eff(result["reward"], tokens, lambda_cost),
-                             "prompt_tokens_total": tokens})
+                             "prompt_tokens_total": tokens,
+                             "context_overflow": False})
         n = len(per_task) or 1
         report["policies"][name] = {
             "mean_R": sum(t["R"] for t in per_task) / n,
