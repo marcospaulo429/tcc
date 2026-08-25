@@ -12,6 +12,9 @@ import json
 import statistics
 from pathlib import Path
 
+import openai
+
+from agent.harness import summarize_is_vacuous
 from agent.harness_v2 import HarnessV2
 from agent.llm import LLMClient
 from agent.loop_v2 import EpisodeV2
@@ -191,6 +194,14 @@ def _candidatos(trajs) -> dict[str, list]:
             if acao not in FLIPS[p]:
                 continue
             score = d.state_before.get("context_tokens", 0)
+            if p == "context_policy":
+                # adendo 28b: prioriza keep→summarize (direção do Teste 1 V1);
+                # summarize vácuo não muda o contexto → candidato inútil, filtrado
+                if acao == "keep_context":
+                    if summarize_is_vacuous(d.state_before["messages"], keep_last=6,
+                                            task_chars=0):
+                        continue
+                    score += 10**6
             if p == "observation_policy":
                 if not (d.observation or {}).get("chars_full"):
                     continue  # sem output de falha, compact==full (vácuo)
@@ -238,6 +249,13 @@ def stage4():
                 append_row(rows_path, {"tipo": tipo, "task_id": traj.task_id, "index": i,
                                        "flip": flip["action"], "flipou": None,
                                        "error": str(exc)})
+            except openai.BadRequestError as exc:
+                # overflow de contexto sob o flip (ex.: keep forçado onde o original
+                # sumarizou) — consequência causal do flip, mas sem R mensurável no
+                # serving de 8k: reportado à parte, não conta como flip.
+                append_row(rows_path, {"tipo": tipo, "task_id": traj.task_id, "index": i,
+                                       "flip": flip["action"], "flipou": None,
+                                       "error": f"context_overflow: {exc}"[:200]})
 
     rows = load_rows(rows_path)
     por_tipo = {}
