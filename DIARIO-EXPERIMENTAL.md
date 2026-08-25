@@ -1051,3 +1051,70 @@ por ser o item nº 1 do AC.
   a leitura "viés load-bearing + imposto do replay" fica identificada sem o
   confound R1-W1. Custo: 44 chamadas × 7 células ≈ 260 chamadas LLM, ~12 min.
 - Artefatos: runs/ato4_em/ (summary.json + 7 células), experiments/ato4_em.py.
+
+## 2026-08-26 — PRÉ-REGISTRO 32: treino V2 (F4–F5) — o ramo ABERTO do no-free-lunch, exercitado
+
+### Licença e accounting do gate (fixados EX ANTE, antes de qualquer rollout)
+O census (pré-reg 29) abriu o gate F4–F5 sob 3/4 contabilidades. A
+contabilidade PRIMÁRIA desta fase, fixada agora: **pontos medidos sem duais
+degenerados = 15/38 = 0.39 ≥ 0.20 → gate ABERTO** (recomendação do painel
+rodada 7; os duais 29a são degenerados por construção, R_HM ≡ R_H). As
+outras 3 contabilidades ficam reportadas, não decisórias. Isto revoga o
+anti-escopo "treino fora do V2" do REQUISITOS-HARNESS-V2.md — decisão
+tomada com o gate aberto e pré-registrada aqui.
+
+### Predição sob teste
+Prop. nfl / Cor. gate: com massa pivotal não-screened ≥ 0.20, crédito por
+decisão PODE adicionar sinal sobre outcome-only à mesma dose. O V1 (gate
+fechado) confirmou o ramo fechado em 4 atos; este é o primeiro teste do
+ramo aberto. Falha aqui NÃO quebra a regra (a regra é um teto, não um
+piso) — mas confirma que ela não é vazia só quando fecha; desenho e
+desfechos abaixo tornam qualquer resultado publicável.
+
+### Desenho — Estágio A (calibração analítica, protocolo do Ato 4/pré-reg 27)
+- Config v2_folga (thr4500/mt25/keep6), pool 60 congelado
+  (environment.tasks_swe), Qwen3-4B greedy, APC off, sequencial.
+- 3 políticas fixas × 60 tasks (rl.train_v2 calibrate): keep_always
+  (thr 10^9), summarize_always (thr −1), default (thr4500). Uma passada;
+  R e prompt_tokens por task permitem recompute analítico de R_eff(λ)
+  para qualquer λ sem GPU nova.
+- Grade λ ∈ {1, 2, 5, 10, 25}. Task ELEGÍVEL sob λ: default domina
+  ESTRITAMENTE keep_always E summarize_always em R_eff(λ). λ* = λ que
+  maximiza elegíveis (empate → menor λ). Pool de treino: elegíveis
+  ordenadas por margem mínima de dominância desc, cap 16, mínimo 10
+  (senão ABORTA — reportável). Ranks pares = treino, ímpares = held-out.
+- Regra idêntica ao pré-reg 27 exceto o par de atratores (V2: thr4500).
+
+### Desenho — Estágio B (treino, 4 braços × 3 seeds)
+- rl.train_v2: braços outcome / ch / chm_cm / zero; budget 1600 chamadas
+  LLM por célula (dose-matched, TODA chamada conta: episódios + replays +
+  a′); seeds 1/2/3; lr 0.1, clip 1.0, CENTER_V2, k_credit 2; λ = λ* do
+  estágio A; avaliação greedy no held-out.
+- **Contabilidade dual desde o desenho (lição do pré-reg 31):** ao final,
+  o braço outcome é TAMBÉM avaliado fatiado nos nº de episódios dos braços
+  ch e chm_cm por seed (θ do train_log; protocolo idêntico ao 31, mesmo
+  fidelity gate de re-eval exata do θ final do outcome s1).
+- chm_cm: fallback p/ C_H quando a′ não encontrado (sampler V2 com
+  escalação; taxa de fallback é resultado reportável — census: 87/114 a
+  temp 0.8).
+
+### Desfechos declarados (primário: held-out mean R_eff, comparação por seed)
+- **s1 (ramo aberto confirmado):** ch OU chm_cm > outcome em ≥2/3 seeds
+  SOB AS DUAS contabilidades (dose-matched E episode-matched).
+- **s2 (aprendizado sem ordenação de crédito):** ≥1 braço escapa dos dois
+  atratores fixos, mas crédito ≤ outcome em ≥2/3 em qualquer contabilidade.
+- **s3 (sem aprendizado/colapso):** nenhum braço > max(atratores) em 2/3.
+- Secundário: chm_cm ≥ ch por seed (o crédito corrigido não pode perder
+  para o viesado onde a massa não-screened domina — predição da prop).
+- Convenção de sempre: 3 seeds, per-seed e per-task reportados, sem
+  p-valor de fachada.
+
+### Custo estimado e riscos
+- Estágio A: 180 episódios (~2.000–5.000 chamadas, 1–3 h GPU).
+- Estágio B: 12 células × 1.600 chamadas ≈ 19.200 chamadas (~6–20 h GPU,
+  sequencial). Watcher por chain script; células idempotentes.
+- Riscos: (i) elegibilidade < 10 → aborta reportável (landscape sem sala
+  p/ política treinável); (ii) episódios V2 longos podem reduzir nº de
+  episódios/célula — a contabilidade dual mitiga; (iii) saturação de
+  reward em parte do pool 60 (metade fácil demais p/ 4B) — a seleção por
+  margem endereça.
