@@ -776,6 +776,62 @@ $C_H = -0.09$ while the corrected signal is $+0.09$, an inverted sign. The
 corrected signal $C_{HM} - C_M$ is exact in both regimes.
 \end{corollary}
 
+Screening-off has a direct budget consequence for any attempt to
+\emph{train} on replay credit --- one that is decidable before training
+begins. We state it here as the operational centerpiece of the paper;
+\S\ref{sec:training} then tests it the hard way.
+
+\begin{proposition}[No free lunch for replay credit under screening]
+\label{prop:nfl}
+Fix a task pool, the determinism premises of \S\ref{sec:floor}, and a
+training budget matched in total LLM calls. Let $\sigma$ be the fraction of
+reward-pivotal harness points at which screening-off holds exactly, and
+consider a trainer that bills the harness the corrected signal
+$C_{HM} - C_M$, paying $r \geq 2$ replays per billed point out of the
+shared budget. Then: (i)~every screened point contributes a billed signal
+of \emph{exactly zero} (Proposition~\ref{prop:dc}(i)) at strictly positive
+replay cost; (ii)~the total per-decision training signal is confined to the
+$(1-\sigma)$ non-screened pivotal mass and bounded by the effect sizes
+$|C_{HM} - C_M|$ there, so the value of replay credit for training is at
+most (non-screened mass $\times$ effect size) minus the replay tax;
+(iii)~if $\sigma = 1$ on the measured pool, the corrected-credit arm
+reduces to outcome-only policy gradient computed from a strictly smaller
+episode budget --- it is dominated at matched dose whenever additional
+episodes do not hurt the outcome-only learner.
+\end{proposition}
+\begin{proof}
+(i) is Proposition~\ref{prop:dc}(i) plus the accounting of dose-matching.
+(ii) sums (i) over points: screened points contribute zero, non-screened
+points at most their effect size, and every replay is paid from the shared
+call budget. (iii) with the credit term identically zero, the arm's update
+rule coincides with outcome-only on the episodes it can still afford.
+\end{proof}
+
+\begin{corollary}[The census is a decision procedure]
+\label{cor:gate}
+Both quantities in the bound --- $\sigma$ and the non-screened effect
+mass --- are measurable \emph{before any training} by a screening census
+whose cost is a small multiple of baseline collection. Whether cross-layer
+replay credit can pay for itself on a given stack is therefore decidable in
+advance: pre-register a gate on the census and run credit training only if
+it opens.
+\end{corollary}
+
+Three scope notes keep the proposition honest. \emph{First}, the dominance
+in (iii) is a property of the measured pool, not of the method class:
+pools with substantial non-screened pivotal mass may repay credit ---
+the proposition \emph{prices} replay credit, it does not prohibit it.
+\emph{Second}, the tax term attaches to the replay \emph{estimator} under
+dose-matching, not to the signal itself: an amortized critic fit offline
+to census data moves the replay cost out of the training loop and changes
+the accounting --- measurement remains the right place for replays, and
+the census is exactly the dataset such a critic needs. \emph{Third},
+screening annihilates the \emph{harness-side} signal only: $C_M$ is
+untouched, so model-side credit is priced by a different budget line.
+Under this reading, Act~4's null is not an optimization pathology but the
+\emph{correct} behavior of an exact estimator of a quantity that is truly
+zero --- the arms could not have separated in any other direction.
+
 We emphasize the epistemic status of each piece.
 Proposition~\ref{prop:dc} is elementary algebra --- its value is not
 mathematical depth but the correction rule it licenses.
@@ -987,6 +1043,11 @@ and quantified rather than confounded: \emph{per-decision replay credit
 costs more compute than its signal adds, and correcting its bias removes
 what little training signal the bias was providing.} Measurement remains
 the right use of the replays; billing them to the training loop is not.
+Section~\ref{sec:formal} states this as
+Proposition~\ref{prop:nfl} and converts it into a pre-registrable decision
+rule (Corollary~\ref{cor:gate}): the census that diagnosed the failure is
+the same instrument that could have predicted it --- and that any future
+cross-layer training attempt should be gated on.
 
 \begin{figure}[t]
 \centering
