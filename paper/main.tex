@@ -1918,6 +1918,22 @@ buying at all. Our designed pools satisfy 1--2 and 5 but --- as pre-reg 34
 established post hoc --- not 3; to our knowledge no existing benchmark
 satisfies all five.
 
+Item 3 is harder than it looks: after pre-reg 34 we attempted to
+\emph{construct} a passing pool adversarially, with full knowledge of the
+mechanism (24 tasks: information poisoned against summarization paired
+with context-heavy tasks demanding it). Four design iterations, each
+calibrated against the real model, all failed the gate --- and each failed
+through a \emph{distinct behavioral pathology} rather than a task
+parameter: the model reads too little for the poison to bite the default
+policy; multi-stage repairs exceed its competence band entirely (all
+policies sink together); two-source synthesis collapses the pool; and in
+the final iteration, summarization mid-repair induced a
+degenerate loop (the model rewrites the same file without ever re-running
+tests, overflowing the context under \emph{every} context policy). The
+margin of item 3 must be verified against model behavior, not estimated
+from task structure --- exploratory, single-seed; the record is in the
+released ledger artifacts.
+
 \bibliographystyle{iclr2026_conference}
 \bibliography{refs}
 \end{document}
