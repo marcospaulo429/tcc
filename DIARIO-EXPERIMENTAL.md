@@ -1522,3 +1522,15 @@ mensagens consecutivas do mesmo role na borda do cliente
 informacional idêntico; a estrutura de renderização difere da dos runs
 Qwen e o census Mistral é comparável apenas a si mesmo nesse aspecto.
 Smoke e protocolo do pré-reg 35 inalterados.
+
+**Adendo 35b (2026-08-26, antes de qualquer rollout válido; único contato
+com o Mistral: o smoke declarado):** o smoke do Mistral-7B-Instruct-v0.3
+rodou (após o shim 35a) e FALHOU pelo critério declarado: taxa de parse
+0.57 (8 ok, 6 retries; corte 0.80), rewards 0.00 nos 3 episódios.
+Conforme declarado no pré-reg 35, troca para o fallback
+**deepseek-ai/deepseek-coder-6.7b-instruct** (ungated; chat template
+aceita roles consecutivos — shim 35a desnecessário e desligado, o
+rendering fica estruturalmente igual ao dos runs Qwen). Tags: dsc_g600 /
+dsc_mt6. Protocolo, endpoints, gate de poder e desfechos declarados
+inalterados. O smoke roda de novo com o deepseek; se falhar também, novo
+adendo antes de qualquer decisão.
