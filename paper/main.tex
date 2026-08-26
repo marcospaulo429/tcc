@@ -1934,6 +1934,22 @@ margin of item 3 must be verified against model behavior, not estimated
 from task structure --- exploratory, single-seed; the record is in the
 released ledger artifacts.
 
+A follow-up on the final pool with a $2\times$ larger model (Qwen3-8B)
+sharpens the requirement rather than relaxing it. The looping pathology
+disappears, four tasks are solved by exactly the designed mechanism
+(keep overflows, summarize repairs, margin $+0.95$ each), and the
+conditional target strictly dominates \emph{every} fixed policy in mean
+efficiency ($+0.16$) --- the first landscape where it does. Yet the
+registered gate still vetoes ($0/24$): the conditional oracle commits at
+its first consulted decision and thereafter reproduces one fixed policy
+token-exactly per task, so its per-task margin over the best fixed policy
+is identically zero. A target that exercises only \emph{across-task}
+conditionality can never pass a per-task-versus-best-fixed criterion;
+item 3's margin must therefore be specified \emph{per attractor} (against
+each fixed policy the optimizer can collapse into) and at the level the
+training signal observes --- mean efficient reward --- with any such
+revision registered before training, not after.
+
 \bibliographystyle{iclr2026_conference}
 \bibliography{refs}
 \end{document}
