@@ -692,7 +692,8 @@ both regimes; the 4B also breaks on the curated pool. The claim re-scopes:
 \emph{whether} screening holds is a property of the (model, harness, task)
 triple, with break sets point-level disjoint across models, and the
 re-injection mechanism is neither necessary nor sufficient there --- all
-Qwen3-family; cross-family transport unmeasured.
+Qwen3-family; a pre-registered cross-family census was blocked by its own
+smoke gate (pre-reg 35, Appendix~\ref{app:replication}).
 
 \subsection{Statistical caveats}
 
@@ -1121,6 +1122,22 @@ $I = +0.18$: either flip alone hurts, together they cancel).
 
 \section{Replication Across Models, Pools, and Environments}
 \label{app:replication}
+\paragraph{The cross-family attempt (pre-reg 35).} A census mirroring
+pre-reg 15 on a non-Qwen model was registered with a protocol-adherence
+smoke gate: 3 episodes, action-parse rate $\geq 0.80$, no screening
+analysis before passing. Three ungated candidates failed it in sequence
+(addenda 35a--c, each registered before contact with the next model):
+Mistral-7B-Instruct-v0.3 at 0.57 --- after a role-merging serving shim its
+strict-alternation chat template required --- DeepSeek-Coder-6.7B at 0.33,
+and Phi-3.5-mini at 0.43. A raw-output probe confirmed the failure mode is
+not our parser: the models answer in prose plus fenced code, never
+emitting the action object. The declared stopping rule (no fourth
+candidate, no harness relaxation) fired: under a \emph{frozen} harness,
+adherence to the action format --- the precondition of measurement --- is
+itself family-dependent. The Qwen3 scope of every claim is therefore a
+measured constraint rather than an omission, and cross-family transport
+of screening remains open; measuring it requires per-family harness
+adaptation, which would confound the very comparison it enables.
 \paragraph{Floor and unconditional replications.} The floor
 replicates everywhere (pre-regs 14, 15, 16, all registered before running): the
 8B contributes 810 dedicated and 234 attached null replays and MBPP+
@@ -1751,6 +1768,7 @@ failed and the eleven partial. Failed predictions are reported in the main text 
 33 & V2 training, re-registered: single change --- $\lambda$ grid rescaled to $\{0.02..0.5\}$, ties break to larger $\lambda$; all else inherited from 32; declared outcomes s1 (credit $>$ outcome under both accountings) / s2 (learning without credit ordering) / s3 (no arm beats the best fixed attractor) & $\lambda^{*}=0.2$, 10 tasks; \textbf{s3}: 8/9 learning runs collapse token-exactly onto summarize-always (0.831 vs.\ 0.889 target), one outcome seed and the untrained control at keep-always ($-0.092$); episode-matched slices leave the bin unchanged (one transient mixed-policy slice at 0.301) & held \\
 30 & V2 estimand controls mirroring V1 items 21/26 (number reserved earlier; registered and run after 31--33): (A) $a'$ re-sampling on all 48 measured census points, two disjoint seed schedules at each point's census temperature, point-classification stability + recomputed headline per schedule; (B) $a'_s$ from the summarized state on keep$\to$summarize context points; declared outcomes r1/r2/r3, b1/b2/b3 & \textbf{r2}: classification draw-sensitive (17/23 stable) but s3 verdict and open gate survive both schedules (0.474/0.368 vs.\ 0.395); \textbf{b3}: screening $8/21=0.381$ under $a'_s$, all 13 non-screened points exactly additive ($I=0$, $C_H\neq 0$) & held; claim scoped \\
 34 & Post-mortem of 33's collapse, two parts. (A) analytic power gate: license training only if $\geq$10 pool tasks have attractor margin $\geq$0.10 in $R_{\text{eff}}(\lambda)$ at some $\lambda$ (margins from 32's calibration data; design motivated by exploratory inspection, declared as such); (B) optimizer probe: outcome + corrected arms, 1 seed, lr $5\times$ smaller, budget $2\times$ larger, same pool/$\lambda^{*}$; declared outcomes p1 (both collapse) / p2 (arms separate) / p3 (one collapses) & (A) \textbf{no $\lambda$ yields $\geq$10 eligible tasks} (max 3 at margin 0.10; 8 at 0.08) --- the gate would have vetoed 33; (B) \textbf{p1}: both arms collapse token-exactly onto \emph{opposite} attractors with $\theta\approx 0$ ($\|\theta\|_\infty\leq 0.055$) --- landscape, not optimizer & held \\
+35 & Cross-family census (mirror of \#15 on a non-Qwen model): protocol-adherence smoke gate (3 episodes, action-parse rate $\geq$0.80) before any census rollout; candidate sequence and the no-fourth-candidate stopping rule declared in addenda 35a--c & \textbf{unrunnable as declared}: Mistral-7B-v0.3 parses 0.57 (after a role-merge serving shim), DeepSeek-Coder-6.7B 0.33 (raw-output probe: prose + code, ignores the action protocol entirely), Phi-3.5-mini 0.43; under the frozen harness, format adherence is itself family-dependent --- the Qwen3 restriction becomes a measured constraint, and cross-family screening remains an open question & held (gate fired 3$\times$) \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:

@@ -1551,3 +1551,18 @@ census cross-family é irrealizável sob o harness V1 congelado — a adesão
 ao formato de instrução é ela mesma família-dependente; isso vira achado
 de escopo reportado no paper (a questão do screening cross-family
 permanece aberta), sem afrouxar o harness e sem quarto candidato.
+
+### DESFECHO 35 (2026-08-26): census cross-family IRREALIZÁVEL sob o harness V1 congelado
+Os três candidatos declarados falharam o smoke de adesão ao protocolo
+(corte 0.80): Mistral-7B-v0.3 **0.57** (com shim 35a), deepseek-coder-6.7b
+**0.33** (probe: prosa + código, ignora o protocolo de ações por completo
+— parser descartado como causa), Phi-3.5-mini **0.43**. Regra de parada
+declarada no 35c disparou: sem quarto candidato, sem afrouxar o harness.
+Leitura: sob harness congelado, a adesão ao formato de ação — precondição
+da medida — é ela mesma família-dependente. O escopo Qwen3 das claims
+passa de "não medido" a **restrição medida**; transporte cross-family de
+screening permanece aberto (medi-lo exigiria adaptação de harness por
+família, que confundiria a própria comparação). Integrado no paper:
+§threats (1 frase), app:replication (parágrafo), ledger (linha 35).
+Custo total: 3 smokes + 1 probe ≈ 40 chamadas; zero rollouts de census.
+4B restaurado e servindo.
