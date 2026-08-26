@@ -86,12 +86,12 @@ regime-dependent: with budget slack the model action screens off the
 harness decision exactly --- $C_{HM} = C_M$ at every measured point (57/57
 raw; 53/56 under the stricter reward-pivotal endpoint;
 \S\ref{sec:interaction} maps every count to its endpoint); under pressure
-the shield cracks (8 breaks in 65 points, at recurring decision points ---
-though only 3 tasks break, so clustered inference is weak),
-non-monotonically and co-occurring with reward saturation: interaction is
-detectable only inside a \emph{competence window} where the agent neither
-aces nor fails everything. A stronger model breaks at a flat rate in both
-regimes (\S\ref{sec:threats}).
+the shield cracks (8/65 points, recurring --- though only 3 tasks break,
+so clustered inference is weak), non-monotonically and co-occurring with
+reward saturation: interaction is detectable only inside a
+\emph{competence window} where the agent neither aces nor fails
+everything. A stronger model breaks at a flat rate in both regimes
+(\S\ref{sec:threats}).
 
 We then test whether interaction-aware credit improves \emph{training}.
 Screening has a budget consequence (Proposition~\ref{prop:nfl}): under
@@ -101,8 +101,8 @@ pay for itself is a gate measurable \emph{before any training} by the same
 census that established screening (Corollary~\ref{cor:gate}). Four
 training acts validate this the hard way: three identified failures, then,
 under a repaired objective, the first arm separation --- outcome-only wins
-at matched dose, and corrected credit, correctly zero where the model
-shields, removes exactly the gradient the single-layer bias was providing.
+at matched dose; corrected credit, correctly zero where the model shields,
+loses the gradient the single-layer bias was providing.
 
 \paragraph{Contributions.}
 \begin{enumerate}
@@ -168,10 +168,7 @@ shows amortization failing. Table~\ref{tab:positioning}
 (Appendix~\ref{app:figs}) summarizes the
 gap: no prior work measures $C_H$, $C_M$ and $I$ at the same decision
 point against an exact zero-floor replay --- within a single layer,
-cross-layer interaction is invisible by construction. Prior work observes
-only that counterfactual \emph{measurability} is
-model-dependent~\citep{audit2026}; \S\ref{sec:threats} shows the structure
-itself changes with the (model, task pool) at identical points.
+cross-layer interaction is invisible by construction.
 
 \section{Setup: A Two-Layer Agent with Deterministic Replay}
 \label{sec:setup}
@@ -192,10 +189,8 @@ the fraction of hidden pytest tests passed, so $R \in [0,1]$ with resolution
 set by the number of tests. Cost-adjusted reward is
 $R_{\text{eff}} = R - \lambda \cdot \text{prompt tokens}/10^5$ with
 $\lambda = 25$, fixed analytically before any training and never
-recalibrated.\footnote{$\lambda = 25$ was fixed before any training so
-that a typical long-context episode's token cost is commensurate with one
-unit of task reward; the artifact stores raw token totals, so
-$R_{\text{eff}}$ at any $\lambda$ is recomputable.}
+recalibrated (the artifact stores raw token totals, so $R_{\text{eff}}$
+at any $\lambda$ is recomputable).
 
 \subsection{Replay and interventions}
 \begin{figure}[t]
@@ -397,41 +392,58 @@ post-treatment variable and are descriptive, not causal, and their
 task-clustered versions are weak (\S\ref{sec:threats}). We call the
 picture a \emph{competence window}: cross-layer interaction is detectable
 only where the agent neither saturates success nor failure
-(Figure~\ref{fig:regime}, Table~\ref{tab:synthesis},
+(Table~\ref{tab:synthesis}; Figure~\ref{fig:regime},
 Appendix~\ref{app:figs}).
 
-
+\begin{table}[t]
+\centering\small
+\begin{tabular}{lllll}
+\toprule
+Model & Pool & Slack & Pressure & Reading \\
+\midrule
+4B & original (30) & 0/57 & 8/65 & breaks gated by pressure \\
+1.7B & original (30) & \multicolumn{2}{c}{0/23 combined} & slack replicates; pressure saturated \\
+8B & original (30) & 5/28 & 6/34, 7/35 & flat: regime-independent breaks \\
+4B & curated (22) & 4/16 & 2/23 & breaks in both regimes \\
+8B & curated (22) & 3/27 & 3/31 & flat again \\
+4B & MBPP+ (60) & \multicolumn{2}{c}{0/66 (11/11 pivotal)} & screens unconditionally \\
+1.7B & MBPP+ (60) & \multicolumn{2}{c}{0/44 (24/24 pivotal)} & screens unconditionally \\
+4B & HumanEval+ (60) & \multicolumn{2}{c}{0/76 (42/42 pivotal)} & screens unconditionally \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Synthesis: raw screening-off break counts by (model, pool,
+regime).} Every claim about \emph{when} the shield holds reduces to this
+grid: pressure-gating is a 4B-on-original-pool phenomenon; the 8B breaks
+at a flat rate wherever it is in its competence window; MBPP+/HumanEval+
+screen everywhere. Counts are breaks/points; per-configuration detail in
+Figure~\ref{fig:regime} (Appendix~\ref{app:figs}).}
+\label{tab:synthesis}
+\end{table}
 
 \paragraph{Anatomy and robustness (summary).}
-Appendix~\ref{app:shield} gives the full record. On the falsifiable
+Appendix~\ref{app:shield} gives the full record: on the falsifiable
 subpopulation (reward-non-pivotal points screen by construction,
 Remark~\ref{rem:pivot}) the screened fraction is $53/56 = 0.946$, CI95
 $[0.87,1.00]$ task-clustered, surviving the discovery/confirmation split
 (confirmation set 39/42) and $a'$ re-sampling under three disjoint seed
 schedules (99/101 informative slack draws; the three pressure breaks
-re-break 9/9 --- breaks are properties of the point, not the draw).
-Mechanistically, of the 52 non-trivially \emph{shielded} points, 23/24
-annotated show \emph{structural re-injection} ($a'$, sampled from the
-un-summarized state, carries the destroyed information across the cut) and
-22/52 show the downstream harness re-triggering summarization; together
-the two coalescence arguments explain 72/75 screened points, verified
-directly in the recorded traces.
+re-break 9/9). Two verified mechanisms --- \emph{structural re-injection}
+($a'$, sampled from the un-summarized state, carries the destroyed
+information across the cut; 23/24 annotated) and downstream
+re-summarization (22/52) --- explain 72/75 screened points in the recorded
+traces.
 
-\paragraph{Consequence for credit assignment.} At every shielded point
-single-layer $C_H$ bills the harness for an effect the model absorbs ---
-interaction-corrected $C_{HM} - C_M$ is zero while $C_H$ is not, and in
-the slack regime that is \emph{all} measured points; the error is exact,
-$C_H = -I$ (Appendix~\ref{app:formal}).
-
-\paragraph{Formal reading.}
-Appendix~\ref{app:formal} gives the deterministic treatment: the
-double-counting identity $C_{HM}-C_M = C_H + I$, so $C_H = -I$ exactly at
-screened points (Proposition~\ref{prop:dc}); the coalescence lemma
-licensing the correction rule at one extra replay per point
-(Lemma~\ref{lem:coalesce}); and the no-free-lunch bound
-(Proposition~\ref{prop:nfl}) whose two branches organize
-\S\ref{sec:training} and \S\ref{sec:v2}. All are point identities under
-the determinism premises of \S\ref{sec:floor}, not expectations.
+\paragraph{Consequence for credit assignment, formally.} At every
+shielded point single-layer $C_H$ bills the harness for an effect the
+model absorbs, and the error is exact: the double-counting identity
+$C_{HM}-C_M = C_H + I$ gives $C_H = -I$ at screened points
+(Proposition~\ref{prop:dc}) --- in the slack regime, \emph{all} measured
+points. The coalescence lemma (Lemma~\ref{lem:coalesce}) licenses the
+correction rule $C_{HM}-C_M$ at one extra replay per point, and the
+no-free-lunch bound (Proposition~\ref{prop:nfl}) organizes
+\S\ref{sec:training} and \S\ref{sec:v2} --- all point identities under
+the determinism premises of \S\ref{sec:floor}
+(Appendix~\ref{app:formal}).
 
 \paragraph{Controls.}
 On control tasks (summaries destroy nothing by construction) the method
@@ -453,26 +465,17 @@ the order (Appendix~\ref{app:critic}). This is a finding about the signal:
 --- exactly what the information-destruction mechanism predicts --- so
 practitioners get most of the ranking value of $C_H$ from features they
 already log, reserving replay for calibration and for the interaction
-term, which no cheap feature predicts. The cross-environment test sharpens
-this: a critic trained on all designed-task $C_M$ ground truth transfers
-to the 94 MBPP+ points at chance (Spearman $0.03$/$-0.08$; pre-registered
-secondary of pre-reg 16). Amortized credit does not cross environments
-here.
+term, which no cheap feature predicts. A critic trained on all
+designed-task $C_M$ ground truth transfers to the 94 MBPP+ points at
+chance (Spearman $0.03$/$-0.08$; pre-registered secondary of pre-reg 16):
+amortized credit does not cross environments here.
 
 \section{Training with Cross-Layer Credit}
 \label{sec:training}
 Does better credit train a better harness? \textbf{No --- and the reason
-is the paper's rule at work.} Across four pre-registered rounds
-(``acts''), the first three failed for three identified, repaired reasons;
-in the fourth, under a verified-sane objective, the arms finally separate
-and \emph{outcome-only wins at matched dose}: corrected credit, being
-correctly zero wherever the model shields, receives no gradient where the
-harness acts and lands exactly on the untrained control
-(Table~\ref{tab:acts}, Appendix~\ref{app:acts}). This section reports how
-that conclusion was earned.
-
-
-We train the harness \texttt{context\_policy} (a logistic policy over 5
+is the paper's rule at work} (Table~\ref{tab:acts},
+Appendix~\ref{app:acts}). We train the harness \texttt{context\_policy} (a
+logistic policy over 5
 features) with four arms, \textbf{dose-matched in total rollouts}
 (episodes + credit replays): (1)~\emph{outcome-only} policy gradient;
 (2)~\emph{single-layer} $C_H$ credit --- an explicit reproduction of the
@@ -502,8 +505,8 @@ before any rollout) repairs the objective: we measured the third attractor
 on all 52 tasks, then selected analytically --- before any training ---
 the cost weight $\lambda^{*} = 5$ and the 12 tasks on which thr600
 \emph{strictly} dominates both fixed attractors (held-out window:
-keep-always $0.392$, thr600 $0.455$, summarize-always $-0.031$). Every
-pathology of Acts 1--3 disappears and, for the first time, \textbf{arms 2
+keep-always $0.392$, thr600 $0.455$, summarize-always $-0.031$). For the
+first time, \textbf{arms 2
 and 3 separate}: outcome-only reaches held-out $R_{\text{eff}} =
 0.440$--$0.443$, single-layer $C_H$ reaches $0.398$--$0.405$, and
 interaction-corrected $C_{HM}-C_M$ stays exactly at keep-always ($0.392$,
@@ -522,16 +525,13 @@ was closed by a registered \emph{episode-matched} control (pre-reg 31):
 the outcome-only $\theta$-trajectory stopped at the credit arms' episode
 counts still reaches $0.398$--$0.450$, $\geq$ the $C_H$ arm in 3/3 seeds
 (strictly above in 2/3; one seed ties \emph{exactly}), and beats the
-corrected arm's attractor in 2/3 seeds at half its episodes. The answer
-to the motivating question is identified,
-not confounded: \emph{per-decision replay credit costs more compute than
-its signal adds, and correcting its bias removes what little training
-signal the bias was providing.} Measurement remains the right use of the
-replays; billing them to the training loop is not. Proposition~\ref{prop:nfl}
-states this as a bound and Corollary~\ref{cor:gate} converts it into a
-pre-registrable decision rule: the census that diagnosed the failure could
-have predicted it.
-
+corrected arm's attractor in 2/3 seeds at half its episodes. The verdict
+is identified, not confounded: \emph{per-decision replay credit costs
+more compute than its signal adds, and correcting its bias removes what
+little training signal the bias was providing.} Measurement remains the
+right use of the replays; billing them to the training loop is not ---
+and the census that diagnosed the failure could have predicted it
+(Corollary~\ref{cor:gate}).
 
 \section{The Other Branch of the Rule: A Second Agent Class}
 \label{sec:v2}
@@ -550,13 +550,12 @@ scheduling, retry, termination), each logged and forceable in replay. Two
 configurations (slack and pressure) give 120 baseline episodes. A pilot
 finding: under the V1 JSON action envelope the
 model emitted \emph{zero} \texttt{write\_file} actions in 437 calls; a
-plain-text protocol restored normal behavior with the same model. The
-action envelope is itself a harness decision with first-order causal
-effect --- and an estimand-level face: the short plain-text actions are
-near-deterministic at the V1 sampling temperature, and the $a'$ sampler
-failed at 87/114 points until a pre-registered escalation to temperature
-1.2 (strata diverge by 0.084, below the declared 0.15 threshold, so the
-pooled analysis is primary).
+plain-text protocol restored normal behavior --- the action envelope is
+itself a harness decision with first-order causal effect. Its
+estimand-level face: plain-text actions are near-deterministic at the V1
+temperature, and the $a'$ sampler failed at 87/114 points until a
+pre-registered escalation to temperature 1.2 (strata diverge 0.084,
+below the declared 0.15, so the pooled analysis is primary).
 
 \paragraph{Floor and pivotality.} The zero floor survives the class change
 (117/117 nulls exact, including three retry-bearing trajectories).
@@ -662,11 +661,11 @@ and Qwen3-8B, a pool hardened to the 8B's competence boundary, and the
 pre-registered symmetric control. In brief: the floor replicates
 everywhere; screening replicates unconditionally on the 1.7B and both
 external environments; the 8B \emph{breaks} the shield at a flat rate in
-both regimes; and the 4B also breaks on the curated pool. The claim
-re-scopes: \emph{whether} screening holds is a property of the (model,
-harness, task) triple, with break sets point-level disjoint across models,
-and the re-injection mechanism --- which fully explained the original-pool
-4B/8B contrast --- is neither necessary nor sufficient in a curated pool.
+both regimes; the 4B also breaks on the curated pool. The claim re-scopes:
+\emph{whether} screening holds is a property of the (model, harness, task)
+triple, with break sets point-level disjoint across models, and the
+re-injection mechanism is neither necessary nor sufficient in a curated
+pool.
 
 \subsection{Statistical caveats}
 
@@ -682,8 +681,7 @@ cross-configuration break recurrence as the stronger evidence.
 pre-registered outcomes (Table~\ref{tab:ledger}) are confirmatory;
 borderline point-level values are descriptive. Saturation is computed on
 replayed-arm rewards, so saturation-conditioned rates condition on a
-post-treatment variable and are never causal estimates
-(Appendix~\ref{app:estimand}).
+post-treatment variable and are never causal estimates.
 
 \subsection{Estimand caveats and the practical prescription}
 Appendix~\ref{app:estimand} details the estimand-level caveats and serving
@@ -696,27 +694,25 @@ $5.6\times$ episode tax at matched budget; and the stochastic protocol
 showing the deterministic census predicts where the temperature-$0.8$
 estimand separates from its null band.
 
-\paragraph{The practical prescription.} If
-\emph{whether} screening holds depends on the triple, no fixed correction
-transports across stacks: ``measure before training'' survives only as a
-per-stack diagnostic --- null floor, then screening census, then decide
-which credit signal is billable. The transportable artifacts are the
-identity $C_H = -I$ at screened points, the correction rule
-$C_{HM} - C_M$ (one extra replay), and the census procedure itself --- not
-any particular census result.
+\paragraph{The practical prescription.} Since \emph{whether} screening
+holds depends on the triple, no fixed correction transports across stacks;
+what transports is the procedure --- null floor, then screening census,
+then decide which credit signal is billable --- plus the identity
+$C_H = -I$ at screened points and the correction rule $C_{HM}-C_M$ (one
+extra replay), not any particular census result.
 
 \section{Conclusion}
 We built the first apparatus that measures, on the same trajectory, the
-causal credit of harness decisions, model decisions, and their interaction,
-against an exactly-zero measured noise floor. With slack the model screens
-off the harness completely (57/57), so single-layer harness credit
-double-counts; under pressure the shield breaks at recurring points ---
-and the contrast is a property of the (model, harness, task) triple. Better credit did not train a better harness:
-outcome-only wins at matched dose --- the closed branch of the
-no-free-lunch rule, confirmed the expensive way. The contributions: the
-infrastructure, the triple-dependence finding, the APC warning, the census
-gate, and a 29-item pre-registration ledger whose training negative is the
-design brief for the benchmark this field still needs.
+causal credit of harness decisions, model decisions, and their
+interaction, against an exactly-zero measured noise floor. With slack the
+model screens off the harness completely (57/57), so single-layer harness
+credit double-counts; under pressure the shield breaks, and the contrast
+is a property of the (model, harness, task) triple. Better credit did not
+train a better harness: outcome-only wins at matched dose. The
+contributions: the infrastructure, the triple-dependence finding, the APC
+warning, the census gate, and a 29-item pre-registration ledger whose
+training negative is the design brief for the benchmark this field still
+needs.
 \appendix
 \section{Master Claim Table}
 \label{app:claims}
@@ -1569,31 +1565,6 @@ on, the floor rises to $0.417$ (7/270 inexact): greedy determinism breaks
 silently.}
 \label{fig:floor}
 \end{figure}
-
-\begin{table}[h]
-\centering\small
-\begin{tabular}{lllll}
-\toprule
-Model & Pool & Slack & Pressure & Reading \\
-\midrule
-4B & original (30) & 0/57 & 8/65 & breaks gated by pressure \\
-1.7B & original (30) & \multicolumn{2}{c}{0/23 combined} & slack replicates; pressure saturated \\
-8B & original (30) & 5/28 & 6/34, 7/35 & flat: regime-independent breaks \\
-4B & curated (22) & 4/16 & 2/23 & breaks in both regimes \\
-8B & curated (22) & 3/27 & 3/31 & flat again \\
-4B & MBPP+ (60) & \multicolumn{2}{c}{0/66 (11/11 pivotal)} & screens unconditionally \\
-1.7B & MBPP+ (60) & \multicolumn{2}{c}{0/44 (24/24 pivotal)} & screens unconditionally \\
-4B & HumanEval+ (60) & \multicolumn{2}{c}{0/76 (42/42 pivotal)} & screens unconditionally \\
-\bottomrule
-\end{tabular}
-\caption{\textbf{Synthesis: raw screening-off break counts by (model, pool,
-regime).} Every claim about \emph{when} the shield holds reduces to this
-grid: pressure-gating is a 4B-on-original-pool phenomenon; the 8B breaks at
-a flat rate wherever it is in its competence window; MBPP+ screens
-everywhere. Counts are point-level (breaks/points); per-configuration
-detail in Figure~\ref{fig:regime}.}
-\label{tab:synthesis}
-\end{table}
 
 \begin{figure}[h]
 \centering
