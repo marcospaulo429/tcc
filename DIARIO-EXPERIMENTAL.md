@@ -1363,3 +1363,26 @@ idempotente por (parte, cfg, task_id, index, schedule).
   - p3: um colapsa e o outro não → anatomia por braço, reportar como está.
 - Custo estimado: 2 células × 3200 calls ≈ 2–3 h GPU, sequencial,
   servidor 8321 (APC off), idempotente por summary.json.
+
+### DESFECHO do pré-reg 34 Parte B (2026-08-27): p1 — colapso robusto a lr e budget
+- outcome lr=0.02, 3200 calls, 151 episódios: heldout R_eff = −0.09228
+  = keep-always EXATO (o atrator catastrófico).
+- chm_cm lr=0.02, 3215 calls, 47 episódios: heldout R_eff = 0.8307378
+  = summarize-always EXATO.
+- **p1 confirmado** (ambos a ±0.02 de atrator calibrado; na prática, exatos).
+  O remédio "lr menor + mais episódios" (R3) não separa braços neste
+  landscape.
+- Anatomia (honesta): θ final ≈ 0 nos DOIS braços (‖θ‖∞ ≤ 0.055) — com
+  lr 0.02 o sinal disponível mal move a política; o comportamento greedy
+  da política quase-nula degenera num lado fixo, e os braços caem em
+  LADOS OPOSTOS (outcome no ruim, chm_cm no bom) por sensibilidade a
+  updates minúsculos, não por aprendizado. Não interpretar a ordenação
+  chm_cm > outcome desta sonda como vitória de crédito: é ruído de
+  inicialização efetiva, 1 seed, e nenhum braço aprendeu política
+  condicional.
+- Leitura conjunta 34 A+B: "não é o lr, não é o budget, e a margem não
+  existe no landscape" — o colapso do 33 é propriedade do landscape
+  (margens ≤0.058 em 9/10 tasks do pool), não do otimizador. O gate de
+  poder (Parte A) entra na prescrição do paper; o 33 teria sido vetado.
+- Custo real: ~23 min GPU (2 células). Artefatos runs/v2_train34/,
+  log runs/logs/prereg34b.log.
