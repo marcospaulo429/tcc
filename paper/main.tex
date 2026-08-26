@@ -31,14 +31,18 @@ exactly one decision changed and reading off per-decision credit for the
 harness, the model, and their interaction, on the same trajectory.
 The instrument reveals a phenomenon we call \emph{screening-off}: given
 budget slack, the model's next action absorbs the harness decision's
-damage at 53 of 56 reward-pivotal points, so single-layer harness credit
+damage at 53 of 56 reward-pivotal points --- 24 of 31 under an
+information-poor alternative that cannot re-inject what the harness
+destroyed, so the two estimands bracket the phenomenon rather than
+settling it --- so single-layer harness credit
 --- the estimator implicit in prior work --- systematically bills the
 harness for effects that belong to the model. Whether screening holds is
 triple-dependent (model, harness, task): breaks recur at fixed
 points across configurations; a stronger model breaks outright.
 Screening has a training
 consequence we state as a no-free-lunch proposition: under matched
-compute, screened points contribute exactly zero training signal at
+compute, screened points contribute exactly zero \emph{billed}
+per-decision signal at
 strictly positive replay cost --- so a cheap pre-training census decides
 whether credit can pay for itself \emph{before any training is run}. Four
 pre-registered training rounds confirm the closed branch of that rule the
@@ -50,7 +54,7 @@ registered accountings --- and the licensed training collapses onto
 a fixed attractor before credit ordering becomes testable. Replay
 credit is worth its cost for measurement; whether it is worth
 \emph{training on} is a measurable property of the agent, not an article
-of faith. We release the apparatus and a 33-item registration ledger whose
+of faith. We release the apparatus and a 34-item registration ledger whose
 evidential force rests on its reported failures.
 \end{abstract}
 
@@ -95,7 +99,8 @@ everything. A stronger model breaks at a flat rate in both regimes
 We then test whether interaction-aware credit improves \emph{training}.
 Screening has a budget consequence (Proposition~\ref{prop:nfl}): under
 dose-matched compute, screened points contribute \emph{exactly zero}
-training signal at strictly positive replay cost, so whether credit can
+\emph{billed} per-decision signal at strictly positive replay cost, so
+whether credit can
 pay for itself is a gate measurable \emph{before any training} by the same
 census that established screening (Corollary~\ref{cor:gate}). Four
 training acts validate this the hard way: three identified failures, then,
@@ -122,7 +127,7 @@ multi-file stack the gate opens under three of four registered
 accountings, the licensed training runs, and the optimization collapses
 onto a fixed attractor before credit ordering becomes testable
 (\S\ref{sec:v2}).
-\item \textbf{The record.} A 33-item pre-registration ledger with failures
+\item \textbf{The record.} A 34-item pre-registration ledger with failures
 reported as results, control-task construct validation, and a claims table
 (Table~\ref{tab:claims}, Appendix~\ref{app:claims}) in which every number
 is auditable against the ledger (Table~\ref{tab:ledger}).
@@ -191,10 +196,14 @@ schema: decision id, layer, state before, available actions, chosen action,
 observation, token costs, and parent/child links. Reward is deterministic:
 the fraction of hidden pytest tests passed, so $R \in [0,1]$ with resolution
 set by the number of tests. Cost-adjusted reward is
-$R_{\text{eff}} = R - \lambda \cdot \text{prompt tokens}/10^5$ with
-$\lambda = 25$, fixed analytically before any training and never
-recalibrated (the artifact stores raw token totals, so $R_{\text{eff}}$
-at any $\lambda$ is recomputable).
+$R_{\text{eff}} = R - \lambda \cdot \text{prompt tokens}/10^5$. The
+measurement runs and training Acts 1--3 use $\lambda = 25$; Act 4 and the
+V2 stack re-derive $\lambda^{*}$ analytically ($5$ and $0.2$) from
+already-measured $(R, \text{tokens})$ pairs, because $\lambda$ does not
+transport across token magnitudes (\S\ref{sec:v2}). Each value is fixed
+before the run it governs and never fit to that run's results; the
+artifact stores raw token totals, so $R_{\text{eff}}$ at any $\lambda$ is
+recomputable.
 
 \subsection{Replay and interventions}
 \begin{figure}[t]
@@ -329,8 +338,8 @@ regularities matter downstream: direction is everything (flipping
 yields $C_H$ up to $+0.89$ while the reverse is near zero, so we never
 aggregate across directions); credits are sparse, with mass concentrated
 at the information-destruction points predicted by task design; and $C_M$
-at matched points is frequently nonzero when $C_H$ is not, foreshadowing
-\S\ref{sec:interaction}.
+at matched points is frequently nonzero when $C_H$ is not
+(\S\ref{sec:interaction}).
 
 
 \subsection{Interaction $I$ and its anatomy}
@@ -339,9 +348,8 @@ The central measurement flips a harness decision and a model decision at
 the same point, alone and jointly. The model action \emph{screens off} the
 harness decision when the joint flip yields exactly the model flip's
 reward, $C_{HM} = C_M$: conditional on the model counterfactual, the
-harness flip has no marginal effect (term borrowed operationally
-from~\citealp{reichenbach1956}; Appendix~\ref{app:formal} gives the
-deterministic reading).
+harness flip has no marginal effect (term borrowed
+from~\citealp{reichenbach1956}; Appendix~\ref{app:formal}).
 
 Configuration names: g$N$ = slack (max 12 turns, summarize threshold $N$
 tokens); mt$K$ = pressure (max $K$ turns, threshold 600); q8/q17 =
@@ -491,7 +499,7 @@ registered criterion (GATE~3) required arm~3 to beat arms~2 and~4.
 Calibration established the target is learnable: on held-out tasks a
 context-size threshold policy (thr600) achieves $R_{\text{eff}} = 0.398$,
 dominating keep-always (0.237) and summarize-always ($-0.464$), and is
-expressible by the policy class.
+policy-expressible.
 
 \paragraph{Acts 1--3 (summary).}
 Appendix~\ref{app:acts} reports Acts 1--3 in full. What
@@ -502,7 +510,7 @@ clipping; margin-verified task selection); and Act 3's nine-of-nine
 collapse to summarize-always identified the objective
 itself as mis-specified --- under $\lambda = 25$ universal cheap failure
 was the true optimum, so a sane objective must verify the margin against
-\emph{every} fixed attractor expressible by the policy class.
+\emph{every} expressible fixed attractor.
 
 \paragraph{Act 4: sane objective --- the arms finally separate, and the
 bias is load-bearing.} The last run (registered with declared outcomes
@@ -535,7 +543,7 @@ is identified, not confounded: \emph{per-decision replay credit costs
 more compute than its signal adds, and correcting its bias removes what
 little training signal the bias was providing.} Measurement remains the
 right use of the replays; billing them to the training loop is not ---
-and the census that diagnosed the failure could have predicted it
+and the census could have predicted the failure
 (Corollary~\ref{cor:gate}).
 
 \section{The Other Branch of the Rule: A Second Agent Class}
@@ -543,8 +551,8 @@ and the census that diagnosed the failure could have predicted it
 If screening-off were an artifact of the single-file agent's simplicity
 (one dominant harness decision), the rule would have nothing to price
 elsewhere. We therefore built a second agent class and ran the census as a
-decision procedure, with the gate of Corollary~\ref{cor:gate}
-pre-registered before any rollout.
+decision procedure, its gate (Corollary~\ref{cor:gate}) registered up
+front.
 
 \paragraph{Stack.} Mini-SWE tasks: a frozen pool of 60 multi-file repos
 (15 families $\times$ 4 bug variants; 4--6 source files, 150--300 LOC, 6--12
@@ -553,14 +561,13 @@ $(0,1)$; determinism validated 3$\times$ at generation). The harness makes
 five decision types (context policy, observation formatting, test
 scheduling, retry, termination), each logged and forceable in replay. Two
 configurations (slack and pressure) give 120 baseline episodes. A pilot
-finding: under the V1 JSON action envelope the
-model emitted \emph{zero} \texttt{write\_file} actions in 437 calls; a
-plain-text protocol restored normal behavior --- the action envelope is
-itself a harness decision with first-order causal effect. Its
-estimand-level face: plain-text actions are near-deterministic at the V1
-temperature, and the $a'$ sampler failed at 87/114 points until a
-pre-registered escalation to temperature 1.2 (strata diverge 0.084,
-below the declared 0.15, so the pooled analysis is primary).
+finding: under a JSON action envelope the model emitted \emph{zero}
+\texttt{write\_file} actions in 437 calls; plain text restored normal
+behavior --- the envelope is itself a first-order harness decision. Its
+estimand-level face: plain-text actions are near-deterministic, and the
+$a'$ sampler failed at 87/114 points until a pre-registered escalation to
+temperature 1.2 (strata diverge 0.084 $<$ the declared 0.15; pooled
+analysis primary).
 
 \paragraph{Floor and pivotality.} The zero floor survives the class change
 (117/117 nulls exact, including three retry-bearing trajectories).
@@ -574,17 +581,19 @@ retry-preceded span) the pre-registered outcome bin is \textbf{s3,
 general break}:
 no type screens at $\geq 0.90$ --- context policy 0.609 ($n=23$),
 observation formatting 0.667 ($n=12$), termination 0.100 ($n=10$), test
-scheduling 0.333 ($n=3$). Interaction is nonzero at 29/48 points with
+scheduling 0.333 ($n=3$); per-type rates are descriptive (point
+classification draw-stable at only 17/23; verdict and gate survive
+re-draws). Interaction is nonzero at 29/48 points with
 $|I|$ up to $0.73$ --- on this stack interaction is the dominant component
 of harness credit, not a correction to it.
 
-\paragraph{The gate, under every accounting.} Here we hold ourselves to
-the standard the paper preaches. The registration fixed the threshold
+\paragraph{The gate, under every accounting.} The registration fixed the
+threshold
 (non-screened mass $\geq 0.20$) but left two accounting choices
 under-specified --- the denominator (measured points only, or all pivotal
 points) and whether the 10 analytically degenerate termination points (see
 \emph{last-mover screening} below) count as evidence --- and the verdict
-is sensitive to both. Table~\ref{tab:gate} shows all four cells.
+turns on both (Table~\ref{tab:gate}).
 
 \begin{table}[t]
 \centering\scriptsize
@@ -602,9 +611,9 @@ strictest.}
 \label{tab:gate}
 \end{table}
 
-We report all four rather than adjudicate post hoc; the lesson: the
-denominator and the treatment of degenerate points must themselves be
-registered. Robust across
+We report all four rather than adjudicate post hoc; the denominator and
+the treatment of degenerate points must themselves be registered. Robust
+across
 accountings: substantial non-screened pivotal mass exists (15 points with
 $|I|$ up to $0.73$, vs.\ zero V1 slack breaks), richer stacks de-screen as
 the anatomy predicts, and the training experiment is licensed under the
@@ -613,14 +622,19 @@ measured-points accounting.
 \paragraph{The licensed branch, exercised.} The licensed training ran
 (pre-regs 32--33; four arms, 3 seeds, dose- and episode-matched). The
 first run \emph{aborted at calibration}: the V1 cost-weight grid is
-mis-scaled to V2 token magnitudes ($\lambda$ does not transport across
-stacks). Re-registered ($\lambda^{*}=0.2$, 10 margin-verified tasks), it
+mis-scaled to V2 token magnitudes ($\lambda$ does not transport).
+Re-registered ($\lambda^{*}=0.2$, 10 margin-verified tasks), it
 returned the declared outcome \textbf{s3, attractor collapse}: every
 learning arm collapses onto a fixed attractor --- 8/9 runs
 \emph{token-exactly} onto summarize-always (held-out $R_{\text{eff}}$
 0.831 vs.\ 0.889 for the dominant expressible target; one outcome seed
 and the untrained control at keep-always, $-0.092$) --- before any credit
-ordering becomes testable.
+ordering becomes testable. A registered probe (pre-reg 34) locates the
+failure in the \emph{landscape}, not the optimizer: at $5\times$ smaller
+learning rate and $2\times$ budget both arms still collapse token-exactly
+($\theta \approx 0$, opposite attractors), and no $\lambda$ yields even 3
+tasks with attractor margin $\geq 0.10$ --- the pool a power-gated re-run
+requires does not exist on this stack.
 Both branches end in identified negatives: credit cannot pay for its
 replays (closed); the optimization collapses before credit is tested
 (open) --- each predicted by pre-training measurement.
@@ -629,64 +643,64 @@ replays (closed); the optimization collapses before credit is tested
 make the joint arm analytically degenerate: the counterfactual episode
 ends at the harness decision, the model's alternative never executes, and
 $R_{HM} \equiv R_H$ by determinism (addendum 29a). These 10 termination
-points are the mirror image of the central finding --- there the model
-screens off the harness; here \emph{the harness screens off the model}.
-Screening-off is a fact about \emph{which layer moves last across the
-channel that reaches the reward}.
+points mirror the central finding: here \emph{the harness screens off the
+model}. Screening-off is a fact about \emph{which layer moves last across
+the channel that reaches the reward}.
 
 \paragraph{Scope.} Three caveats bound the verdict. \textbf{Power and
 selection}: $n=48$ with 65 points excluded for want of an $a'$ makes
 per-type rates wide, and the exclusion selects on model entropy --- though
-the cut runs both ways: at excluded points the model is near-deterministic,
-so there is no model deviation for $C_H$ to absorb and the correction is
-vacuous there by construction; test scheduling ($n=3$) supports no claim
+the cut runs both ways: at excluded points the model is
+near-deterministic, so the correction is vacuous there by construction;
+test scheduling ($n=3$) supports no claim
 of its own, and restricting to types with $n \geq 10$ leaves s3 unchanged
 (context 14/23, observation 8/12 screened, both $< 0.75$).
 \textbf{Estimand}: the pre-registered controls (pre-reg 30,
 Appendix~\ref{app:estimand}) discipline the verdict after the fact: it
-survives both $a'$ re-draw schedules (r2) though point-level
-classification does not (17/23), and under the information-poor $a'_s$
-the de-screened points turn exactly additive ($I=0$) --- so the V1-closed /
-V2-open contrast still compares verdicts under estimands whose
-completeness differs.
+survives both $a'$ re-draw schedules, and under the information-poor
+$a'_s$ the de-screened points turn exactly additive ($I=0$) --- so the
+V1-closed / V2-open contrast still compares verdicts under estimands
+whose completeness differs.
 \textbf{Addenda}: two protocol amendments (29a, 29b) were registered
-mid-run --- before analysis, but after data contact --- and the verdict
-inherits that weaker label wherever they bind.
+mid-run --- before analysis, after data contact --- and the verdict
+inherits that weaker label where they bind.
 
 \section{Threats to Validity and Discussion}
 \label{sec:threats}
 \subsection{External validity}
 Our tasks are designed, not sampled from a public benchmark --- a
-motivated limitation: the measurement requires control over the
-\emph{position} of destroyable information, per-stratum calibrated
-recoverability, and deterministic fractional reward; no public benchmark
-provides these jointly. We ran the
-missing experiment in reduced form on MBPP+ and HumanEval+ (pre-regs 16,
-20, 25): the floor replicates exactly in every cell (3{,}668 nulls) and
+motivated limitation: the measurement needs control of
+destroyable-information position, calibrated per-stratum recoverability,
+and deterministic fractional reward, which no public benchmark provides
+jointly. We ran the
+missing experiment in reduced form on MBPP+ and HumanEval+ (pre-regs
+16/20/25): the floor replicates exactly in every cell (3{,}668 nulls) and
 screening replicates unconditionally (Table~\ref{tab:synthesis}), while
-every pressure cell saturates away, so the regime contrast remains
-untested externally (Appendix~\ref{app:replication}). The core phenomenon
-is not a task-design artifact.
+every pressure cell saturates away, so the regime contrast stays
+untested externally (Appendix~\ref{app:replication}); the phenomenon is
+no task-design artifact.
 
 \subsection{Replication across models and pools (summary)}
-Appendix~\ref{app:replication} reports the full record: Qwen3-1.7B,
-Qwen3-8B, a pool hardened to the 8B's competence boundary, and the
+Appendix~\ref{app:replication} gives the full record: Qwen3-1.7B,
+Qwen3-8B, a pool hardened to the 8B's competence, and the
 pre-registered symmetric control. The floor replicates
 everywhere; screening replicates unconditionally on the 1.7B and both
 external environments; the 8B \emph{breaks} the shield at a flat rate in
 both regimes; the 4B also breaks on the curated pool. The claim re-scopes:
 \emph{whether} screening holds is a property of the (model, harness, task)
 triple, with break sets point-level disjoint across models, and the
-re-injection mechanism is neither necessary nor sufficient in a curated
-pool --- all Qwen3-family; cross-family transport unmeasured.
+re-injection mechanism is neither necessary nor sufficient there --- all
+Qwen3-family; cross-family transport unmeasured.
 
 \subsection{Statistical caveats}
 
 \paragraph{Clustered inference.} Points within a task are not independent.
 The pressure-vs-slack contrast is 3 tasks vs.\ 0 at task level (sign test
-$p = 0.125$) and $p = 0.005$ at point level. We report all levels and lean on the
-pivotal-point sign test (53/56, $P = 4.1\times10^{-13}$; 19/22 on unique
-points) and cross-configuration break recurrence as the stronger evidence.
+$p = 0.125$) and $p = 0.005$ at point level. We report all levels and rest
+the screening claim on the task-clustered estimate (53/56, CI95
+$[0.87,1.00]$; 19/22 on unique points) together with cross-configuration
+break recurrence --- not on the sign-test $p$-values (they certify only
+non-coin-flip; Appendix~\ref{app:shield}).
 
 \paragraph{Multiplicity and post-treatment conditioning.} Only
 pre-registered outcomes (Table~\ref{tab:ledger}) are confirmatory;
@@ -697,29 +711,31 @@ rates condition on a post-treatment variable.
 Appendix~\ref{app:estimand} details the estimand-level caveats: the shared
 sampled alternative coupling $C_M$ and $I$; the single-draw $a'$,
 bracketed on both stacks by re-sampling and $a'_s$ studies (V1 99/101,
-24/31; V2: verdict and gate survive re-draws, and under $a'_s$
-de-screened points turn exactly additive, $I=0$ --- pre-reg 30);
+24/31; V2 pre-reg 30, \S\ref{sec:v2});
 selection into measurement (53--73\% discarded, composition
 pointing \emph{against} the headline contrast); the $5.6\times$ episode
 tax; and the stochastic protocol (the census predicts where the
-temperature-$0.8$ estimand separates from its null band).
+temperature-$0.8$ estimand leaves its null band).
 
 \paragraph{The practical prescription.} No fixed correction transports
-across stacks; the procedure does: null floor, screening census, then
-decide which credit signal is billable --- plus the
+across stacks; the procedure does: null floor, screening census, a
+\emph{power gate} (train only where verified attractor margins
+resolve at the planned budget --- it vetoed our V2 round, pre-reg 34),
+then decide which signal is billable, plus the
 identity $C_H = -I$ at screened points and the correction
 $C_{HM}-C_M$.
 
 \section{Conclusion}
 We built the first apparatus measuring harness credit, model credit,
 and their interaction on the same trajectory against an exactly-zero
-noise floor: with slack the model screens off the harness (57/57) and
+floor: with slack the model screens off the harness (57/57) and
 single-layer harness credit double-counts; under pressure the shield
-breaks --- the contrast is triple-dependent (model, harness,
-task). Better credit did not train a better harness on either stack.
+breaks --- a triple-dependent contrast. Better credit did not train a
+better harness on either stack.
 Contributions: the infrastructure, the triple-dependence finding, the APC
-warning, the census gate, and a 33-item ledger whose
-training negatives are the design brief for the benchmark this field needs.
+warning, the census and power gates, and a 34-item ledger whose
+training negatives are the design brief for the missing benchmark
+(Appendix~\ref{app:brief}).
 \appendix
 \section{Master Claim Table}
 \label{app:claims}
@@ -761,6 +777,7 @@ Screening replicates in a third environment & HumanEval+: 42/42 pivotal screened
 Interaction-corrected credit trains a better harness & no arm learns thr600; margin $+0.024$, CI95 $[-0.029,+0.079]$ & \textbf{failed} (pre-reg 9, 12); cause identified \\
 Learned critic beats cheap heuristics & context-size heuristic wins overall & refuted; $C_H\approx$ position + size \\
 Amortized credit transfers across environments & Spearman $0.03$/$-0.08$, chance & refuted (pre-reg 16) \\
+V2 collapse is a landscape property, not an optimizer artifact & analytic gate: no $\lambda$ gives $\geq$10 tasks with attractor margin $\geq$0.10 (max 3); probe at lr$/5$, budget$\times$2 still collapses token-exactly, $\theta\approx 0$ & held (pre-reg 34, both parts) \\
 \bottomrule
 \end{tabular}
 \caption{T0 --- master claim ledger: every claim, its evidence, and its
@@ -1685,7 +1702,7 @@ pilot runs that preceded the formal ledger are preserved in the artifact
 tree). Its
 evidential force rests on the recorded failures, not on the registration
 mechanism itself. Table~\ref{tab:ledger} lists
-all 29 pre-registrations with their outcomes, including the four that
+all 34 pre-registrations with their outcomes, including the four that
 failed and the eleven partial. Failed predictions are reported in the main text where they occur.
 
 \begin{table}[h]
@@ -1728,6 +1745,7 @@ failed and the eleven partial. Failed predictions are reported in the main text 
 32 & V2 training (open branch): accounting fixed ex ante (measured points w/o degenerate duals, $15/38=0.39$, gate opens); Act-4 protocol --- calibrate 3 fixed attractors on all 60 tasks, select $\lambda^{*}$ and a margin-verified pool analytically before any training (abort if $<10$ eligible); 4 arms $\times$ 3 seeds, dose- and episode-matched; context overflow = failed episode with paid tokens (amendment 32a, registered before resuming) & \textbf{aborted at the registered criterion}: $\leq 3$ eligible tasks under $\lambda \in \{1..25\}$ --- the grid transported from V1 is mis-scaled to V2 token magnitudes; no training data touched & held (abort rule fired) \\
 33 & V2 training, re-registered: single change --- $\lambda$ grid rescaled to $\{0.02..0.5\}$, ties break to larger $\lambda$; all else inherited from 32; declared outcomes s1 (credit $>$ outcome under both accountings) / s2 (learning without credit ordering) / s3 (no arm beats the best fixed attractor) & $\lambda^{*}=0.2$, 10 tasks; \textbf{s3}: 8/9 learning runs collapse token-exactly onto summarize-always (0.831 vs.\ 0.889 target), one outcome seed and the untrained control at keep-always ($-0.092$); episode-matched slices leave the bin unchanged (one transient mixed-policy slice at 0.301) & held \\
 30 & V2 estimand controls mirroring V1 items 21/26 (number reserved earlier; registered and run after 31--33): (A) $a'$ re-sampling on all 48 measured census points, two disjoint seed schedules at each point's census temperature, point-classification stability + recomputed headline per schedule; (B) $a'_s$ from the summarized state on keep$\to$summarize context points; declared outcomes r1/r2/r3, b1/b2/b3 & \textbf{r2}: classification draw-sensitive (17/23 stable) but s3 verdict and open gate survive both schedules (0.474/0.368 vs.\ 0.395); \textbf{b3}: screening $8/21=0.381$ under $a'_s$, all 13 non-screened points exactly additive ($I=0$, $C_H\neq 0$) & held; claim scoped \\
+34 & Post-mortem of 33's collapse, two parts. (A) analytic power gate: license training only if $\geq$10 pool tasks have attractor margin $\geq$0.10 in $R_{\text{eff}}(\lambda)$ at some $\lambda$ (margins from 32's calibration data; design motivated by exploratory inspection, declared as such); (B) optimizer probe: outcome + corrected arms, 1 seed, lr $5\times$ smaller, budget $2\times$ larger, same pool/$\lambda^{*}$; declared outcomes p1 (both collapse) / p2 (arms separate) / p3 (one collapses) & (A) \textbf{no $\lambda$ yields $\geq$10 eligible tasks} (max 3 at margin 0.10; 8 at 0.08) --- the gate would have vetoed 33; (B) \textbf{p1}: both arms collapse token-exactly onto \emph{opposite} attractors with $\theta\approx 0$ ($\|\theta\|_\infty\leq 0.055$) --- landscape, not optimizer & held \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
@@ -1859,6 +1877,46 @@ magnitude difference ($I=+0.77$ slack vs.\ $+0.31$ pressure) traces entirely
 to baseline quality --- $C_{HM}$ and all free-divergence offsets are
 identical across regimes. The $I$ \emph{magnitude} at a recurring point is
 therefore baseline-relative even when the break itself is stable.
+
+\section{Design Brief for a Cross-Layer Credit Benchmark}
+\label{app:brief}
+The training negatives in the ledger are constructive: each names a
+property a benchmark must certify \emph{before} a cross-layer credit
+comparison on it is interpretable. A pool qualifies only if it offers, per
+task:
+\begin{enumerate}
+\item \textbf{Deterministic fractional reward} (pre-regs 1, 27): a test
+suite scoring strictly inside $(0,1)$ on the buggy state, deterministic at
+generation --- otherwise the null floor is unmeasurable and no $C$ is
+interpretable.
+\item \textbf{Controllable position of destroyable information} (pre-regs
+6, 16/20/25): the information a harness decision can destroy must be
+placeable relative to the decision point, with per-stratum calibrated
+recoverability; public benchmarks provide neither, which is why our
+external replications could test the floor and screening but not the
+regime contrast.
+\item \textbf{Verified attractor margins} (pre-regs 32--34): for the
+declared policy class and cost weight, enough tasks (our gate: $\geq 10$)
+on which the best conditional policy beats \emph{every} expressible fixed
+attractor by a margin resolvable at the planned budget ($\geq 0.10$ in
+$R_{\text{eff}}$). Pre-reg 34 shows this must be verified, not assumed:
+on our V2 stack no cost weight yields even 3 such tasks, and training
+collapses regardless of learning rate or budget.
+\item \textbf{Cost weights scaled to the stack} (pre-reg 32): $\lambda$
+grids do not transport across token-magnitude regimes; the benchmark must
+publish per-stack calibration data (fixed-attractor sweeps), not a single
+constant.
+\item \textbf{A screening census with registered accounting} (pre-regs 29,
+30): pivotal-point discovery, per-type screening rates, and the gate of
+Corollary~\ref{cor:gate} --- with denominator and treatment of degenerate
+last-mover points fixed in advance, since the verdict can be sensitive to
+both (Table~\ref{tab:gate}).
+\end{enumerate}
+Items 1--2 make credit \emph{measurable}; items 3--4 make training on it
+\emph{adjudicable}; item 5 decides whether cross-layer correction is worth
+buying at all. Our designed pools satisfy 1--2 and 5 but --- as pre-reg 34
+established post hoc --- not 3; to our knowledge no existing benchmark
+satisfies all five.
 
 \bibliographystyle{iclr2026_conference}
 \bibliography{refs}
