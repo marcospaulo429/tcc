@@ -1174,3 +1174,37 @@ desfechos abaixo tornam qualquer resultado publicável.
 - Riscos: (i) margens finas (10º = 0.0087) → separação de braços pode ficar
   abaixo do ruído de 5 tasks held-out; (ii) λ pequeno enfraquece o preço do
   custo no objetivo — mitigado pelo empate→maior λ; (iii) mesmos riscos do 32.
+
+### DESFECHO do pré-reg 33 (2026-08-26): s3 — colapso no atrator summarize_always
+- Estágio A (herdado do 32) + seleção re-escalada: λ* = 0.2, pool 10
+  (viáveis 10/10/10/10/9/6 na grade 0.02–0.5), 5 treino / 5 held-out.
+- Estágio B (12 células × ~1600 chamadas, ~75 min GPU total): TODOS os
+  braços que aprendem (outcome s1/s3, ch 3/3, chm_cm 3/3) convergem
+  TOKEN-EXATO para summarize_always no held-out (R_eff 0.8307, R e
+  prompt_tokens idênticos per-task ao atrator). outcome s2 fica no atrator
+  keep_always (−0.0923, 5/5 overflow — regra 32a precificando). zero 3/3 =
+  keep_always (θ=0 → tie-break greedy = keep).
+- Atratores held-out (λ=0.2): keep −0.0923 < summarize 0.8307 < default
+  (thr4500) 0.8890. NENHUM braço > max(atratores) em nenhuma seed →
+  **s3 declarado** (sem aprendizado além de atrator fixo). Em 2/3 vs 3/3
+  não muda o bin.
+- Contabilidade episode-matched (experiments/v2_em.py; fidelity gate OK,
+  0.8307378303030303 reproduzido exato): fatias do outcome em N=32/33/32
+  (ch) e 24/23/24 (chm) → mesmos valores dos braços plenos exceto
+  chm_match_s1 = 0.3014 (política mista transitória). Não altera o bin.
+- Secundário (chm_cm ≥ ch por seed): satisfeito trivialmente (iguais).
+- ANATOMIA do colapso: ‖θ‖ final dos braços de crédito ≈ 0.02–0.06 — o
+  "aprendizado" é sair do fio-de-navalha do tie-break em θ≈0 para o lado
+  summarize; nenhum braço encontra a política seletiva (default) que o
+  pool margin-verified garante ser expressível e estritamente dominante.
+  Diferença vs Ato 4 V1: lá a seleção por margem produziu separação de
+  braços; aqui o gap default−summarize (0.058 held-out) é fino demais
+  para ~24–79 episódios com lr 0.1. Eco do Ato 3 (colapso em atrator),
+  agora do lado BOM do custo: summarize_always é quase-ótimo neste
+  landscape com cap 8k — overflow domina o objetivo.
+- LEITURA p/ paper: o ramo aberto foi EXERCITADO: o gate licenciou, o
+  treino rodou, e o resultado é um negativo identificado de outro tipo —
+  colapso em atrator antes de a ordenação de crédito virar testável. As
+  duas rodadas (V1 fechado: outcome vence; V2 aberto: colapso comum)
+  sustentam a mesma prescrição: census + calibração de landscape ANTES de
+  pagar por crédito. Custo total 33: ~19.400 chamadas, ~1h15 GPU.
