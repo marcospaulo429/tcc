@@ -1,0 +1,38 @@
+{
+  "data": "2026-08-26",
+  "status": "pos-hoc declarado",
+  "V1_slack": {
+    "candidatos": 186,
+    "medidos": 57,
+    "excluidos": 129,
+    "screened_medidos": 57,
+    "fracao_screened_bounds": [
+      0.306,
+      1.0
+    ],
+    "break_even_maioria": {
+      "excluidos_screened_necessarios": 36,
+      "fracao_dos_excluidos": 0.279
+    },
+    "leitura": "pior caso 0.31; 'maioria screened' exige que apenas 36/129 = 28% dos excluidos screenem; sob a leitura do estimando (excluidos = modelo quase-deterministico, correcao vacua), a populacao e definida pelo estimando e o bound nao se aplica"
+  },
+  "V2_gate": {
+    "com_duais": {
+      "medidos": "24/48 = 0.50",
+      "todos_pivotais_pior_caso": 0.211,
+      "todos_pivotais_melhor_caso": 0.789,
+      "gate_pior_caso": "abre",
+      "gate_melhor_caso": "abre",
+      "identificado": true
+    },
+    "sem_duais": {
+      "medidos": "15/38 = 0.39",
+      "todos_pivotais_pior_caso": 0.132,
+      "todos_pivotais_melhor_caso": 0.711,
+      "gate_pior_caso": "fecha",
+      "gate_melhor_caso": "abre",
+      "identificado": false
+    },
+    "leitura": "com duais o gate abre ate no pior caso adversarial (0.211 >= 0.20) — a selecao por a' nao pode ter fabricado a abertura; sem duais os extremos cruzam o limiar (0.132 vs 0.711) — indeterminado sob imputacao, como a tabela do paper ja reporta ao fechar nessa contabilidade"
+  }
+}

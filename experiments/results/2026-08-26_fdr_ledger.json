@@ -1,0 +1,57 @@
+{
+  "data": "2026-08-26",
+  "status": "pos-hoc declarado",
+  "familia": "todos os 6 testes computados no paper",
+  "alpha": 0.05,
+  "testes": [
+    {
+      "teste": "slack vs pressure, point-level hypergeometric",
+      "p": 0.005,
+      "status_no_paper": "afirmado",
+      "bh_sobrevive": true,
+      "holm_p_ajustado": 0.03,
+      "holm_sobrevive": true
+    },
+    {
+      "teste": "condicionado nao-saturado 0/12 vs 6/19",
+      "p": 0.037,
+      "status_no_paper": "afirmado (descritivo)",
+      "bh_sobrevive": false,
+      "holm_p_ajustado": 0.185,
+      "holm_sobrevive": false
+    },
+    {
+      "teste": "slack vs pressure, task-clustered sign test",
+      "p": 0.125,
+      "status_no_paper": "reportado nao-sig",
+      "bh_sobrevive": false,
+      "holm_p_ajustado": 0.5,
+      "holm_sobrevive": false
+    },
+    {
+      "teste": "monotonicidade Cochran-Armitage (pre-reg 13)",
+      "p": 0.38,
+      "status_no_paper": "falha declarada",
+      "bh_sobrevive": false,
+      "holm_p_ajustado": 1.0,
+      "holm_sobrevive": false
+    },
+    {
+      "teste": "D4b breaks<->re-injection Fisher (b2)",
+      "p": 0.94,
+      "status_no_paper": "falha declarada",
+      "bh_sobrevive": false,
+      "holm_p_ajustado": 1.0,
+      "holm_sobrevive": false
+    },
+    {
+      "teste": "D4b breaks<->re-injection Fisher (b1)",
+      "p": 1.0,
+      "status_no_paper": "falha declarada",
+      "bh_sobrevive": false,
+      "holm_p_ajustado": 1.0,
+      "holm_sobrevive": false
+    }
+  ],
+  "leitura": "apenas o p=0.005 (point-level) sobrevive a BH e a Holm; o p=0.037 nao sobrevive a nenhuma correcao — consistente com a postura do paper de tratar padroes replicados, nao p-values individuais, como evidencia primaria"
+}

@@ -651,10 +651,12 @@ the channel that reaches the reward}.
 selection}: $n=48$ with 65 points excluded for want of an $a'$ makes
 per-type rates wide, and the exclusion selects on model entropy --- though
 the cut runs both ways: at excluded points the model is
-near-deterministic, so the correction is vacuous there by construction;
-test scheduling ($n=3$) supports no claim
-of its own, and restricting to types with $n \geq 10$ leaves s3 unchanged
-(context 14/23, observation 8/12 screened, both $< 0.75$).
+near-deterministic, so the correction is vacuous there by construction,
+and worst-case imputation of all 66 excluded points cannot close the
+measured-accounting gate ($24/114 = 0.21 \geq 0.20$);
+test scheduling ($n=3$) supports no claim, and restricting to types with
+$n \geq 10$ leaves s3 unchanged (context 14/23, observation 8/12, both
+$< 0.75$).
 \textbf{Estimand}: the pre-registered controls (pre-reg 30,
 Appendix~\ref{app:estimand}) discipline the verdict after the fact: it
 survives both $a'$ re-draw schedules, and under the information-poor
@@ -832,10 +834,12 @@ when only the harness trains; $C_{HM} - C_M$ is the harness's marginal
 contribution in the world where the model deviates, the relevant wedge for
 \emph{joint} training, where billing the harness for effects the model's
 own update will absorb double-charges the same reward; a Shapley
-symmetrization would bill the average, $C_H + I/2$. Our contribution is
-not to legislate the ordering but to measure the wedge between them ---
-which is exactly $I$, and which our census shows is (a) usually the
-\emph{whole} of $C_H$ at screened points and (b) obtainable for one extra
+symmetrization would bill the average, $C_H + I/2$ --- computed over every
+recorded quartet, at screened points it bills exactly \emph{half} the
+single-layer double-count, never zero. Our contribution is
+not to legislate the ordering but to measure the fan of admissible
+attributions --- whose diameter is exactly $I$, usually the
+\emph{whole} of $C_H$ at screened points, obtainable for one extra
 replay. Our training arm 3 uses $C_{HM} - C_M$; arm 2 uses $C_H$; the
 comparison never separated (\S\ref{sec:training}), so the practical import
 of the choice remains empirically open --- what is settled is its size.
@@ -1284,11 +1288,12 @@ pre-specified power gate.
 \section{Estimand and Infrastructure Caveats}
 \label{app:estimand}
 \paragraph{Multiplicity.} This paper reports on the order of a dozen
-$p$-values across regimes, strata, and clustering levels, and we apply no
-family-wise correction. Only the pre-registered outcomes
-(Table~\ref{tab:ledger}) are confirmatory; borderline point-level values
-($p = 0.037$, $p = 0.005$) would not all survive a family correction, and we
-treat them as descriptive support. The claims we retain rest on replicated
+$p$-values across regimes, strata, and clustering levels. Only the
+pre-registered outcomes (Table~\ref{tab:ledger}) are confirmatory. A
+post-hoc Benjamini--Hochberg and Holm correction over the six hypothesis
+tests computed in this paper confirms the caution: only the point-level
+$p = 0.005$ survives either correction (Holm-adjusted $0.03$); $p = 0.037$
+does not (Holm-adjusted $0.19$). We treat both as descriptive support. The claims we retain rest on replicated
 structure --- exact screening at pivotal points, cross-configuration
 recurrence of break points, and the pool-matched model contrast --- rather
 than on any single threshold crossing.

@@ -1,0 +1,113 @@
+{
+  "data": "2026-08-26",
+  "status": "pos-hoc declarado",
+  "configs": {
+    "v1_g450": {
+      "n_quartetos": 17,
+      "screened": 17,
+      "screened_com_CH_nao_nulo": 12,
+      "mediana_abs": {
+        "C_H": 0.8571,
+        "C_HM_menos_C_M": 0.0,
+        "shapley_H": 0.4286
+      },
+      "nesses_pontos_media": {
+        "C_H": 0.7348,
+        "corrigido": 0.0,
+        "shapley_H": 0.3674
+      }
+    },
+    "v1_g600": {
+      "n_quartetos": 21,
+      "screened": 21,
+      "screened_com_CH_nao_nulo": 13,
+      "mediana_abs": {
+        "C_H": 0.6,
+        "C_HM_menos_C_M": 0.0,
+        "shapley_H": 0.3
+      },
+      "nesses_pontos_media": {
+        "C_H": 0.5758,
+        "corrigido": 0.0,
+        "shapley_H": 0.2879
+      }
+    },
+    "v1_g900": {
+      "n_quartetos": 19,
+      "screened": 19,
+      "screened_com_CH_nao_nulo": 12,
+      "mediana_abs": {
+        "C_H": 0.8,
+        "C_HM_menos_C_M": 0.0,
+        "shapley_H": 0.4
+      },
+      "nesses_pontos_media": {
+        "C_H": 0.5678,
+        "corrigido": 0.0,
+        "shapley_H": 0.2839
+      }
+    },
+    "v1_mt4": {
+      "n_quartetos": 22,
+      "screened": 21,
+      "screened_com_CH_nao_nulo": 13,
+      "mediana_abs": {
+        "C_H": 0.3769,
+        "C_HM_menos_C_M": 0.0,
+        "shapley_H": 0.2077
+      },
+      "nesses_pontos_media": {
+        "C_H": 0.7377,
+        "corrigido": 0.0,
+        "shapley_H": 0.3689
+      }
+    },
+    "v1_mt6": {
+      "n_quartetos": 21,
+      "screened": 18,
+      "screened_com_CH_nao_nulo": 15,
+      "mediana_abs": {
+        "C_H": 0.8,
+        "C_HM_menos_C_M": 0.0,
+        "shapley_H": 0.4
+      },
+      "nesses_pontos_media": {
+        "C_H": 0.6073,
+        "corrigido": 0.0,
+        "shapley_H": 0.3036
+      }
+    },
+    "v1_mt8": {
+      "n_quartetos": 22,
+      "screened": 18,
+      "screened_com_CH_nao_nulo": 12,
+      "mediana_abs": {
+        "C_H": 0.4154,
+        "C_HM_menos_C_M": 0.0,
+        "shapley_H": 0.2462
+      },
+      "nesses_pontos_media": {
+        "C_H": 0.6459,
+        "corrigido": 0.0,
+        "shapley_H": 0.3229
+      }
+    },
+    "v2_census": {
+      "n_quartetos": 26,
+      "screened": 14,
+      "screened_com_CH_nao_nulo": 14,
+      "mediana_abs": {
+        "C_H": 0.1742,
+        "C_HM_menos_C_M": 0.0,
+        "shapley_H": 0.1
+      },
+      "nesses_pontos_media": {
+        "C_H": 0.0316,
+        "corrigido": 0.0,
+        "shapley_H": 0.0158
+      }
+    }
+  },
+  "identidades_verificadas": "phi_H = (C_H + (C_HM-C_M))/2 por construcao",
+  "leitura": "em 91 pontos screened com C_H!=0, single-layer cobra C_H, o corrigido cobra 0, e Shapley cobra exatamente C_H/2 (media 0.275): Shapley nao resolve o double counting no ponto — reparte-o entre as camadas; a escolha de atribuicao continua sendo uma escolha de estimando, e I e exatamente o diametro do leque de atribuicoes admissiveis"
+}

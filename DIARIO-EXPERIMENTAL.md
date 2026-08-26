@@ -1462,3 +1462,25 @@ caminho construtivo concreto — enriquecer as F com variantes da classe
 f_02 (dentro da banda do 8B) até ≥10 tasks com margem vs keep — mas
 exigiria re-registro explícito do critério por atrator ANTES de qualquer
 treino. Custo: ~75 min GPU (calibração 72 eps + oráculo 24 eps).
+
+### Tier 0 pós-review externo (2026-08-26): três análises zero-GPU, pós-hoc declaradas
+Motivação: review externo independente apontou como críticas mais fortes
+(1) seleção por a' (53–73% descartados), (2) dependência do estimando a′/
+Shapley, (3) multiplicidade sem correção. Três análises sobre dados já
+coletados, sem rollout novo:
+- **Bounds de Manski (bounds_selecao_t0.py):** gate V2 com duais abre até
+  sob imputação adversarial de TODOS os 66 excluídos (24/114 = 0.211 ≥
+  0.20) — a seleção por a' não pode ter fabricado a abertura. Sem duais os
+  extremos cruzam o limiar (0.132/0.711): indeterminado, consistente com o
+  paper fechar nessa contabilidade. V1 slack: pior caso 0.31; "maioria
+  screened" exige só 28% dos excluídos screened.
+- **Shapley 2-player (shapley_quartetos_t0.py):** sobre todos os quartetos
+  (V1 g450/600/900+mt4/6/8, V2 census): φ_H = ½(C_H + C_HM − C_M); em 91
+  pontos screened com C_H≠0, Shapley cobra exatamente C_H/2 — não elimina
+  o double counting, reparte-o; I é o diâmetro do leque de atribuições.
+- **FDR (fdr_ledger_t0.py):** BH+Holm sobre os 6 testes computados no
+  paper: só p=0.005 sobrevive (Holm 0.03); p=0.037 não (Holm 0.19).
+Integrações no paper: multiplicidade exata (app:estimand), bound de pior
+caso no Scope do V2, Shapley empírico na teoria (§ do prop:dc). 9pp
+intactas. Framing do abstract auditado: sem mudança necessária.
+Custo: 0 rollouts.
