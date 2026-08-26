@@ -1264,3 +1264,32 @@ do V1 no stack V2.
 ≤96 amostragens (A) + ≤23 (B); ≤192+46 replays ≈ 30–60 min GPU, sequencial,
 servidor de sempre (8321, APC off). Script: experiments/v2_controles.py,
 idempotente por (parte, cfg, task_id, index, schedule).
+
+### DESFECHO do pré-reg 30 (2026-08-27): Parte A r2, Parte B b3
+- **Parte A (re-amostragem, 96 draws):** 56 idênticos ao a′ do census
+  (58% — o sampler plain-text é quase determinístico mesmo re-seedado,
+  consistente com 29b), 17 sem a′, 23 informativos. Estabilidade da
+  classificação = 17/23 = **0.739 < 0.90**; 6 flips (4 screen→break,
+  2 break→screen, espalhados por 3 tipos). MAS o headline é robusto:
+  sob os DOIS schedules o desfecho recomputado é s3 e o gate primário
+  (medidos sem duais) segue aberto (A1 0.474, A2 0.368 vs 0.395 original;
+  limiar 0.20 com folga). → **r2**: a classificação PONTUAL depende do
+  draw; o veredito agregado (s3 + gate aberto) não.
+- **Parte B (a′_s, 23 pontos context keep→summarize):** 21 informativos,
+  screened_s = 8/21 = **0.381 → b3** (vs 24/31=0.774 no V1, pré-reg 26).
+  ASSINATURA NOVA: os 13 de-screened têm TODOS I_s = 0.0 EXATO com
+  C_H ≠ 0 — sob a′_s os efeitos das camadas são ADITIVOS (R_Ms − R_HMs
+  = C_H), não screening (R_HMs = R_Ms). No V1 o de-screening tinha
+  assinatura de re-injeção; no V2, sob o estimando do estado pobre, o
+  harness credit deixa de ser double-counted: as camadas se tornam
+  independentes. Reforça a tese estimando-dependência: QUAL identidade
+  vale no ponto (C_H=−I screening vs I=0 aditividade) é função do
+  estimando de a′.
+- Custo real: ~17 min GPU (96+23 amostragens, ~90 replays), bem abaixo
+  do estimado. Artefatos: runs/v2_controles/{a_rows,b_rows}.jsonl,
+  summary.json; log runs/logs/v2_controles.log.
+- Leitura conjunta p/ o paper: os controles de estimando do V2 CONFIRMAM
+  o veredito do census sob re-draw (r2) e REESCOPAM a interpretação dos
+  pontos screened: no estimando a′_s a decomposição vira aditiva (I=0),
+  o caso em que crédito single-layer é correto. A prescrição (census por
+  estimando antes de billar crédito) sai fortalecida.
