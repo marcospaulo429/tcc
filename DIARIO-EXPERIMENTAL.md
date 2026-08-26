@@ -1566,3 +1566,34 @@ família, que confundiria a própria comparação). Integrado no paper:
 §threats (1 frase), app:replication (parágrafo), ledger (linha 35).
 Custo total: 3 smokes + 1 probe ≈ 40 chamadas; zero rollouts de census.
 4B restaurado e servindo.
+
+### PRÉ-REGISTRO 36 (2026-08-26, antes de rodar): distribuição de a′ nos pontos do census V2
+Motivação: review externo — um único draw de a′ torna C(d) uma quantidade
+dependente do draw; 30A mediu estabilidade par-a-par com 2 schedules
+(17/23 estáveis), mas não caracterizou a DISTRIBUIÇÃO por ponto.
+
+**Hipótese:** o veredito screened/não-screened por ponto é uma propriedade
+do ponto, não do draw — a distribuição de vereditos sob redraws de a′ é
+concentrada.
+**Manipulada:** apenas a seed do sampler de a′ (5 schedules novos e
+disjuntos: S3=7001–7008, S4=8001–8008, S5=9001–9008, S6=10001–10008,
+S7=11001–11008), nos mesmos 48 pontos medidos do census V2, mesma
+temperatura por ponto, mesmo procedimento (sample_alternative_v2).
+**Draws por ponto no pool de análise:** census + A1 + A2 (já medidos,
+pré-reg 30A) + S3–S7 = até 8. Draw válido := encontrado e braços M/HM sem
+erro; draw idêntico ao a′ do census (canônico) herda o veredito do census
+sem replay novo (replay é determinístico). Duais (29a) e exclusões do
+census herdados.
+**Endpoint primário:** U = fração dos pontos com ≥2 draws válidos cujo
+veredito é UNÂNIME. Desfechos: d1 U≥0.80 (veredito robusto ao draw);
+d2 0.60≤U<0.80 (sensível — reportar distribuição por ponto e veredito por
+voto majoritário); d3 U<0.60 (dependência de a′ domina — deprecia o
+veredito pontual em favor de statement distribucional no paper).
+**Secundários (descritivos):** headline (desfecho s3 + gate medidos sem
+duais, corte 0.20) recomputado (i) por schedule novo e (ii) sob voto
+majoritário por ponto; nº de a′ canônicos distintos por ponto; flips por
+tipo de decisão.
+**Piso:** coberto pelos nulos exatos já medidos nas mesmas configs (como
+no 30A); sem re-run de teste0.
+**Custo estimado:** ≤240 tentativas de draw, ~250–450 replays, 6–12h GPU
+(4B já servido).
