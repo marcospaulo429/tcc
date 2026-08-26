@@ -823,6 +823,23 @@ replay. Our training arm 3 uses $C_{HM} - C_M$; arm 2 uses $C_H$; the
 comparison never separated (\S\ref{sec:training}), so the practical import
 of the choice remains empirically open --- what is settled is its size.
 
+\begin{remark}[Additivity signature]
+\label{rem:additivity}
+The dual of screening is \emph{additivity}: $I = 0$ with $C_H \neq 0$,
+i.e.\ $R_M - R_{HM} = C_H$ --- the layers' effects compose independently
+and single-layer harness credit is exactly correct (no double-counting).
+Which identity holds at a point is a property of the \emph{estimand} of
+$a'$, not of the point alone: on the V2 stack, replacing the sampled
+alternative $a'$ (drawn in the factual, information-rich state) with
+$a'_s$ (the same sampler run in the counterfactual, post-summarization
+state) moves 13 of 13 non-screened points to exact additivity ($I_s =
+0.0$, $C_H \neq 0$; pre-reg 30, Appendix~\ref{app:estimand}) --- whereas
+the V1 de-screening under $a'_s$ showed a re-injection signature instead.
+A census therefore licenses credit only under the estimand it was run
+with: the identity structure ($C_H = -I$ vs.\ $I = 0$) can flip with the
+estimand while the trajectory stays fixed.
+\end{remark}
+
 \begin{lemma}[Coalescence]
 \label{lem:coalesce}
 Let $s_k = (c_k, e_k)$ denote the agent state at step $k \geq t$ ---
