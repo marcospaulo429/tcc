@@ -1534,3 +1534,20 @@ rendering fica estruturalmente igual ao dos runs Qwen). Tags: dsc_g600 /
 dsc_mt6. Protocolo, endpoints, gate de poder e desfechos declarados
 inalterados. O smoke roda de novo com o deepseek; se falhar também, novo
 adendo antes de qualquer decisão.
+
+**Adendo 35c (2026-08-26, antes de qualquer rollout válido com o novo
+candidato):** o smoke do deepseek-coder-6.7b-instruct também FALHOU
+(taxa 0.33; corte 0.80). Probe diagnóstico (experiments/probe_parse.py,
+1 chamada por task, outputs crus inspecionados): o modelo ignora
+completamente o protocolo JSON de ações e responde prosa + blocos de
+código — nem um parser balanceado alternativo encontra ação válida.
+Ou seja: não é bug do nosso parser (regex greedy foi descartado como
+causa); é não-aderência ao formato. Terceiro e último candidato
+declarado: **microsoft/Phi-3.5-mini-instruct** (ungated, 3.8B — pareado
+em escala com o Qwen3-4B; template aceita roles consecutivos, sem shim).
+Tags: phi_g600 / phi_mt6. Protocolo, endpoints, gate e desfechos
+inalterados. **Desfecho declarado se o Phi também falhar o smoke:** o
+census cross-family é irrealizável sob o harness V1 congelado — a adesão
+ao formato de instrução é ela mesma família-dependente; isso vira achado
+de escopo reportado no paper (a questão do screening cross-family
+permanece aberta), sem afrouxar o harness e sem quarto candidato.

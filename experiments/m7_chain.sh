@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Pré-registro 35 (+ adendos 35a/35b): census cross-family.
-# 35b: Mistral-7B-v0.3 falhou o smoke declarado (parse 0.57 < 0.80) → fallback
-# declarado deepseek-coder-6.7b-instruct. Espelho do q8_chain (pré-reg 15):
-# smoke de parse → teste0/2/3 em g600 e mt6. Restaura o Qwen3-4B ao final.
+# Pré-registro 35 (+ adendos 35a–35c): census cross-family.
+# 35b: Mistral-7B falhou smoke (parse 0.57). 35c: deepseek-coder-6.7b falhou
+# smoke (0.33; ignora o protocolo JSON — probe diagnóstico confirmou prosa+código).
+# Candidato 3: microsoft/Phi-3.5-mini-instruct. Espelho do q8_chain (pré-reg 15).
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
@@ -20,8 +20,8 @@ start_vllm () {  # $1 = modelo, $2 = gpu-memory-utilization
   echo "TIMEOUT esperando vLLM com $1"; return 1
 }
 
-export TCC_MODEL="deepseek-ai/deepseek-coder-6.7b-instruct"
-# 35b: template do deepseek aceita roles consecutivos — sem shim de merge.
+export TCC_MODEL="microsoft/Phi-3.5-mini-instruct"
+# templates do phi aceitam roles consecutivos — sem shim de merge.
 unset TCC_MERGE_ROLES
 start_vllm "$TCC_MODEL" 0.90 || exit 1
 
@@ -29,7 +29,7 @@ start_vllm "$TCC_MODEL" 0.90 || exit 1
 echo "=== smoke de parse ($(date -Is)) ==="
 uv run python -m experiments.smoke_parse_m7 || { echo "SMOKE FALHOU — abortar e re-declarar"; start_vllm "Qwen/Qwen3-4B" 0.85; exit 1; }
 
-for CFG in "dsc_g600:12" "dsc_mt6:6"; do
+for CFG in "phi_g600:12" "phi_mt6:6"; do
   TAG="${CFG%%:*}"; MT="${CFG##*:}"
   if [ -f "runs/teste3_${TAG}/summary.json" ]; then echo "=== pula ${TAG} ==="; continue; fi
   echo "=== preg35 ${TAG} max_turns=${MT} ($(date -Is)) ==="
