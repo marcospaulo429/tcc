@@ -19,7 +19,7 @@ THETA_ORACULO = [40.0, 0.0, 0.0, 0.0, 120.0]
 HARNESS_KW = {"summarize_threshold_tokens": 4500, "max_turns": 25, "keep_last": 6}
 
 def main() -> None:
-    out = Path("runs/v2_land35d")
+    out = Path(sys.argv[1] if len(sys.argv) > 1 else "runs/v2_land35d")
     pool = json.loads((out / "all24.json").read_text())
     by_id = {t["task_id"]: t
              for t in importlib.import_module("environment.tasks_swe35").TASKS}

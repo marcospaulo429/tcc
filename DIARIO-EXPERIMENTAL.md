@@ -1422,3 +1422,43 @@ comportamento do modelo, não estimada da estrutura da task.
 Caminho aberto (não exercitado): repetir o gate com Qwen3-8B — a
 patologia de loop pode ser específica do 4B.
 Custo: ~4×40 min GPU (calibrações+oráculos, runs/v2_land35{,b,c,d}/).
+
+### Gate de poder com Qwen3-8B no pool it.4 (2026-08-26): exploratório — o gate
+estrito veta de novo (0/24), mas por uma razão estrutural nova e informativa
+Exercita o caminho aberto do fechamento acima. Mesmo pool congelado da it.4
+(runs/v2_land35d/all24.json), mesmas 3 políticas fixas + oráculo condicional
+θ=[40,0,0,0,120], 1 seed, greedy. Servidor trocado para Qwen/Qwen3-8B (mesmas
+flags; HF_HOME=/home/marcos/hf_cache é obrigatório). Artefatos:
+runs/v2_land35_8b/.
+
+Resultados (λ=1.0): keep R=0.542/r_eff=0.373; summ 0.458/−0.223; default
+0.508/−0.234; **oráculo 0.708/0.533**.
+- **Hipótese da banda parcialmente confirmada:** o loop pós-summarize do 4B
+  desaparece. Nas F, o 8B divide: f_00 solúvel por todas; f_02/05/07/11
+  solúveis EXATAMENTE pelo mecanismo desenhado (keep overflowa, summarize
+  resolve, margem +0.95 vs keep cada); 7/12 insolúveis sob todas (overflow
+  universal). As 12 F são estruturalmente idênticas (mesmo bug, mesmo
+  template, só a seed dos dados) — o split é a borda da banda de
+  competência por seed, não um parâmetro de desenho.
+- **Primeira paisagem em que o alvo condicional domina estritamente todas
+  as fixas na média:** +0.16 de r_eff sobre a melhor fixa (keep) em λ=1.
+- **Mas o gate estrito registrado veta: 0/24 tasks com margem ≥0.10 vs
+  melhor-fixa-por-task, em todo λ ∈ {0, 0.1, 0.2, 0.5, 1, 2}.** Razão
+  estrutural: o oráculo comete-se na primeira decisão consultada e
+  degenera token-exato numa das fixas em cada task (margens +0.0000).
+  Um alvo que só exerce condicionalidade ENTRE tasks nunca passa um
+  critério per-task-vs-melhor-fixa — o critério é impassável por
+  construção para essa classe de alvo.
+- Na versão por atrator (margem vs CADA fixa): vs summarize 12 tasks
+  ≥0.10; vs keep apenas 4 (as f_02/05/07/11). Gargalo: 4 < 10.
+
+Leitura honesta: nenhum treino se justifica ainda (gate fechado sob o
+critério registrado; redefinir o critério post hoc para abrir o gate é
+exatamente o que a disciplina do paper proíbe). Dois aprendizados para o
+design brief: (i) o critério de margem do item 3 precisa ser especificado
+POR ATRATOR e no nível em que o sinal de treino enxerga (média de r_eff),
+senão conflita condicionalidade intra-task com inter-task; (ii) existe um
+caminho construtivo concreto — enriquecer as F com variantes da classe
+f_02 (dentro da banda do 8B) até ≥10 tasks com margem vs keep — mas
+exigiria re-registro explícito do critério por atrator ANTES de qualquer
+treino. Custo: ~75 min GPU (calibração 72 eps + oráculo 24 eps).
