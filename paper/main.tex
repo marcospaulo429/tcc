@@ -53,7 +53,7 @@ registered accountings --- and the licensed training, run, collapses onto
 a fixed attractor before credit ordering becomes testable. Replay
 credit is worth its cost for measurement; whether it is worth
 \emph{training on} is a measurable property of the agent, not an article
-of faith. We release the apparatus and a 32-item registration ledger whose
+of faith. We release the apparatus and a 33-item registration ledger whose
 evidential force rests on its reported failures.
 \end{abstract}
 
@@ -124,7 +124,7 @@ multi-file stack the gate opens under three of four registered
 accountings, the licensed training runs, and the optimization collapses
 onto a fixed attractor before credit ordering becomes testable
 (\S\ref{sec:v2}).
-\item \textbf{The record.} A 32-item pre-registration ledger with failures
+\item \textbf{The record.} A 33-item pre-registration ledger with failures
 reported as results, control-task construct validation, and a claims table
 (Table~\ref{tab:claims}, Appendix~\ref{app:claims}) in which every number
 is auditable against the ledger (Table~\ref{tab:ledger}).
@@ -660,14 +660,13 @@ missing experiment in reduced form on MBPP+ and HumanEval+ (pre-regs 16,
 20, 25): the floor replicates exactly in every cell (3{,}668 nulls) and
 screening replicates unconditionally (Table~\ref{tab:synthesis}), while
 every pressure cell saturates away, so the regime contrast remains
-untested externally (Appendix~\ref{app:replication}). The designed tasks
-remain necessary for the regime claim; the core phenomenon is not a
-task-design artifact.
+untested externally (Appendix~\ref{app:replication}). The core phenomenon
+is not a task-design artifact.
 
 \subsection{Replication across models and pools (summary)}
-Appendix~\ref{app:replication} reports the full record: Qwen3-1.7B,
-Qwen3-8B, a pool hardened to the 8B's competence boundary, and the
-pre-registered symmetric control. The floor replicates
+Appendix~\ref{app:replication} reports the full record (Qwen3-1.7B,
+Qwen3-8B, a pool hardened to the 8B's competence boundary, the
+pre-registered symmetric control). The floor replicates
 everywhere; screening replicates unconditionally on the 1.7B and both
 external environments; the 8B \emph{breaks} the shield at a flat rate in
 both regimes; the 4B also breaks on the curated pool. The claim re-scopes:
@@ -687,24 +686,25 @@ points) and cross-configuration break recurrence as the stronger evidence.
 
 \paragraph{Multiplicity and post-treatment conditioning.} Only
 pre-registered outcomes (Table~\ref{tab:ledger}) are confirmatory;
-borderline point-level values are descriptive. Saturation is computed on
-replayed-arm rewards, so saturation-conditioned rates condition on a
-post-treatment variable and are never causal estimates.
+borderline point-level values are descriptive, and saturation-conditioned
+rates condition on a post-treatment variable (never causal estimates).
 
 \subsection{Estimand caveats and the practical prescription}
 Appendix~\ref{app:estimand} details the estimand-level caveats: the shared
 sampled alternative coupling $C_M$ and $I$; the single-draw $a'$,
-bracketed by re-sampling (99/101) and summarized-state $a'_s$ (24/31);
-selection into measurement (53--73\% discarded, composition pointing
-\emph{against} the headline contrast); the $5.6\times$ episode tax; and
-the stochastic protocol (the census predicts where the temperature-$0.8$
-estimand separates from its null band).
+bracketed on both stacks by re-sampling and $a'_s$ studies (V1 99/101,
+24/31; V2: verdict and gate survive re-draws, and under $a'_s$
+de-screened points turn exactly additive, $I=0$ --- pre-reg 30);
+selection into measurement (53--73\% discarded, composition
+pointing \emph{against} the headline contrast); the $5.6\times$ episode
+tax; and the stochastic protocol (the census predicts where the
+temperature-$0.8$ estimand separates from its null band).
 
-\paragraph{The practical prescription.} Since \emph{whether} screening
-holds depends on the triple, no fixed correction transports across stacks;
-what transports is the procedure --- null floor, then screening census,
-then decide which credit signal is billable --- plus the identity
-$C_H = -I$ at screened points and the correction rule $C_{HM}-C_M$.
+\paragraph{The practical prescription.} No fixed correction transports
+across stacks; what transports is the procedure --- null floor, then
+screening census, then decide which credit signal is billable --- plus the
+identity $C_H = -I$ at screened points and the correction rule
+$C_{HM}-C_M$.
 
 \section{Conclusion}
 We built the first apparatus that measures harness credit, model credit,
@@ -714,7 +714,7 @@ single-layer harness credit double-counts; under pressure the shield
 breaks --- the contrast is a property of the (model, harness, task)
 triple. Better credit did not train a better harness on either stack.
 Contributions: the infrastructure, the triple-dependence finding, the APC
-warning, the census gate, and a 32-item pre-registration ledger whose
+warning, the census gate, and a 33-item pre-registration ledger whose
 training negatives are the design brief for the benchmark this field
 still needs.
 \appendix
@@ -1307,6 +1307,26 @@ the stochastic cell where the weakest break dissolved under re-sampling.
 (The third published break is a restore-direction flip, outside this
 estimand's population by construction.)
 
+\paragraph{V2 estimand controls (pre-reg 30).} The same two controls, run
+on the V2 census's 48 measured points. \emph{Re-sampling} (two disjoint
+seed schedules at each point's census temperature): the plain-text sampler
+is near-deterministic even re-seeded (56/96 draws return the identical
+$a'$; 17 find none), and on the 23 informative draws the point-level
+classification is draw-sensitive --- stability $17/23 = 0.739$, with flips
+in both directions across three decision types. The aggregate verdict is
+not: substituting each schedule's draws and recomputing, the census
+outcome remains s3 and the primary gate stays open under both schedules
+(0.474 and 0.368 vs.\ 0.395 original; threshold 0.20).
+\emph{Summarized-state} $a'_s$ (23 keep$\to$summarize context points, one
+schedule): screening drops to $8/21 = 0.381$ --- and all 13 non-screened
+points (9 genuinely de-screened) share a signature \emph{different from
+V1's}: $I(a'_s) = 0$ exactly with $C_H \neq 0$, i.e.\ the layers become
+\emph{additive} --- the one regime where single-layer credit is correct.
+Which identity holds at a point --- screening ($C_H = -I$), additivity
+($I = 0$), or neither --- is itself a function of the estimand, which
+sharpens the prescription: run the census under the estimand you intend
+to bill.
+
 \paragraph{Selection into measurement.} A point enters the interaction
 census only if the sampler finds a parseable $a' \neq a$ within the 8-seed
 schedule; across configurations 53--73\% of candidate points are discarded
@@ -1678,6 +1698,7 @@ failed and the eleven partial. Failed predictions are reported in the main text 
 28 & V2 mini-SWE pilot, 4 staged gates: pool $\geq$16 validated tasks; success in $[0.30,0.70]$ with $<$15\% malformed; determinism (5/5 reruns byte-identical, 5/5 nulls exact); $\geq$3 of 5 harness decision types pivotal. Two recalibrations pre-registered before re-run (28a: plain-text action protocol after the JSON envelope yielded 0 write actions in 437 calls --- itself a reportable harness effect; 28b: flip-candidate selection) & GO on all 4: pool 20/20; success 0.50, 0\% malformed; determinism exact; 3 types pivotal (context 3/8, observation 4/5, termination 1/5; test-schedule 0/5 reported as non-pivotal) & held \\
 29 & V2 multi-decision census on a frozen 60-task pool, 2 configs (slack/pressure): Teste 0 V2 floor; per-type selective screening; $C_H/C_M/C_{HM}/I$ at pivotal points; declared outcomes s1 (screening is type-dependent) / s2 (screening dominates all types) / s3 (general break); \textbf{pre-registered training gate}: F4--F5 only if $\geq$20\% non-screened pivotal mass (Corollary~\ref{cor:gate} applied prospectively). Addenda 29a (terminal flips make the HM arm analytically degenerate) and 29b ($a'$ sampler escalation to temp 1.2, stratified analysis, 0.15 divergence rule) registered mid-run before resuming & floor 117/117 exact; all 5 types pivotal (114 points); outcome \textbf{s3}: no type screens $\geq$0.90 (context 0.609, observation 0.667, termination 0.100, test-schedule 0.333); gate opens under 3/4 accountings (0.50 measured to 0.13 pivotal-denominator w/o degenerate duals --- the registration under-specified the accounting, reported in \S\ref{sec:v2}); strata diverge by 0.084 $<$ 0.15 (pooled primary) & held (amended mid-run) \\
 31 & Episode-matched outcome-only control for Act 4 (the flagged confound): the deterministic outcome-only $\theta$-trajectory sliced at the credit arms' episode counts (139/139/137 and 70/68/70), evaluated under the identical held-out protocol; validity gate: re-evaluating the final $\theta$ must reproduce $0.4402$ exactly; declared outcomes o1 (outcome$_{\text{em}} >$ max $C_H$ in $\geq$2/3 seeds: reading survives) / o2 (below per-seed $C_H$ in $\geq$2/3: sample-size artifact) / o3 (attractor-level) & gate passed (exact equality); \textbf{o1}: $0.410/0.450/0.398$ vs $C_H$ $0.405/0.405/0.398$ --- $\geq C_H$ 3/3 seeds, strictly above 2/3, seed 3 ties exactly; at 70/68/70 episodes outcome still beats the corrected arm's attractor 2/3 & confirmed \\
+30 & V2 estimand controls mirroring V1 items 21/26 (registered after 31--33, number reserved earlier): (A) $a'$ re-sampling on all 48 measured census points, two disjoint seed schedules at each point's census temperature, point-classification stability + recomputed headline per schedule; (B) $a'_s$ from the summarized state on keep$\to$summarize context points; declared outcomes r1/r2/r3, b1/b2/b3 & \textbf{r2}: classification draw-sensitive (17/23 stable) but s3 verdict and open gate survive both schedules (0.474/0.368 vs.\ 0.395); \textbf{b3}: screening $8/21=0.381$ under $a'_s$, all 13 non-screened points exactly additive ($I=0$, $C_H\neq 0$) & held; claim scoped \\
 32 & V2 training (open branch): accounting fixed ex ante (measured points w/o degenerate duals, $15/38=0.39$, gate opens); Act-4 protocol --- calibrate 3 fixed attractors on all 60 tasks, select $\lambda^{*}$ and a margin-verified pool analytically before any training (abort if $<10$ eligible); 4 arms $\times$ 3 seeds, dose- and episode-matched; context overflow = failed episode with paid tokens (amendment 32a, registered before resuming) & \textbf{aborted at the registered criterion}: $\leq 3$ eligible tasks under $\lambda \in \{1..25\}$ --- the grid transported from V1 is mis-scaled to V2 token magnitudes; no training data touched \\
 33 & V2 training, re-registered: single change --- $\lambda$ grid rescaled to $\{0.02..0.5\}$, ties break to larger $\lambda$; all else inherited from 32; declared outcomes s1 (credit $>$ outcome under both accountings) / s2 (learning without credit ordering) / s3 (no arm beats the best fixed attractor) & $\lambda^{*}=0.2$, 10 tasks; \textbf{s3}: every learning arm collapses token-exactly onto summarize-always (0.831 vs.\ 0.889 target; untrained control at keep-always $-0.092$); episode-matched slices unchanged \\
 \bottomrule
