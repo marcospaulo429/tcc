@@ -1,9 +1,9 @@
 # PROXIMOS-PASSOS.md — pós-painel rodada 7 (paper em formato ICLR, 9 pp)
 
 > Atualizado em 2026-08-27. Paper no template ICLR 2026, texto principal em
-> exatamente 9 páginas (commit 4a9f96d). Painel simulado rodada 7:
-> **R1=6, R2=6, R3=6 — AC: Accept (poster).** Pré-regs 31, 32 (ABORT) e 33
-> executados e integrados ao paper.
+> exatamente 9 páginas (commit 975af1b). Painel simulado rodada 7:
+> **R1=6, R2=6, R3=6 — AC: Accept (poster).** Pré-regs 30, 31, 32 (ABORT) e
+> 33 executados e integrados ao paper (ledger com 33 itens).
 
 ## Estado
 
@@ -31,14 +31,16 @@
 
 ## Fila de execução (ordem)
 
-1. **Pré-reg 30 — controles de estimando V2:** re-amostragem de a′ + a′
-   estruturado (a′_s) nos 48 pontos do census (contra a objeção 29b).
-   Registrar no DIARIO antes de rodar.
+1. ✅ **Pré-reg 30 — controles de estimando V2:** Parte A **r2** (estabilidade
+   pontual 0.739 <0.90, mas s3 + gate abertos sob os 2 schedules de re-draw);
+   Parte B **b3** (screened_s 8/21=0.381; os 13 não-screened têm I_s=0 EXATO
+   — aditividade, o regime onde crédito single-layer é correto). Integrado:
+   app:estimand, §8, ledger row 30 (975af1b).
 2. (Opcional) Análise zero-GPU da composição dos 65 pontos excluídos do
    census V2.
-3. (Decidir) Pré-reg 34 — treino V2 mais longo/lr menor para testar se o
-   colapso s3 é limitado por orçamento. Postura atual: s3 fica como resultado
-   honesto; 34 só se um revisor exigir.
+3. (Decidido: NÃO por ora) Pré-reg 34 — treino V2 mais longo/lr menor; s3
+   fica como resultado honesto, só revisitar se revisor exigir.
+4. (Opcional, caro) Célula não-Qwen (item 5 do AC).
 
 ## Lembretes de rigor
 
