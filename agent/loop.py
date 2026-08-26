@@ -185,6 +185,9 @@ class Episode:
             self._seed_workspace()
             messages = [{"role": "system", "content": self.SYSTEM_PROMPT},
                         {"role": "user", "content": self.task["prompt"]}]
+            if self.task.get("boot_note"):
+                # nota volátil: NÃO é protegida pelo summarize (só system+task o são)
+                messages.append({"role": "user", "content": self.task["boot_note"]})
             turn, entry = 0, "context_policy"
 
         # C2: entrada em termination restaura os insumos gravados no state_before
