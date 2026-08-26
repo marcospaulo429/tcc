@@ -1386,3 +1386,39 @@ idempotente por (parte, cfg, task_id, index, schedule).
   poder (Parte A) entra na prescrição do paper; o 33 teria sido vetado.
 - Custo real: ~23 min GPU (2 células). Artefatos runs/v2_train34/,
   log runs/logs/prereg34b.log.
+
+### Fase exploratória de desenho do landscape 35 (2026-08-27/28): encerrada SEM registro — o gate de poder veta as 4 iterações
+Declarado exploratório desde o início (pré-congelamento; nenhum treino rodou,
+nenhum pré-reg 35 foi registrado — o gate do pré-reg 34 nunca abriu).
+Objetivo: construir pool de 24 tasks (12 poison + 12 free) onde a política
+condicional "keep se n_writes==0, senão summarize" domine TODAS as fixas
+(keep/summarize/default-4500) por ≥0.10 em ≥10 tasks em algum λ.
+
+- **It. 1** (blob grande + boot_note): veneno morde summarize (P: 12/12 a
+  R≤0.6) mas NÃO o default — o modelo lê pouco e o threshold nunca cruza
+  pré-write. F sem overflow. Margem mix: 0.016.
+- **It. 2** (F com 4 estágios verbosos): keep estoura como desenhado, mas
+  4 estágios excedem a competência do 4B — oráculo/default travam em R=0.6
+  gastando 50–100k tokens. Margem do oráculo: negativa em todo λ.
+- **It. 3** (P exige síntese spec+boot; F com esperado oculto): tudo
+  afunda (P keep 0.17; F ~0.03 em todas; 22/24 overflows sob keep).
+  Síntese de duas fontes está acima da competência do modelo.
+- **It. 4** (dificuldade só de leitura: fix copiável na spec; F com bugs
+  óbvios e diff visível): P finalmente funciona na direção certa
+  (keep 0.67 > summ/def 0.40), MAS as F revelam patologia nova: após o
+  primeiro summarize o modelo entra em loop (list→read→write normaliza,
+  8+ ciclos, NUNCA re-roda testes — a informação de falha foi destruída
+  junto com o contexto) e estoura 8192 até sob summarize (12/12) e
+  default (11/12). R=0.0 nas F para TODAS as políticas. Margem do
+  oráculo: negativa em todo λ; 0/24 tasks com margem ≥0.10.
+
+Leitura conjunta (1 seed, greedy, descritivo): no stack (Qwen3-4B, harness
+V2), mesmo desenhando adversarialmente COM conhecimento do mecanismo, não
+existe pool que passe o gate. Os modos de falha são comportamentais do
+modelo — gap binário de competência (it.2–3) e loop pós-summarize (it.4)
+— não parâmetros de task. Fortalece o pré-reg 34 construtivamente e vira
+requisito do design brief: a margem tem que ser verificada contra o
+comportamento do modelo, não estimada da estrutura da task.
+Caminho aberto (não exercitado): repetir o gate com Qwen3-8B — a
+patologia de loop pode ser específica do 4B.
+Custo: ~4×40 min GPU (calibrações+oráculos, runs/v2_land35{,b,c,d}/).
