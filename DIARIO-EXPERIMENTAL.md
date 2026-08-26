@@ -1293,3 +1293,6 @@ idempotente por (parte, cfg, task_id, index, schedule).
   pontos screened: no estimando a′_s a decomposição vira aditiva (I=0),
   o caso em que crédito single-layer é correto. A prescrição (census por
   estimando antes de billar crédito) sai fortalecida.
+- Precisão (nota adicionada em seguida): dos 13 não-screened sob a′_s,
+  9 eram screened no census (de-screening genuíno) e 4 já eram breaks;
+  a assinatura I_s = 0.0 exato vale para os 13.
