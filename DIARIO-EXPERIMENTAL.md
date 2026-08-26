@@ -1296,3 +1296,19 @@ idempotente por (parte, cfg, task_id, index, schedule).
 - Precisão (nota adicionada em seguida): dos 13 não-screened sob a′_s,
   9 eram screened no census (de-screening genuíno) e 4 já eram breaks;
   a assinatura I_s = 0.0 exato vale para os 13.
+
+## 2026-08-27 — Análise descritiva (zero-GPU): composição dos 66 pontos pivotais excluídos do census V2
+- Sem novos rollouts (não é pré-reg; análise de seleção, espelho V2 da
+  análise do V1). Script experiments/analise_exclusao_v2.py; saída
+  runs/census_v2/analise_exclusao.json.
+- 66 excluídos = 65 sem a′ (mesmo após escalonamento 29b) + 1 span com
+  retry. Composição vs os 48 medidos: |ΔR| do flip COMPARÁVEL (mediana
+  0.167 vs 0.182; média 0.183 vs 0.173) — a exclusão NÃO esconde efeitos
+  menores; mas os excluídos são mais CEDO (turn mediano 2 vs 7) e com
+  contexto menor (919 vs 2.098 tokens); termination (26) e observation
+  (23) sobre-representados; retry excluído por inteiro (2/2).
+- Leitura: o census V2 sobre-representa estados tardios e de contexto
+  grande — onde o sampler tem entropia para achar a′. Direção do viés:
+  neutra para o tamanho de efeito, mas os pontos mais precoces (onde o V1
+  mostrou pivotalidade profunda) ficam não-medidos. Caveat honesto no
+  app:estimand do paper.
