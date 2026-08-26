@@ -1597,3 +1597,33 @@ tipo de decisão.
 no 30A); sem re-run de teste0.
 **Custo estimado:** ≤240 tentativas de draw, ~250–450 replays, 6–12h GPU
 (4B já servido).
+
+### PRÉ-REGISTRO 37 (2026-08-26, antes de rodar): pressão externa de-saturada — censo exaustivo in-window no MBPP+
+Motivação: review externo — o contraste folga→pressão→quebra nunca teve
+poder num ambiente externo (D3: 4B saturado em sucesso; D6: 1.7B saturado
+em fracasso, 2/22 não-saturados). Poder existente in-window nos census
+MBPP+ atuais: 1 ponto não-saturado por célula (gate exige ≥5).
+
+**Hipótese:** com poder real, o padrão V1 transporta ao MBPP+: screening
+sob folga, quebras sob pressão.
+**Manipulada:** nada de novo no agente — só a POPULAÇÃO de medição: censo
+EXAUSTIVO de pontos (max-per-traj 99) restrito às tasks na janela de
+competência (baseline da própria config em (0.05,0.95)), sobre os
+baselines JÁ CONGELADOS de runs/teste0_mbpp_{g600,mt6} (zero rollout de
+baseline novo). Tasks declaradas — g600 (10): mbpp_111, 276, 410, 420,
+606, 620, 7, 769, 792, 809; mt6 (11): as mesmas + mbpp_563.
+**Protocolo:** teste2 (amostragem a′, max-per-traj 99) → teste3 (census,
+max-per-traj 99) sobre baseline filtrado por symlink; pontos que
+coincidirem com os já medidos em teste3_mbpp_* são re-medidos pelo mesmo
+procedimento determinístico (sem herança manual). Piso: coberto pelos
+nulos exatos já medidos nessas configs; teste0 não re-roda.
+**Gate de poder (herdado do pré-reg 25):** ≥5 pontos pivotais
+não-saturados por célula; célula abaixo disso = inconclusiva, sem leitura.
+**Desfechos declarados (se as duas células passarem o gate):**
+e1 — folga screena ≥0.90 nos pivotais e taxa de quebra sob pressão >
+folga: padrão V1 transporta; e2 — ambas screenam ≥0.90: ambiente externo
+blinda inclusive sob pressão (refina o escopo do contraste de regime);
+e3 — folga quebra (<0.75): screening não transporta ao MBPP+ nem sob
+folga. Entre 0.75–0.90 ou padrões mistos: descritivo, sem claim.
+**Custo estimado:** ~350–500 replays, 6–10h GPU (4B). Roda após a coleta
+do pré-reg 36 (GPU sequencial).
