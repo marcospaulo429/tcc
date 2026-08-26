@@ -73,8 +73,17 @@ def test_orcamentos_de_chars_por_familia():
         assert cb["keep_total_est"] <= 30000, t["task_id"]
     for t in F_TASKS:
         cb = t["char_budget"]
-        assert cb["pre_primeiro_write"] < 18000, t["task_id"]
-        assert cb["keep_total_est"] >= 32500, t["task_id"]
+        # threshold (4500 tok ≈ 14850 chars) cruza só DEPOIS do 1º write…
+        assert cb["pre_primeiro_write"] < 14850, t["task_id"]
+        assert cb["pos_primeiro_write"] >= 14850, t["task_id"]
+        # …e o caminho keep estoura o max-model-len (8192 tok ≈ 27033 chars) no turno 6
+        assert cb["keep_turno6_est"] > 27033, t["task_id"]
+        assert cb["msg_falha_chars"] >= 3000, t["task_id"]
+
+
+def test_f_boot_note_pareada_com_p():
+    for p, f in zip(P_TASKS, F_TASKS):
+        assert len(f["boot_note"]) == len(p["boot_note"]), f["task_id"]
 
 
 # -- execução real em sandbox ----------------------------------------------------
@@ -89,13 +98,22 @@ def test_p_canonica_5de5_e_sem_constantes_3de5():
         assert res_e["total"] == 5 and res_e["passed"] == 3, t["task_id"]
 
 
-def test_f_canonica_5de5_e_estagio1_parcial():
+F_ORDEM = ("normaliza.py", "agrega.py", "valida.py", "exporta.py")
+
+
+def test_f_canonica_5de5_e_progressao_por_estagio():
+    # 0 estágios→0/5, 1→2/5, 2→3/5, 3→4/5, 4→5/5 (reward fracionário estrito)
+    esperado = {0: 0, 1: 2, 2: 3, 3: 4, 4: 5}
     for t in F_TASKS[:2]:
-        res = _run({**t["repo_files"], **t["canonical_files"]}, t["test_code"])
-        assert res["total"] == 5 and res["passed"] == 5, t["task_id"]
-        so1 = {**t["repo_files"], t["bug_file"]: t["canonical_files"][t["bug_file"]]}
-        res_1 = _run(so1, t["test_code"])
-        assert res_1["total"] == 5 and 2 <= res_1["passed"] <= 3, t["task_id"]
+        assert set(t["canonical_files"]) == set(F_ORDEM), t["task_id"]
+        for k, alvo in esperado.items():
+            files = dict(t["repo_files"])
+            for rel in F_ORDEM[:k]:
+                files[rel] = t["canonical_files"][rel]
+            res = _run(files, t["test_code"])
+            assert res["total"] == 5 and res["passed"] == alvo, \
+                f"{t['task_id']}: {k} estágio(s) → {res['passed']}/5 (esperado {alvo}/5)"
+        assert res["success"]  # k=4 é a canônica completa
 
 
 # -- boot_note no EpisodeV2 -------------------------------------------------------

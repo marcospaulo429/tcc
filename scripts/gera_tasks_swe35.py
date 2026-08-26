@@ -8,25 +8,37 @@ Família P — summarize destrói informação necessária e irrecuperável:
   aparecem SOMENTE na boot_note; 5 testes: 3 genéricos + 2 comparam o mixing com
   valores pré-computados. Canonical → 5/5; canonical com constantes erradas → 3/5.
 
-Família F — summarize estritamente melhor; keep leva a overflow:
-  boot_note inócua; bug em 2 estágios (arquivo 1, depois a falha aponta o arquivo 2);
-  repo grande/redundante tal que keep até o fim estoura ~8000 tokens. Canonical → 5/5;
-  só estágio 1 → 3/5. Toda informação necessária persiste em arquivos.
+Família F — summarize estritamente melhor; keep leva a overflow REAL:
+  boot_note inócua (mesmo comprimento da P pareada); pipeline de 4 estágios
+  (normaliza → agrega → valida → exporta), 1 bug por estágio; a suite (5 testes)
+  só revela o erro do estágio k+1 depois que o estágio k está consertado.
+  Reward fracionário: 0 estágios→0/5, 1→2/5, 2→3/5, 3→4/5, 4→5/5.
+  Mensagens de falha verbosas (~3000–3500 chars no output bruto do pytest);
+  no caminho keep canônico (TEST; READ+WRITE por estágio) o prompt cumulativo
+  cruza 8192·3.3 chars até o turno 6 → BadRequestError → R=0 (regra 32a).
+  Sob summarize (keep-last-6) o episódio completa. Tudo persiste em arquivos.
 
 Validações (task reprovada aborta a geração):
-  1. P: constantes ausentes de repo_files/test_code; canonical→5/5; constantes erradas→3/5.
-  2. F: canonical→5/5; estágio 1 apenas→2–3/5.
+  1. P: constantes ausentes do blob VISÍVEL (repo_files/test_code — nunca dos
+     canônicos); canonical→5/5; constantes erradas→3/5.
+  2. F: canonical→5/5; progressão por estágio exata (0/5, 2/5, 3/5, 4/5);
+     5 blocos de falha verbosos de 3000–3500 chars no pytest bruto;
+     simulação do caminho keep: pré-1º-write < 4500·3.3 chars, pós-1º-write
+     ≥ 4500·3.3, prompt do turno 6 > 8192·3.3; boot_note pareada com a P.
   3. Todas: canonical roda 5/5 num sandbox limpo (mesmo mecanismo do gera_tasks_swe).
-  4. Orçamentos de chars por família (P rasa, F profunda) verificados numericamente
-     e gravados por task no campo `char_budget`.
+  4. Orçamentos de chars por família verificados numericamente e gravados por
+     task no campo `char_budget`.
 
 Uso: uv run python scripts/gera_tasks_swe35.py [--out environment/tasks_swe35.py]
 """
 import argparse
+import os
 import pprint
 import random
 import re
+import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -240,6 +252,15 @@ def _char_budget_p(task: dict) -> dict:
 
 
 # -- família F ("free") ------------------------------------------------------
+# Pipeline de 4 estágios; 1 bug por estágio; suite revela um estágio por vez.
+CHARS_POR_TOKEN = 3.3
+MAX_MODEL_CHARS = int(8192 * CHARS_POR_TOKEN)      # overflow keep: 27033 chars
+THRESHOLD_CHARS = int(4500 * CHARS_POR_TOKEN)      # summarize_threshold: 14850 chars
+OBS_TEST_CHARS = len("Resultado dos testes: 0/5 passaram.\nSaída:\n") + 1200
+LARGURA_MSG_FALHA = 3050  # chars da mensagem de _falha (pytest renderiza ~+390)
+
+F_ORDEM = ("normaliza.py", "agrega.py", "valida.py", "exporta.py")
+
 NORMALIZA_TPL = '''"""Normalização de registros de consumo (estágio 1 do pipeline).
 
 {doc}
@@ -272,87 +293,205 @@ def agrega(registros):
     return totais
 '''
 
-TESTS_F_TPL = '''"""Suite do pipeline de consumo (5 testes)."""
+VALIDA_TPL = '''"""Validação de totais contra o limite operacional (estágio 3 do pipeline).
+
+{doc}
+"""
+
+LIMITE_PADRAO = {lim}
+
+
+def valida(totais, limite=LIMITE_PADRAO):
+    """(nome, total, status) ordenado por nome; status "acima" sse total > limite."""
+    saida = []
+    for nome in sorted(totais):
+        total = totais[nome]
+        status = "acima" if total {op} limite else "ok"
+        saida.append((nome, total, status))
+    return saida
+'''
+
+EXPORTA_TPL = '''"""Exportação do relatório final (estágio 4 do pipeline).
+
+{doc}
+"""
+
+
+def exporta(itens):
+    """Uma linha por item no formato nome|total|status, unidas por quebra de linha."""
+    linhas = []
+    for nome, total, status in itens:
+        linhas.append({linha})
+    return "\\n".join(linhas)
+'''
+
+LINHA_EXPORTA_BUG = 'f"{nome}|{total}"'
+LINHA_EXPORTA_OK = 'f"{nome}|{total}|{status}"'
+
+# Substituição por tokens @X@ (o corpo tem chaves demais para str.format).
+TESTS_F_TPL = '''"""Suite do pipeline de consumo (5 testes, 4 estágios encadeados)."""
 from agrega import agrega
+from exporta import exporta
 from normaliza import normaliza
+from valida import valida
 
-DADOS = {dados}
+DADOS = @DADOS@
+NORM_ESP = @NORM_ESP@
+TOT_ESP = @TOT_ESP@
+VAL_ESP = @VAL_ESP@
+EXP_ESP = @EXP_ESP@
+
+LARGURA_MSG = @LARGURA@
+_ENCH = ("contexto do runner: lote unico, ordem estavel de chegada, sem retentativa "
+         "pendente e trilha de auditoria completa para esta janela de processamento")
 
 
-def test_normaliza_minusculas_e_espacos():
-    assert normaliza([("  {N1}  ", {w1})]) == [("{n1}", {w1})]
+def _falha(arquivo, estagio, esperado, obtido):
+    linhas = [
+        f"FALHA no estagio {estagio} do pipeline (arquivo {arquivo}).",
+        "Tabela de linhas processadas nesta execucao (entrada bruta da ingestao):",
+    ]
+    for k, (nome, valor) in enumerate(DADOS):
+        linhas.append(f"  linha {k:02d} | nome={nome!r} | valor={valor} "
+                      f"| origem=ingestao | lote=unico | rota=padrao")
+    linhas += [
+        "Diff esperado-vs-obtido no ponto da falha:",
+        f"  esperado: {esperado!r}",
+        f"  obtido..: {obtido!r}",
+        "Traceback sintetico do runner (mais recente por ultimo):",
+        '  File "runner/executa_lote.py", line 88, in executa_lote',
+        f'  File "{arquivo}", line 12, in {estagio}',
+        f"  EstagioInvalidoError: saida do estagio {estagio} diverge do contrato",
+        "Contexto adicional (janelas anteriores, para conferencia):",
+    ]
+    corpo = "\\n".join(linhas)
+    rodape = (f"\\nDIAGNOSTICO: o proximo conserto e em {arquivo}; reescreva "
+              f"{arquivo} INTEIRO com write_file e rode os testes de novo.")
+    k = 0
+    while len(corpo) + len(rodape) < LARGURA_MSG:
+        corpo += f"\\n  janela {k:03d} | {_ENCH}"
+        k += 1
+    return corpo[:LARGURA_MSG - len(rodape)] + rodape
+
+
+def _ate(estagio):
+    """Gate encadeado: o erro do estágio k+1 só aparece com o estágio k consertado."""
+    regs = normaliza(DADOS)
+    assert regs == NORM_ESP, _falha("normaliza.py", "normaliza", NORM_ESP, regs)
+    if estagio == "agrega":
+        return regs
+    tot = agrega(regs)
+    assert tot == TOT_ESP, _falha("agrega.py", "agrega", TOT_ESP, tot)
+    if estagio == "valida":
+        return tot
+    val = valida(tot)
+    assert val == VAL_ESP, _falha("valida.py", "valida", VAL_ESP, val)
+    return val
+
+
+def test_normaliza_minusculas_espacos_e_filtro():
+    entrada = [("  @N1@  ", @w1@), ("@n3@", 0)]
+    esperado = [("@n1@", @w1@)]
+    obtido = normaliza(entrada)
+    assert obtido == esperado, _falha("normaliza.py", "normaliza", esperado, obtido)
 
 
 def test_normaliza_descarta_nao_positivo():
-    assert normaliza([("{n2}", 0), ("{n1}", {w2})]) == [("{n1}", {w2})]
+    entrada = [("@n3@", -@d@), ("@N2@", @w2@)]
+    esperado = [("@n2@", @w2@)]
+    obtido = normaliza(entrada)
+    assert obtido == esperado, _falha("normaliza.py", "normaliza", esperado, obtido)
 
 
-def test_normaliza_preserva_ordem():
-    assert normaliza([("{N2}", {w1}), ("{n1}", {w2})]) == [("{n2}", {w1}), ("{n1}", {w2})]
+def test_agrega_acumula_duplicatas():
+    regs = _ate("agrega")
+    obtido = agrega(regs)
+    assert obtido == TOT_ESP, _falha("agrega.py", "agrega", TOT_ESP, obtido)
 
 
-def test_fluxo_total_por_nome():
-    regs = normaliza(DADOS)
-    assert regs == {norm_esp}, "normaliza.py ainda incorreto"
-    assert agrega(regs) == {totais_esp}, "bug em agrega.py: revise agrega.py"
+def test_valida_status_no_limite():
+    tot = _ate("valida")
+    obtido = valida(tot)
+    assert obtido == VAL_ESP, _falha("valida.py", "valida", VAL_ESP, obtido)
 
 
-def test_fluxo_acumula_duplicatas():
-    regs = normaliza(DADOS)
-    assert regs == {norm_esp}, "normaliza.py ainda incorreto"
-    assert agrega(regs)["{nome_dup}"] == {soma_dup}, "bug em agrega.py: revise agrega.py"
+def test_exporta_relatorio_final():
+    val = _ate("exporta")
+    obtido = exporta(val)
+    assert obtido == EXP_ESP, _falha("exporta.py", "exporta", EXP_ESP, obtido)
 '''
-
-PROMPT_F_BASE = (
-    "Este repositório implementa o pipeline de consumo em dois estágios: leitura.py "
-    "descreve a ingestão, normaliza.py o estágio 1 (limpeza dos registros), "
-    "agrega.py o estágio 2 (totais por nome), formato.py o formato de saída e "
-    "catalogo.py o catálogo de origens. Há testes falhando em mais de um ponto do "
-    "fluxo (a suite está em test_app.py). Use run_tests para ver as falhas, corrija "
-    "um arquivo por vez reescrevendo-o INTEIRO com write_file e rode os testes de "
-    "novo: a mensagem de falha indica onde está o próximo problema.\n\n"
-    "Contexto operacional:\n")
 
 _NOMES = ("ana", "bruno", "carla", "davi", "elisa", "fabio", "gina", "hugo")
 
+PROMPT_F_BASE = (
+    "Este repositório implementa o pipeline de consumo em quatro estágios: "
+    "normaliza.py (estágio 1, limpeza dos registros), agrega.py (estágio 2, totais "
+    "por nome), valida.py (estágio 3, status contra o limite operacional) e "
+    "exporta.py (estágio 4, relatório final); leitura.py, formato.py e catalogo.py "
+    "documentam a ingestão e o catálogo de origens. Há um bug em cada estágio e a "
+    "suite (test_app.py) revela um estágio de cada vez, na ordem do fluxo. Use "
+    "run_tests para ver a falha atual, corrija UM arquivo por vez reescrevendo-o "
+    "INTEIRO com write_file e rode os testes de novo: a mensagem de falha aponta o "
+    "próximo arquivo.\n\n"
+    "Contexto operacional:\n")
 
-def _gera_f(i: int) -> dict:
+
+def _gera_f(i: int, boot_len: int) -> dict:
     rng = random.Random(SEED_BASE + 1000 + i)
     n1, n2, n3, n4 = rng.sample(_NOMES, 4)
-    w = [rng.randrange(2, 61) for _ in range(5)]
+    while True:
+        w = [rng.randrange(2, 61) for _ in range(5)]
+        if w[0] + w[2] > w[1] + w[3]:  # garante um "acima" estrito no valida
+            break
+    d = rng.randrange(1, 9)
     dados = [(f"  {n1.upper()}  ", w[0]), (n2.title(), w[1]), (f" {n1} ", w[2]),
-             (n3, -rng.randrange(1, 9)), (n2, w[3]), (n4.upper(), w[4])]
+             (n3, -d), (n2, w[3]), (n4.upper(), w[4])]
     norm_esp = [(n.strip().lower(), v) for n, v in dados if v > 0]
     totais_esp: dict = {}
     for n, v in norm_esp:
         totais_esp[n] = totais_esp.get(n, 0) + v
+    lim = totais_esp[n2]  # total EXATAMENTE no limite: >= (bug) difere de > (ok)
+    val_esp = [(n, t, "acima" if t > lim else "ok")
+               for n, t in sorted(totais_esp.items())]
+    exp_esp = "\n".join(f"{n}|{t}|{s}" for n, t, s in val_esp)
 
-    doc1 = _texto(random.Random(SEED_BASE + 1100 + i), 1300)
-    doc2 = _texto(random.Random(SEED_BASE + 1200 + i), 1500)
-    test_code = TESTS_F_TPL.format(
-        dados=repr(dados), n1=n1, n2=n2, N1=n1.upper(), N2=n2.upper(),
-        w1=w[0], w2=w[1], norm_esp=repr(norm_esp), totais_esp=repr(totais_esp),
-        nome_dup=n1, soma_dup=w[0] + w[2])
+    subs = {"@DADOS@": repr(dados), "@NORM_ESP@": repr(norm_esp),
+            "@TOT_ESP@": repr(totais_esp), "@VAL_ESP@": repr(val_esp),
+            "@EXP_ESP@": repr(exp_esp), "@LARGURA@": str(LARGURA_MSG_FALHA),
+            "@n1@": n1, "@N1@": n1.upper(), "@n2@": n2, "@N2@": n2.upper(),
+            "@n3@": n3, "@w1@": str(w[0]), "@w2@": str(w[1]), "@d@": str(d)}
+    test_code = TESTS_F_TPL
+    for tok, val in subs.items():
+        test_code = test_code.replace(tok, val)
+
+    doc1 = _texto(random.Random(SEED_BASE + 1100 + i), 5450)
+    doc2 = _texto(random.Random(SEED_BASE + 1200 + i), 5450)
+    doc3 = _texto(random.Random(SEED_BASE + 1250 + i), 2750)
+    doc4 = _texto(random.Random(SEED_BASE + 1270 + i), 2800)
     repo = {
         "normaliza.py": NORMALIZA_TPL.format(doc=doc1, corpo=CORPO_NORM_BUG),
         "agrega.py": AGREGA_TPL.format(doc=doc2, expr="valor"),
+        "valida.py": VALIDA_TPL.format(doc=doc3, lim=lim, op=">="),
+        "exporta.py": EXPORTA_TPL.format(doc=doc4, linha=LINHA_EXPORTA_BUG),
         "leitura.py": _modulo_padding(random.Random(SEED_BASE + 1300 + i),
-                                      "Ingestão de registros de consumo.", 9200),
+                                      "Ingestão de registros de consumo.", 3800),
         "formato.py": _modulo_padding(random.Random(SEED_BASE + 1400 + i),
-                                      "Formato de saída dos totais agregados.", 9200),
+                                      "Formato de saída dos totais agregados.", 3800),
         "catalogo.py": _modulo_padding(random.Random(SEED_BASE + 1500 + i),
-                                       "Catálogo de origens do pipeline.", 6600),
+                                       "Catálogo de origens do pipeline.", 3000),
         "test_app.py": test_code,
     }
     canonical = {
         "normaliza.py": NORMALIZA_TPL.format(doc=doc1, corpo=CORPO_NORM_OK),
         "agrega.py": AGREGA_TPL.format(doc=doc2, expr="totais.get(nome, 0) + valor"),
+        "valida.py": VALIDA_TPL.format(doc=doc3, lim=lim, op=">"),
+        "exporta.py": EXPORTA_TPL.format(doc=doc4, linha=LINHA_EXPORTA_OK),
     }
     prompt = PROMPT_F_BASE + _texto(random.Random(SEED_BASE + 1600 + i),
                                     1250 - len(PROMPT_F_BASE))
     boot_rng = random.Random(SEED_BASE + 1700 + i)
     boot_note = ("Nota do deploy (status da janela de manutenção, sem ação necessária):\n"
-                 + _texto(boot_rng, 1400))
+                 + _texto(boot_rng, boot_len))[:boot_len]  # pareada com a P de mesmo i
 
     task = {
         "task_id": f"f_swe35_{i:02d}",
@@ -368,20 +507,38 @@ def _gera_f(i: int) -> dict:
     return task
 
 
+def _simula_keep_f(task: dict) -> dict:
+    """Chars do prompt cumulativo no caminho keep canônico: TEST; depois, por
+    estágio, READ do arquivo bugado e WRITE do canônico (auto_test após write).
+    Observações de teste usam a truncagem REAL do loop_v2 (últimos 1200 chars)."""
+    base = len(SYSTEM_PROMPT_V2) + len(task["prompt"]) + len(task["boot_note"])
+    cum, por_turno = base, []
+    cum += len("TEST") + OBS_TEST_CHARS                                  # turno 1
+    por_turno.append(cum)
+    for rel in F_ORDEM:
+        cum += len(f"READ {rel}") + len(f"Conteúdo de {rel}:\n") \
+               + len(task["repo_files"][rel])                            # READ
+        por_turno.append(cum)
+        canon = task["canonical_files"][rel]
+        cum += len(f"WRITE {rel}\n```python\n{canon}\n```") \
+               + len(f"Arquivo {rel} gravado.") + OBS_TEST_CHARS         # WRITE
+        por_turno.append(cum)
+    # prompt enviado no turno t = acumulado até o fim do turno t-1
+    return {"pre_primeiro_write": por_turno[1],   # prompt do turno 3 (1º WRITE)
+            "pos_primeiro_write": por_turno[2],   # prompt do turno 4
+            "keep_turno6_est": por_turno[4],      # prompt do turno 6
+            "keep_total_est": por_turno[-1]}
+
+
 def _char_budget_f(task: dict) -> dict:
     src = {k: v for k, v in task["repo_files"].items() if k != "test_app.py"}
-    base = len(SYSTEM_PROMPT_V2) + len(task["prompt"]) + len(task["boot_note"])
+    sim = _simula_keep_f(task)
     return {
         "prompt": len(task["prompt"]),
         "boot_note": len(task["boot_note"]),
         "repo_src": sum(len(v) for v in src.values()),
-        # antes do 1º write: list + read do estágio 1 → NÃO cruza o threshold
-        "pre_primeiro_write": base + _lista_chars(task["repo_files"])
-                              + len(src[task["bug_file"]]),
-        # keep até o fim (todas as leituras + 2 writes + observações) → > 8192 tok
-        "keep_total_est": base + _lista_chars(task["repo_files"])
-                          + sum(len(v) for v in src.values())
-                          + sum(len(v) for v in task["canonical_files"].values()) + 1600,
+        "msg_falha_chars": LARGURA_MSG_FALHA,
+        **sim,
     }
 
 
@@ -400,6 +557,39 @@ def _run(files: dict[str, str], test_code: str) -> tuple[dict, float]:
         return sb.run_tests(test_code), time.monotonic() - t0
     finally:
         sb.cleanup()
+
+
+def _pytest_bruto(files: dict[str, str], test_code: str) -> str:
+    """Saída COMPLETA do pytest (sem a truncagem do Sandbox), mesmos flags/env."""
+    with tempfile.TemporaryDirectory(prefix="swe35_full_") as d:
+        for rel, content in files.items():
+            Path(d, rel).write_text(content, encoding="utf-8")
+        Path(d, "test_solution.py").write_text(test_code, encoding="utf-8")
+        proc = subprocess.run(
+            [sys.executable, "-m", "pytest", "test_solution.py",
+             "-q", "--tb=line", "-p", "no:cacheprovider"],
+            cwd=d, env={"PATH": os.environ.get("PATH", ""),
+                        "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"},
+            capture_output=True, text=True, timeout=60)
+        return (proc.stdout or "") + (proc.stderr or "")
+
+
+def _blocos_falha(saida: str) -> list[str]:
+    """Blocos 'E   AssertionError: …' + continuações indentadas do --tb=line."""
+    blocos, atual = [], None
+    for ln in saida.splitlines():
+        if ln.startswith("E   AssertionError:"):
+            if atual:
+                blocos.append("\n".join(atual))
+            atual = [ln]
+        elif atual is not None and ln.startswith("    "):
+            atual.append(ln)
+        elif atual is not None:
+            blocos.append("\n".join(atual))
+            atual = None
+    if atual:
+        blocos.append("\n".join(atual))
+    return blocos
 
 
 def valida_task(task: dict) -> list[str]:
@@ -447,14 +637,37 @@ def valida_task(task: dict) -> list[str]:
         if cb["keep_total_est"] > 30000:
             erros.append(f"P: keep_total_est {cb['keep_total_est']} > 30000 chars")
     else:
-        estagio1 = {**repo, task["bug_file"]: task["canonical_files"][task["bug_file"]]}
-        res_1, _ = _run(estagio1, task["test_code"])
-        if not (2 <= res_1["passed"] <= 3 and res_1["total"] == 5):
-            erros.append(f"estágio 1 fora de 2-3/5 ({res_1['passed']}/{res_1['total']})")
-        if cb["pre_primeiro_write"] >= 18000:
-            erros.append(f"F: pre_primeiro_write {cb['pre_primeiro_write']} >= 18000 chars")
-        if cb["keep_total_est"] < 32500:
-            erros.append(f"F: keep_total_est {cb['keep_total_est']} < 32500 chars")
+        # (b) progressão exata de reward por estágio consertado: 0/5→2/5→3/5→4/5(→5/5)
+        esperado_por_k = {0: 0, 1: 2, 2: 3, 3: 4}
+        for k, alvo in esperado_por_k.items():
+            files = dict(repo)
+            for rel in F_ORDEM[:k]:
+                files[rel] = task["canonical_files"][rel]
+            res_k, _ = _run(files, task["test_code"])
+            if not (res_k["passed"] == alvo and res_k["total"] == 5):
+                erros.append(f"{k} estágio(s) consertado(s) != {alvo}/5 "
+                             f"({res_k['passed']}/{res_k['total']})")
+        # (verbosidade) 5 blocos de falha de 3000–3500 chars no pytest bruto inicial
+        bruto = _pytest_bruto(repo, task["test_code"])
+        blocos = _blocos_falha(bruto)
+        if len(blocos) != 5:
+            erros.append(f"F: {len(blocos)} blocos de falha no estado inicial (≠ 5)")
+        for b in blocos:
+            if not 3000 <= len(b) <= 3500:
+                erros.append(f"F: bloco de falha com {len(b)} chars fora de [3000, 3500]")
+                break
+        if len(bruto) < 2000:
+            erros.append("F: saída bruta inicial < 2000 chars (observação não satura)")
+        # (c) simulação do caminho keep com a truncagem real do loop_v2
+        if cb["pre_primeiro_write"] >= THRESHOLD_CHARS:
+            erros.append(f"F: pré-1º-write {cb['pre_primeiro_write']} >= "
+                         f"{THRESHOLD_CHARS} chars (threshold cruzaria cedo demais)")
+        if cb["pos_primeiro_write"] < THRESHOLD_CHARS:
+            erros.append(f"F: pós-1º-write {cb['pos_primeiro_write']} < "
+                         f"{THRESHOLD_CHARS} chars (threshold não cruza após o write)")
+        if cb["keep_turno6_est"] <= MAX_MODEL_CHARS:
+            erros.append(f"F: prompt do turno 6 {cb['keep_turno6_est']} <= "
+                         f"{MAX_MODEL_CHARS} chars (keep não estoura o contexto)")
     return erros
 
 
@@ -463,13 +676,18 @@ def main():
     ap.add_argument("--out", default="environment/tasks_swe35.py")
     args = ap.parse_args()
 
-    tasks = [_gera_p(i) for i in range(N_POR_FAMILIA)] + \
-            [_gera_f(i) for i in range(N_POR_FAMILIA)]
+    tasks_p = [_gera_p(i) for i in range(N_POR_FAMILIA)]
+    # (d) boot_note F pareada em chars com a P de mesmo índice
+    tasks_f = [_gera_f(i, len(tasks_p[i]["boot_note"])) for i in range(N_POR_FAMILIA)]
+    tasks = tasks_p + tasks_f
     reprovadas = {}
+    for i in range(N_POR_FAMILIA):
+        if len(tasks_f[i]["boot_note"]) != len(tasks_p[i]["boot_note"]):
+            reprovadas[tasks_f[i]["task_id"]] = ["boot_note não pareada com a P"]
     for task in tasks:
         erros = valida_task(task)
         if erros:
-            reprovadas[task["task_id"]] = erros
+            reprovadas.setdefault(task["task_id"], []).extend(erros)
     for tid, erros in reprovadas.items():
         print(f"  REPROVADA {tid}: {erros}")
     if reprovadas:
