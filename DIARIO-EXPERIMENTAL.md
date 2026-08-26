@@ -1312,3 +1312,54 @@ idempotente por (parte, cfg, task_id, index, schedule).
   neutra para o tamanho de efeito, mas os pontos mais precoces (onde o V1
   mostrou pivotalidade profunda) ficam não-medidos. Caveat honesto no
   app:estimand do paper.
+
+## 2026-08-27 — PRÉ-REGISTRO 34: gate de poder (formalização, aplicação retroativa e sonda de otimização)
+
+### Motivação (painel rodada 8)
+- R1-W1: o pré-reg 33 licenciou treino num landscape cujo gap held-out
+  default−summarize era 0.058 — a prescrição (census+calibração) verifica
+  DOMINÂNCIA mas não PODER (margem vs. ruído ao budget dado).
+- R3-W2/Q1: o colapso s3 é, nos dados atuais, indistinguível de "lr 0.1
+  com 23–79 episódios não resolve margens de 0.06" — artefato de
+  otimização, não propriedade do crédito. Remédio proposto: pool
+  re-selecionado por margem ≥0.15 OU lr menor + mais episódios.
+
+### Parte A — analítica (0 GPU, determinística, artefato congelado)
+- Insumo: runs/v2_train/calibrate/calibrate_report.json (3 políticas ×
+  60 tasks, congelado no pré-reg 33). Recomputação determinística — sem
+  amostragem, logo sem proteção de pré-registro a ganhar; declaramos por
+  honestidade que a inspeção exploratória (hoje) motivou o desenho e que
+  os números abaixo são os que serão reportados.
+- **Gate de poder (formalização registrada):** treino só é licenciado se
+  o pool tiver ≥ MIN_POOL (=10, o mesmo do 32/33) tasks com margem de
+  dominância min(default−keep, default−summarize) em R_eff(λ) ≥ 0.10
+  (primário; 0.15 e 0.08 reportados como sensibilidade), em algum λ da
+  grade registrada no 33.
+- **Resultado (aplicação retroativa):** elegíveis a ≥0.10: máx 3 tasks
+  (λ=0.02); a ≥0.15: 3; a ≥0.08: 8. NENHUM λ atinge nem o mínimo
+  relaxado (6). O pool do 33 rodou com margens 0.009–0.307 (só 1 task
+  ≥0.10) e 23–79 episódios/braço. → O gate de poder teria VETADO o
+  pré-reg 33; mais forte: o pool exigido pelo remédio do R3 (margem
+  ≥0.15) NÃO EXISTE neste landscape, em nenhum λ. O abort é do
+  ambiente, não da seleção — evidência direta para o design brief
+  (benchmark precisa de margem verificável entre atratores expressíveis).
+
+### Parte B — sonda de otimização (estocástica, GPU)
+- Pergunta: o colapso do 33 sobrevive ao melhor cenário do otimizador?
+  Aplica exatamente o remédio alternativo do R3: lr 5× menor E budget
+  2× maior, no mesmo pool/λ* do 33 (única configuração existente).
+- Células: braços outcome e chm_cm, seed 1, lr=0.02, budget 3200 calls,
+  λ*=0.2, pool runs/v2_train/pool.json, mesmíssimo protocolo do 33
+  (emenda 32a incluída). Saída: runs/v2_train34/{outcome,chm_cm}_lr002.
+- Desfechos declarados ANTES de rodar:
+  - p1: ambos colapsam de novo em atrator fixo (heldout R_eff a ±0.02 de
+    um dos 3 atratores calibrados) → colapso robusto a lr E budget;
+    combinado à Parte A: "não é o lr, não é o budget, e a margem não
+    existe no landscape" — s3 vira negativo identificado com anatomia
+    completa.
+  - p2: os braços separam (heldout entre braços difere >0.05 e ≥1 braço
+    fora de todos os atratores ±0.02) → s3 reinterpretado como artefato
+    de otimização; correção reportável no paper (major).
+  - p3: um colapsa e o outro não → anatomia por braço, reportar como está.
+- Custo estimado: 2 células × 3200 calls ≈ 2–3 h GPU, sequencial,
+  servidor 8321 (APC off), idempotente por summary.json.
