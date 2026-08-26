@@ -614,10 +614,11 @@ first run \emph{aborted at calibration}: the V1 cost-weight grid is
 mis-scaled to V2 token magnitudes ($\lambda$ does not transport across
 stacks). Re-registered ($\lambda^{*}=0.2$, 10 margin-verified tasks), it
 returned the declared outcome \textbf{s3, attractor collapse}: every
-learning arm --- outcome-only, $C_H$, corrected --- converges
+learning arm collapses onto a fixed attractor --- 8/9 runs
 \emph{token-exactly} onto summarize-always (held-out $R_{\text{eff}}$
-0.831 vs.\ 0.889 for the dominant expressible target; untrained control
-$-0.092$), before any credit ordering becomes testable.
+0.831 vs.\ 0.889 for the dominant expressible target; one outcome seed
+and the untrained control at keep-always, $-0.092$) --- before any credit
+ordering becomes testable.
 Both branches end in identified negatives: credit cannot pay for its
 replays (closed); the optimization collapses before credit is tested
 (open) --- each predicted by pre-training measurement.
@@ -639,11 +640,13 @@ so there is no model deviation for $C_H$ to absorb and the correction is
 vacuous there by construction; test scheduling ($n=3$) supports no claim
 of its own, and restricting to types with $n \geq 10$ leaves s3 unchanged
 (context 14/23, observation 8/12 screened, both $< 0.75$).
-\textbf{Estimand}: the V2 verdict is measured under a single $a'$
-estimand, without the re-sampling and information-poor-alternative
-controls that discipline the V1 result; since $\sigma$ is estimand-indexed,
-the V1-closed / V2-open contrast compares verdicts under different
-alternative classes (the V2 controls are the registered next measurement).
+\textbf{Estimand}: the pre-registered controls (pre-reg 30,
+Appendix~\ref{app:estimand}) discipline the verdict after the fact: it
+survives both $a'$ re-draw schedules (r2) though point-level
+classification does not (17/23), and under the information-poor $a'_s$
+the screened points turn exactly additive ($I=0$) --- so the V1-closed /
+V2-open contrast still compares verdicts under estimands whose
+completeness differs.
 \textbf{Addenda}: two protocol amendments (29a, 29b) were registered
 mid-run --- before analysis, but after data contact --- and the verdict
 inherits that weaker label wherever they bind.
@@ -737,12 +740,13 @@ Under a sane objective, replay credit loses to outcome at matched dose & Act 4: 
 Zero floor survives an agent-class change & V2 mini-SWE (multi-file, 5 decision types, plain-text protocol): 117/117 nulls exact & confirmed (pre-reg 29) \\
 All five harness decision types are reward-pivotal & V2 screening: 114 pivotal points across all 5 types (incl.\ retry 2/2, test-schedule $\Delta R$ to $-0.64$) & confirmed (pre-reg 29) \\
 The census gate has both branches & V1 stack: closed, confirmed by 4 training acts; V2 stack: outcome s3 (no type screens $\geq$0.90); gate opens under 3/4 accountings (0.50 measured w/ duals to 0.13 pivotal w/o duals, \S\ref{sec:v2}) & measured; accounting-sensitive (pre-reg 29) \\
-V2 licensed training collapses onto a fixed attractor & all learning arms converge token-exactly to summarize-always (held-out 0.831 vs.\ 0.889 dominant target) before credit ordering is testable; first run aborted at calibration ($\lambda$ does not transport across stacks) & identified (pre-regs 32--33, outcome s3) \\
+V2 licensed training collapses onto a fixed attractor & 8/9 learning runs converge token-exactly to summarize-always (held-out 0.831 vs.\ 0.889 dominant target), one outcome seed to keep-always ($-0.092$), before credit ordering is testable; first run aborted at calibration ($\lambda$ does not transport across stacks) & identified (pre-regs 32--33, outcome s3) \\
 Action envelope is a harness decision with estimand-level effects & JSON envelope: 0 writes in 437 calls; plain-text: sampler near-deterministic at temp 0.8 (87/114 fail), escalation registered & demonstrated (pre-reg 28a, 29b) \\
 vLLM APC breaks greedy determinism & floor $0.417$, 7/270 inexact & demonstrated \\
 Slack screening-off, 4B original pool & 0/57 raw; pivotal 53/56 = 0.946, CI95 $[0.87,1.00]$ task-clustered & internally consistent (pre-reg 10; endpoint re-specified post-hoc, \S\ref{sec:threats}) \\
 Screening survives $a'$ re-sampling & 99/101 informative slack draws (CI95 $[0.94,1.00]$); mt6 breaks persist 9/9 & confirmed (pre-reg 21) \\
 Screening completeness depends on the estimand & $a'_s$ (summarized state): 24/31 slack, CI95 $[0.69,0.88]$; de-screened points match the re-injection signature & measured; claim scoped (pre-reg 26) \\
+V2 census verdict survives its estimand controls & re-draws: point classification 17/23 stable but s3 + open gate hold under both schedules (0.474/0.368 vs.\ 0.395); under $a'_s$ screening drops to 8/21 and all non-screened points turn exactly additive ($I=0$, $C_H\neq 0$) & held; claim scoped (pre-reg 30, r2 + b3) \\
 Screening survives discovery/confirmation split & discovery (g600) 14/14; confirmation 39/42; strictly post-registration 27/30 & confirmed (split forced by ledger audit) \\
 Regime contrast not explained by selection composition & retained 8B points \emph{shallower} than 4B's (turn 0.65 vs.\ 1.55); direction disfavors the contrast & supported (\S\ref{sec:threats}) \\
 $C_H = -I$ at screened points & algebra (Prop.~\ref{prop:dc}); exact in all measured slack points & identity \\
@@ -1704,9 +1708,9 @@ failed and the eleven partial. Failed predictions are reported in the main text 
 28 & V2 mini-SWE pilot, 4 staged gates: pool $\geq$16 validated tasks; success in $[0.30,0.70]$ with $<$15\% malformed; determinism (5/5 reruns byte-identical, 5/5 nulls exact); $\geq$3 of 5 harness decision types pivotal. Two recalibrations pre-registered before re-run (28a: plain-text action protocol after the JSON envelope yielded 0 write actions in 437 calls --- itself a reportable harness effect; 28b: flip-candidate selection) & GO on all 4: pool 20/20; success 0.50, 0\% malformed; determinism exact; 3 types pivotal (context 3/8, observation 4/5, termination 1/5; test-schedule 0/5 reported as non-pivotal) & held \\
 29 & V2 multi-decision census on a frozen 60-task pool, 2 configs (slack/pressure): Teste 0 V2 floor; per-type selective screening; $C_H/C_M/C_{HM}/I$ at pivotal points; declared outcomes s1 (screening is type-dependent) / s2 (screening dominates all types) / s3 (general break); \textbf{pre-registered training gate}: F4--F5 only if $\geq$20\% non-screened pivotal mass (Corollary~\ref{cor:gate} applied prospectively). Addenda 29a (terminal flips make the HM arm analytically degenerate) and 29b ($a'$ sampler escalation to temp 1.2, stratified analysis, 0.15 divergence rule) registered mid-run before resuming & floor 117/117 exact; all 5 types pivotal (114 points); outcome \textbf{s3}: no type screens $\geq$0.90 (context 0.609, observation 0.667, termination 0.100, test-schedule 0.333); gate opens under 3/4 accountings (0.50 measured to 0.13 pivotal-denominator w/o degenerate duals --- the registration under-specified the accounting, reported in \S\ref{sec:v2}); strata diverge by 0.084 $<$ 0.15 (pooled primary) & held (amended mid-run) \\
 31 & Episode-matched outcome-only control for Act 4 (the flagged confound): the deterministic outcome-only $\theta$-trajectory sliced at the credit arms' episode counts (139/139/137 and 70/68/70), evaluated under the identical held-out protocol; validity gate: re-evaluating the final $\theta$ must reproduce $0.4402$ exactly; declared outcomes o1 (outcome$_{\text{em}} >$ max $C_H$ in $\geq$2/3 seeds: reading survives) / o2 (below per-seed $C_H$ in $\geq$2/3: sample-size artifact) / o3 (attractor-level) & gate passed (exact equality); \textbf{o1}: $0.410/0.450/0.398$ vs $C_H$ $0.405/0.405/0.398$ --- $\geq C_H$ 3/3 seeds, strictly above 2/3, seed 3 ties exactly; at 70/68/70 episodes outcome still beats the corrected arm's attractor 2/3 & confirmed \\
-30 & V2 estimand controls mirroring V1 items 21/26 (registered after 31--33, number reserved earlier): (A) $a'$ re-sampling on all 48 measured census points, two disjoint seed schedules at each point's census temperature, point-classification stability + recomputed headline per schedule; (B) $a'_s$ from the summarized state on keep$\to$summarize context points; declared outcomes r1/r2/r3, b1/b2/b3 & \textbf{r2}: classification draw-sensitive (17/23 stable) but s3 verdict and open gate survive both schedules (0.474/0.368 vs.\ 0.395); \textbf{b3}: screening $8/21=0.381$ under $a'_s$, all 13 non-screened points exactly additive ($I=0$, $C_H\neq 0$) & held; claim scoped \\
 32 & V2 training (open branch): accounting fixed ex ante (measured points w/o degenerate duals, $15/38=0.39$, gate opens); Act-4 protocol --- calibrate 3 fixed attractors on all 60 tasks, select $\lambda^{*}$ and a margin-verified pool analytically before any training (abort if $<10$ eligible); 4 arms $\times$ 3 seeds, dose- and episode-matched; context overflow = failed episode with paid tokens (amendment 32a, registered before resuming) & \textbf{aborted at the registered criterion}: $\leq 3$ eligible tasks under $\lambda \in \{1..25\}$ --- the grid transported from V1 is mis-scaled to V2 token magnitudes; no training data touched \\
-33 & V2 training, re-registered: single change --- $\lambda$ grid rescaled to $\{0.02..0.5\}$, ties break to larger $\lambda$; all else inherited from 32; declared outcomes s1 (credit $>$ outcome under both accountings) / s2 (learning without credit ordering) / s3 (no arm beats the best fixed attractor) & $\lambda^{*}=0.2$, 10 tasks; \textbf{s3}: every learning arm collapses token-exactly onto summarize-always (0.831 vs.\ 0.889 target; untrained control at keep-always $-0.092$); episode-matched slices unchanged \\
+33 & V2 training, re-registered: single change --- $\lambda$ grid rescaled to $\{0.02..0.5\}$, ties break to larger $\lambda$; all else inherited from 32; declared outcomes s1 (credit $>$ outcome under both accountings) / s2 (learning without credit ordering) / s3 (no arm beats the best fixed attractor) & $\lambda^{*}=0.2$, 10 tasks; \textbf{s3}: 8/9 learning runs collapse token-exactly onto summarize-always (0.831 vs.\ 0.889 target), one outcome seed and the untrained control at keep-always ($-0.092$); episode-matched slices leave the bin unchanged (one transient mixed-policy slice at 0.301) \\
+30 & V2 estimand controls mirroring V1 items 21/26 (number reserved earlier; registered and run after 31--33): (A) $a'$ re-sampling on all 48 measured census points, two disjoint seed schedules at each point's census temperature, point-classification stability + recomputed headline per schedule; (B) $a'_s$ from the summarized state on keep$\to$summarize context points; declared outcomes r1/r2/r3, b1/b2/b3 & \textbf{r2}: classification draw-sensitive (17/23 stable) but s3 verdict and open gate survive both schedules (0.474/0.368 vs.\ 0.395); \textbf{b3}: screening $8/21=0.381$ under $a'_s$, all 13 non-screened points exactly additive ($I=0$, $C_H\neq 0$) & held; claim scoped \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
