@@ -65,19 +65,46 @@ def test_p_constantes_so_na_boot_note():
         assert a_const in canon and b_const in canon, t["task_id"]
 
 
+_FOLD_RE = re.compile(r"h = \(h \* (\d+) \+ v \* (\d+)\) % M")
+
+
+def test_p_spec_mixing_define_formula_e_nao_vaza():
+    for t in P_TASKS:
+        spec = t["repo_files"]["docs/spec_mixing.md"]
+        assert 8000 <= len(spec) <= 9800, t["task_id"]
+        # falhas apontam explicitamente para a spec
+        assert "docs/spec_mixing.md" in t["test_code"], t["task_id"]
+        m = _FOLD_RE.search(t["canonical_files"]["checksum.py"])
+        assert m, f"{t['task_id']}: can\u00f4nica sem fold normativo"
+        r1, r2 = m.group(1), m.group(2)
+        assert f"R1 = {r1}" in spec and f"R2 = {r2}" in spec, t["task_id"]
+        fora_spec = "".join(v for k, v in t["repo_files"].items()
+                            if k != "docs/spec_mixing.md")
+        # f\u00f3rmula/coeficientes s\u00f3 existem na spec (fora dela, nada vaza)
+        assert r1 not in fora_spec and r2 not in fora_spec, t["task_id"]
+        assert "(h * " not in fora_spec, t["task_id"]
+
+
 def test_orcamentos_de_chars_por_familia():
     for t in P_TASKS:
         cb = t["char_budget"]
-        assert cb["leitura_ate_decisao"] >= 18000, t["task_id"]
+        # gatilho REAL do summarize \u00e9 estimate_tokens = chars//4 > 4500 \u21d2 18000 chars
+        assert cb["pre_write"] >= 18000, t["task_id"]
+        assert cb["pre_write_sem_checksum"] >= 18000, t["task_id"]
+        assert cb["boot_morta_default"], t["task_id"]
         assert cb["repo_src"] <= 24000, t["task_id"]
-        assert cb["keep_total_est"] <= 30000, t["task_id"]
+        assert cb["keep_total_est"] <= 24000, t["task_id"]
     for t in F_TASKS:
         cb = t["char_budget"]
-        # threshold (4500 tok ≈ 14850 chars) cruza só DEPOIS do 1º write…
+        # threshold (refer\u00eancia 4500 tok \u2248 14850 chars) cruza s\u00f3 DEPOIS do 1\u00ba write\u2026
         assert cb["pre_primeiro_write"] < 14850, t["task_id"]
         assert cb["pos_primeiro_write"] >= 14850, t["task_id"]
-        # …e o caminho keep estoura o max-model-len (8192 tok ≈ 27033 chars) no turno 6
-        assert cb["keep_turno6_est"] > 27033, t["task_id"]
+        # \u2026keep estoura o max-model-len (8192 tok \u2248 27033 chars) no turno 6, n\u00e3o antes\u2026
+        assert cb["keep_turno5"] <= 27033, t["task_id"]
+        assert cb["keep_turno6"] > 27033, t["task_id"]
+        # \u2026e sob summarize (keep_last=6) toda chamada fecha com folga
+        assert cb["summ_max_call"] < 20000, t["task_id"]
+        assert cb["sim_keep_ok"] and cb["sim_default_ok"], t["task_id"]
         assert cb["msg_falha_chars"] >= 3000, t["task_id"]
 
 
@@ -98,12 +125,12 @@ def test_p_canonica_5de5_e_sem_constantes_3de5():
         assert res_e["total"] == 5 and res_e["passed"] == 3, t["task_id"]
 
 
-F_ORDEM = ("normaliza.py", "agrega.py", "valida.py", "exporta.py")
+F_ORDEM = ("normaliza.py", "agrega.py")
 
 
 def test_f_canonica_5de5_e_progressao_por_estagio():
-    # 0 estágios→0/5, 1→2/5, 2→3/5, 3→4/5, 4→5/5 (reward fracionário estrito)
-    esperado = {0: 0, 1: 2, 2: 3, 3: 4, 4: 5}
+    # 0 estágios→0/5, 1→2/5, 2→5/5 (reward fracionário estrito)
+    esperado = {0: 0, 1: 2, 2: 5}
     for t in F_TASKS[:2]:
         assert set(t["canonical_files"]) == set(F_ORDEM), t["task_id"]
         for k, alvo in esperado.items():
@@ -113,7 +140,15 @@ def test_f_canonica_5de5_e_progressao_por_estagio():
             res = _run(files, t["test_code"])
             assert res["total"] == 5 and res["passed"] == alvo, \
                 f"{t['task_id']}: {k} estágio(s) → {res['passed']}/5 (esperado {alvo}/5)"
-        assert res["success"]  # k=4 é a canônica completa
+        assert res["success"]  # k=2 é a canônica completa
+
+
+def test_f_conserto_do_agrega_exige_formato():
+    for t in F_TASKS:
+        # o diff da falha do agrega OCULTA o esperado e aponta o contrato
+        assert "OCULTO" in t["test_code"], t["task_id"]
+        assert "formato.py" in t["test_code"], t["task_id"]
+        assert "FATOR_CONTRATO" in t["repo_files"]["formato.py"], t["task_id"]
 
 
 # -- boot_note no EpisodeV2 -------------------------------------------------------
