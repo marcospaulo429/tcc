@@ -1484,3 +1484,30 @@ Integrações no paper: multiplicidade exata (app:estimand), bound de pior
 caso no Scope do V2, Shapley empírico na teoria (§ do prop:dc). 9pp
 intactas. Framing do abstract auditado: sem mudança necessária.
 Custo: 0 rollouts.
+
+### PRÉ-REGISTRO 35 (2026-08-26, antes de qualquer rollout com o modelo): census cross-family — Mistral-7B-Instruct-v0.3
+Motivação: review externo aponta que todos os modelos são da família Qwen3;
+transporte cross-family nunca foi medido. Este é o experimento que nenhuma
+análise de dados existentes cobre.
+
+**Hipótese:** screening-off sob folga não é específico da família Qwen.
+**Manipulada:** família do modelo (mistralai/Mistral-7B-Instruct-v0.3,
+única variável trocada; harness V1 congelado, thr600, tasks_all 30).
+**Protocolo:** espelho exato do pré-reg 15 (q8_chain): teste0 (baseline +
+piso nulo, points 3, reps 3) → teste2 (amostragem a′, max-per-traj 4) →
+teste3 (census conjunto, max-per-traj 3), em g600 (folga) e mt6 (pressão).
+Endpoints idênticos: fração screened raw e reward-pivotal, piso nulo.
+**Smoke test declarado (antes do pipeline, sem análise de screening):**
+3 episódios para verificar taxa de parse de ações ≥80%; se falhar, trocar
+para deepseek-coder-6.7b-instruct e re-declarar aqui antes de rodar.
+**Gate de poder (herdado do pré-reg 25):** <5 pontos pivotais não-saturados
+em uma célula ⇒ célula declarada inconclusiva, sem leitura direcional.
+**Desfechos declarados:** (a) screens ≥0.90 nos pivotais de folga (padrão
+V1/Qwen-4B) ⇒ screening transporta cross-family; (b) quebras a taxa
+plana nos dois regimes (padrão 8B) ⇒ screening depende de capacidade, não
+de família; (c) célula inconclusiva pelo gate ⇒ reportar como janela de
+competência não alcançada, sem claim. Qualquer outro padrão: descritivo.
+**Piso:** nulos exatos obrigatórios; se o piso ≠ 0 com o Mistral, o census
+não é interpretável e o desfecho é "piso quebrou" (reportado como achado
+de infraestrutura, sem leitura causal).
+**Custo estimado:** ~500–900 rollouts, ~4–6h GPU (paridade com o q8).
