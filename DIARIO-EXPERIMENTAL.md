@@ -1511,3 +1511,14 @@ competência não alcançada, sem claim. Qualquer outro padrão: descritivo.
 não é interpretável e o desfecho é "piso quebrou" (reportado como achado
 de infraestrutura, sem leitura causal).
 **Custo estimado:** ~500–900 rollouts, ~4–6h GPU (paridade com o q8).
+
+**Adendo 35a (2026-08-26, antes de qualquer rollout válido do pré-reg 35;
+único contato com o modelo: 1 chamada rejeitada com HTTP 400, zero tokens
+gerados):** o chat template do Mistral exige alternância estrita
+user/assistant e rejeita as mensagens user consecutivas do loop V1
+(prompt + boot_note; observações). Correção de infraestrutura: fusão de
+mensagens consecutivas do mesmo role na borda do cliente
+(TCC_MERGE_ROLES=1, opt-in; paths Qwen inalterados). Conteúdo
+informacional idêntico; a estrutura de renderização difere da dos runs
+Qwen e o census Mistral é comparável apenas a si mesmo nesse aspecto.
+Smoke e protocolo do pré-reg 35 inalterados.

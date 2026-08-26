@@ -1,11 +1,24 @@
 """Cliente LLM (vLLM OpenAI-compatible), temperature 0 + seed fixa por padrão.
 
 O modelo pode ser trocado via env var TCC_MODEL (usado no D2c, Qwen3-1.7B).
+TCC_MERGE_ROLES=1 funde mensagens consecutivas do mesmo role (templates com
+alternância estrita, ex. Mistral — adendo 35a); paths Qwen não usam.
 """
 import os
 import time
 
 from openai import OpenAI
+
+
+def _merge_roles(messages: list[dict]) -> list[dict]:
+    out: list[dict] = []
+    for m in messages:
+        if out and out[-1]["role"] == m["role"]:
+            out[-1] = {"role": m["role"],
+                       "content": out[-1]["content"] + "\n\n" + m["content"]}
+        else:
+            out.append(dict(m))
+    return out
 
 
 class LLMClient:
@@ -25,6 +38,8 @@ class LLMClient:
              max_tokens=None) -> dict:
         """Overrides por chamada (None = default da instância) p/ amostragem de a′."""
         t0 = time.monotonic()
+        if os.environ.get("TCC_MERGE_ROLES"):
+            messages = _merge_roles(messages)
         resp = self.client.chat.completions.create(
             model=self.model, messages=messages,
             temperature=self.temperature if temperature is None else temperature,
