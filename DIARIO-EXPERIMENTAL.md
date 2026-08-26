@@ -1208,3 +1208,59 @@ desfechos abaixo tornam qualquer resultado publicável.
   duas rodadas (V1 fechado: outcome vence; V2 aberto: colapso comum)
   sustentam a mesma prescrição: census + calibração de landscape ANTES de
   pagar por crédito. Custo total 33: ~19.400 chamadas, ~1h15 GPU.
+
+## 2026-08-27 — PRÉ-REGISTRO 30: controles de estimando do census V2 (re-amostragem de a′ + a′_s)
+
+### Motivação (registrada ANTES de qualquer rollout)
+O census V2 (pré-reg 29) classificou 48 pontos com UM draw de a′ por ponto
+(temp 0.8, esc 1.2 — adendo 29b mostrou que o envelope plain-text torna o
+sampler quase determinístico). Objeções: (i) a classificação
+screened/não-screened pode depender do draw único; (ii) o a′ vem do estado
+NÃO-transformado — no V1, o estimando a′_s (estado sumarizado) de-screenou
+parte dos pontos (pré-reg 26, s2). Este pré-reg espelha os controles 21 e 26
+do V1 no stack V2.
+
+### Parte A — re-amostragem de a′ (espelha pré-reg 21)
+- População: os 48 pontos válidos do census (rows mescladas passe1+esc de
+  runs/census_v2/{census_rows,census_esc_rows}.jsonl, error==None).
+- 2 schedules disjuntos de seeds: A1=4001–4008, A2=5001–5008; temperatura
+  IGUAL à do ponto no census (a_prime_temp 0.8 ou 1.2), mesmo
+  sample_alternative_v2, mesmo j.
+- Draw informativo := amostra encontrada E ação canônica ≠ a′ do census
+  (draw idêntico ⇒ classificação idêntica por determinismo; contado à parte,
+  sem replay, FORA da métrica de estabilidade). Sem amostra → sem_a_prime_re.
+- Por draw informativo: braços M e HM com o novo a′ (mesma _fila_dupla /
+  build_flip_queue do census; HM analítico nos duais 29a); screened_exato_re
+  := (R_HM == R_M). C_H reusado do screening.
+- Métrica primária: estabilidade = frac de draws informativos com
+  screened_exato_re == screened_exato do census.
+- Métrica de headline: por schedule, substituir a′→draw (onde informativo,
+  senão manter o original) e recomputar desfecho s1/s2/s3 (avalia_desfecho)
+  e a célula primária do gate (medidos sem duais, limiar 0.20).
+
+### Parte B — a′_s do estado sumarizado (espelha pré-reg 26)
+- População: pontos context_policy válidos do census com flip
+  keep_context→summarize_context (a crítica só se aplica a essa direção).
+- msgs_s = summarize_messages(d_i.state_before["messages"], keep_last,
+  task_chars da config DA trajetória, summarizer da config) — o estado que o
+  modelo veria sob h′; a′_s = sample_alternative_v2(llm, msgs_s, ação
+  original de j), seeds 6001–6008, temp do ponto.
+- 2 replays por a′_s (M_s e HM_s); screened_s := (R_HMs == R_Ms);
+  informativo := algum de (C_H, C_Ms, C_HMs) ≠ 0.
+
+### Desfechos declarados
+- Parte A (primário): r1 = estabilidade ≥0.90 E desfecho s3 + gate primário
+  mantidos nos 2 schedules → census robusto ao draw único. r2 = estabilidade
+  <0.90 mas desfecho e gate mantidos → nuance pontual, headline intacto.
+  r3 = desfecho OU gate mudam em ≥1 schedule → claim do census re-escopa
+  para "estimando single-draw" (equally reportable).
+- Parte B (secundário): sobre pares informativos, taxa screened_s: b1 ≥0.90 /
+  b2 ∈[0.75,0.90) / b3 <0.75 (de-screening pelo estimando, como no V1 26).
+- Exclusões reportadas: sem_a_prime_re/sem_a_prime_s, draws idênticos,
+  spans com retry, context_overflow — mesmas categorias do census.
+- Sem teste formal; reportar contagens, por tipo e por schedule.
+
+### Custo estimado
+≤96 amostragens (A) + ≤23 (B); ≤192+46 replays ≈ 30–60 min GPU, sequencial,
+servidor de sempre (8321, APC off). Script: experiments/v2_controles.py,
+idempotente por (parte, cfg, task_id, index, schedule).
