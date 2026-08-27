@@ -1724,3 +1724,41 @@ episódio truncado entra na contagem com as decisões até o abort; métrica
 e gate INALTERADOS (taxa = ok/(ok+retry) ≥ 0.80). Nenhum veredito de
 smoke foi determinado antes desta correção; a cadeia foi interrompida
 antes de qualquer contato com o candidato 2. Re-execução do zero.
+
+### DESFECHO 38 (2026-08-27): X1 + E1 — estrutura E acoplamento não mais confinados a uma única família
+Candidato 1 (Mistral-7B-Instruct-v0.3) passou o smoke com taxa 1.00
+(66 parses, 0 retries) — o protocolo texto plano do V2 é operável pela
+família nova, confirmando que a reprovação do 35 era do protocolo JSON
+do V1, não da fronteira de família. Candidato 2 nunca foi tocado
+(orçamento de uma célula, conforme registrado). Pipeline completo em
+~3h de GPU (bem abaixo do estimado).
+**Instrumento transporta (não-X4):** nulos 48/48 exatos; piso greedy
+48/48 exatos = 1.00 ≥ 0.95. O piso zero é propriedade do stack, não da
+família Qwen.
+**Base:** 60 tasks v2_folga, 48 trajetórias válidas (12 erros de estouro
+de contexto a 8k — mesma classe dos 3/60 do Qwen, adendo 38a), taxa de
+sucesso 0.15, reward médio 0.665.
+**Census (X1):** screening 287 replays → 49 pontos pivotais; census 43
+válidos (6 excluídos por overflow; **0 por falta de a′** — o sampler do
+Mistral sempre achou alternativa, vs 65/114 do Qwen; composição de
+seleção difere e será reportada). Desfecho **s3** (nenhum tipo screena
+≥0.90): observation 0.619 (n=21), context 0.833 (n=6), termination 0.133
+(n=15), test_schedule 1.0 (n=1). Gate por contabilidade, mesmo padrão
+qualitativo do Qwen — abre em três, fecha na mais estrita:
+medidos-com-duais 22/43=0.512 ABRE; **medidos-sem-duais (primário)
+9/28=0.321 ABRE** (Qwen 0.50); pivotal-com-duais 22/49=0.449 ABRE;
+pivotal-sem-duais 9/49=0.184 fecha (Qwen 0.13 fecha). Termination é o
+tipo que menos screena nas duas famílias (0.13 vs 0.00 do Qwen).
+→ **X1: fenômeno transporta no nível do desfecho registrado.**
+**a′_s (E1):** 6 alvos context keep→summarize, 6 ok; taxa screened_s
+0.5 → **bucket b3** (Qwen 0.381, b3), com de-screening na direção
+prevista. n=6 é pequeno (o census do Mistral tem só 6 pontos de contexto
+vs 18 do Qwen) — reportar como suporte, não como estimativa fina.
+→ **E1: acoplamento transporta no nível do bucket registrado.**
+**Leitura (compromisso de linguagem):** o fenômeno — heterogeneidade s3,
+gate aberto nas contabilidades medidas e fechado na mais estrita,
+de-screening sob a′_s — **is no longer confined to a single model
+family**. NÃO é "generalizes across families": uma célula, um harness,
+um ambiente. O 35 fica reclassificado: fronteira de adesão ao protocolo
+JSON do V1, não fronteira de família. Custo real: ~450 replays + 60
+episódios, ~3h GPU. Qwen3-4B restaurado no serving ao final da cadeia.
