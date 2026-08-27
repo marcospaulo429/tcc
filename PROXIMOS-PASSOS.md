@@ -1,46 +1,42 @@
-# PROXIMOS-PASSOS.md — pós-painel rodada 7 (paper em formato ICLR, 9 pp)
+# PROXIMOS-PASSOS.md — pós-painel rodada 10 (desfecho 38 integrado)
 
 > Atualizado em 2026-08-27. Paper no template ICLR 2026, texto principal em
-> exatamente 9 páginas (commit 975af1b). Painel simulado rodada 7:
-> **R1=6, R2=6, R3=6 — AC: Accept (poster).** Pré-regs 30, 31, 32 (ABORT) e
-> 33 executados e integrados ao paper (ledger com 33 itens).
+> exatamente 9 páginas (commit fe70253). Painel simulado rodada 10:
+> **7/10 accept** (soundness 3.5/4, presentation 3/4, contribution 3/4,
+> confidence 4/5). Ledger com 38 itens.
 
 ## Estado
 
-- As três quantidades (C_H, C_M, I) medidas com piso zero em V1; 4 atos de
-  treino no ramo fechado do no-free-lunch; census V2 (pré-reg 29) abriu o gate
-  F4–F5 no stack mini-SWE (frac não-screened 0.50).
-- Critic vs heurísticas dose-matched: empate no pooled, vantagem em detecção
-  de screening (AUROC 0.846); transferência V1→V2 falha (resultado honesto).
-- Reprodutibilidade: `make reproduce` reconcilia todos os números publicados.
+- Paper reestruturado em **três claims** (702f225): Measurement / Finding /
+  Decision rule. Gate reenquadrado como **veto validado** (falso-negativo
+  demonstrado no 8B), licença explicitamente conjectural.
+- **Desfecho 38 = X1+E1** (d042d06, 648d06f): Mistral-7B sob harness V2
+  congelado — smoke 1.00 (vs 0.57 no V1 JSON; pré-reg 35 reclassificado como
+  fronteira do protocolo V1, não da família), piso 48/48+48/48 exato, s3,
+  gate reproduz o padrão Qwen nas 4 contabilidades (primário abre 0.321,
+  estrito fecha 0.184), a′_s mesmo bucket b3 (3/6, n=6, suporte).
+  Linguagem: "no longer confined to a single model family" — NUNCA
+  "generalizes across families".
+- Fixes editoriais do round 10 aplicados (e5f1001, fe70253): termination
+  cross-family = acordo por construção (duais last-mover); a′_s n=6 com CI
+  atravessando buckets; taxas cross-family declaradas confundidas por
+  seleção; linha Mistral em tab:synthesis e T0; ledger 34→38; célula única
+  em §8.1.
 
-## Top-5 do AC (rodada 7) — status
+## Fila de execução (ordem de valor)
 
-1. ✅ **Pré-reg 31 (episode-matched, V1):** outcome ≥ C_H 3/3 seeds a episódios
-   iguais (0.450 vs 0.398); confound morto, veredito do Ato 4 mantido.
-2. ✅ Reenquadramento "regime-dependent" → dependência tripla (texto, ef656ec).
-3. ✅ Tabela-síntese promovida ao texto principal §4.3 (ef656ec).
-4. ✅ Contribuição 3 resolvida RODANDO o treino V2: pré-reg 32 ABORT na
-   calibração (grade de λ da V1 mal-escalada — λ não transporta entre stacks);
-   pré-reg 33 (λ*=0.2, 10 tasks margin-verified) → desfecho **s3, colapso de
-   atrator**: todos os braços de aprendizado convergem token-exact para
-   summarize-always (heldout 0.831 vs 0.889 do alvo dominante) antes de
-   qualquer ordenação de crédito ser testável. "Both branches exercised
-   through training" agora é literal (4a9f96d).
-5. ⬜ Célula não-Qwen — experimento caro, opcional, sem plano no momento.
-
-## Fila de execução (ordem)
-
-1. ✅ **Pré-reg 30 — controles de estimando V2:** Parte A **r2** (estabilidade
-   pontual 0.739 <0.90, mas s3 + gate abertos sob os 2 schedules de re-draw);
-   Parte B **b3** (screened_s 8/21=0.381; os 13 não-screened têm I_s=0 EXATO
-   — aditividade, o regime onde crédito single-layer é correto). Integrado:
-   app:estimand, §8, ledger row 30 (975af1b).
-2. (Opcional) Análise zero-GPU da composição dos 65 pontos excluídos do
-   census V2.
-3. (Decidido: NÃO por ora) Pré-reg 34 — treino V2 mais longo/lr menor; s3
-   fica como resultado honesto, só revisitar se revisor exigir.
-4. (Opcional, caro) Célula não-Qwen (item 5 do AC).
+1. ⬜ **Fase D — validação do ramo positivo do gate** (40–60 GPU-h; NÃO
+   autorizada). Única weakness estrutural restante (W4: a licença nunca foi
+   exercida com sucesso; caminho de 7→8). Exige pool que passe o gate
+   analítico do pré-reg 34 (≥10 tasks com margem ≥0.10 — 4 tentativas
+   falharam); desenho no Appendix L (design brief). Pré-registrar antes.
+2. ⬜ **Nomes de autores** no paper (pendente do usuário).
+3. ⬜ Varredura de literatura #4 (research agent, zero GPU) antes da
+   submissão — última em 2026-08-25.
+4. ⬜ `make reproduce` final + congelamento do artefato de release
+   (o paper promete infraestrutura + ledger de 38 itens).
+5. ⬜ (Opcional) Rodada de polimento de prosa — presentation 3/4 por
+   densidade; sem tocar em claims/gates.
 
 ## Lembretes de rigor
 
@@ -51,6 +47,9 @@
 - I1/I2 (direções de flip são experimentos distintos; filtro de elegibilidade
   enviesa p/ turnos tardios) valem também no V2.
 - Timeouts de pytest: excluídos do piso, reportados à parte.
+- 9pp: cada corte rende 60–80% do estimado (reflow); Table 2 em p5 é
+  sensível a ±1 linha; verificar fronteira p9/p10 com pdftotext após cada
+  lote ("(Appendix L)." / "A Master Claim Table").
 
 ## Setup operacional
 
