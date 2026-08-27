@@ -581,9 +581,9 @@ retry-preceded span) the pre-registered outcome bin is \textbf{s3,
 general break}:
 no type screens at $\geq 0.90$ --- context policy 0.609 ($n=23$),
 observation formatting 0.667 ($n=12$), termination 0.100 ($n=10$), test
-scheduling 0.333 ($n=3$); per-type rates are descriptive (point
-classification draw-stable at only 17/23; verdict and gate survive
-re-draws). Interaction is nonzero at 29/48 points with
+scheduling 0.333 ($n=3$); per-type rates are descriptive (verdicts
+unanimous at 36/46 points under eight $a'$ re-draws; verdict and gate
+survive every schedule). Interaction is nonzero at 29/48 points with
 $|I|$ up to $0.73$ --- on this stack interaction is the dominant component
 of harness credit, not a correction to it.
 
@@ -1376,7 +1376,16 @@ classification is draw-sensitive --- stability $17/23 = 0.739$, with flips
 in both directions across three decision types. The aggregate verdict is
 not: substituting each schedule's draws and recomputing, the census
 outcome remains s3 and the primary gate stays open under both schedules
-(0.474 and 0.368 vs.\ 0.395 original; threshold 0.20).
+(0.474 and 0.368 vs.\ 0.395 original; threshold 0.20). A dedicated
+distributional characterization (pre-reg 36; five further disjoint
+schedules, up to eight draws per point) confirms and sharpens this: the
+$a'$ distribution is \emph{concentrated} (median one distinct canonical
+$a'$ per point, max six; 139/240 re-draws return the census $a'$),
+verdicts are unanimous at $36/46 = 0.78$ of points with flips confined to
+context-policy (7/21) and test-schedule (2/3) types --- termination is
+immune (0/10) --- and the headline is draw-invariant: s3 and the open gate
+hold under all five schedules (non-screened fraction $0.42$--$0.50$) and
+under per-point majority vote ($0.42$).
 \emph{Summarized-state} $a'_s$ (23 keep$\to$summarize context points, one
 schedule): screening drops to $8/21 = 0.381$ --- and all 13 non-screened
 points (9 genuinely de-screened) share a signature \emph{different from
@@ -1769,6 +1778,7 @@ failed and the eleven partial. Failed predictions are reported in the main text 
 30 & V2 estimand controls mirroring V1 items 21/26 (number reserved earlier; registered and run after 31--33): (A) $a'$ re-sampling on all 48 measured census points, two disjoint seed schedules at each point's census temperature, point-classification stability + recomputed headline per schedule; (B) $a'_s$ from the summarized state on keep$\to$summarize context points; declared outcomes r1/r2/r3, b1/b2/b3 & \textbf{r2}: classification draw-sensitive (17/23 stable) but s3 verdict and open gate survive both schedules (0.474/0.368 vs.\ 0.395); \textbf{b3}: screening $8/21=0.381$ under $a'_s$, all 13 non-screened points exactly additive ($I=0$, $C_H\neq 0$) & held; claim scoped \\
 34 & Post-mortem of 33's collapse, two parts. (A) analytic power gate: license training only if $\geq$10 pool tasks have attractor margin $\geq$0.10 in $R_{\text{eff}}(\lambda)$ at some $\lambda$ (margins from 32's calibration data; design motivated by exploratory inspection, declared as such); (B) optimizer probe: outcome + corrected arms, 1 seed, lr $5\times$ smaller, budget $2\times$ larger, same pool/$\lambda^{*}$; declared outcomes p1 (both collapse) / p2 (arms separate) / p3 (one collapses) & (A) \textbf{no $\lambda$ yields $\geq$10 eligible tasks} (max 3 at margin 0.10; 8 at 0.08) --- the gate would have vetoed 33; (B) \textbf{p1}: both arms collapse token-exactly onto \emph{opposite} attractors with $\theta\approx 0$ ($\|\theta\|_\infty\leq 0.055$) --- landscape, not optimizer & held \\
 35 & Cross-family census (mirror of \#15 on a non-Qwen model): protocol-adherence smoke gate (3 episodes, action-parse rate $\geq$0.80) before any census rollout; candidate sequence and the no-fourth-candidate stopping rule declared in addenda 35a--c & \textbf{unrunnable as declared}: Mistral-7B-v0.3 parses 0.57 (after a role-merge serving shim), DeepSeek-Coder-6.7B 0.33 (raw-output probe: prose + code, ignores the action protocol entirely), Phi-3.5-mini 0.43; under the frozen harness, format adherence is itself family-dependent --- the Qwen3 restriction becomes a measured constraint, and cross-family screening remains an open question & held (gate fired 3$\times$) \\
+36 & $a'$ distribution: five further disjoint seed schedules (S3--S7) on all 48 measured census points, $\leq$8 draws per point pooled with census + pre-reg 30A; primary $U$ = fraction of points with unanimous verdict, outcomes d1 $\geq$0.80 / d2 [0.60,0.80) / d3 $<$0.60; secondaries: headline per schedule and under majority vote & \textbf{d2} by 0.017: $U = 36/46 = 0.783$; distribution concentrated (median 1 distinct $a'$, 139/240 draws identical); flips confined to context types, termination 0/10; headline s3 + open gate invariant in 5/5 schedules (0.42--0.50) and under majority vote & held (claim scoped) \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
