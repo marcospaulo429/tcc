@@ -1,0 +1,138 @@
+{
+  "n_pontos": 48,
+  "n_elegiveis_2draws": 46,
+  "U_unanimidade": 0.7826,
+  "desfecho_primario": "d2_sensivel",
+  "flips_por_tipo": {
+    "context_policy": {
+      "n": 21,
+      "flip": 7
+    },
+    "observation_policy": {
+      "n": 12,
+      "flip": 1
+    },
+    "test_schedule": {
+      "n": 3,
+      "flip": 2
+    },
+    "termination": {
+      "n": 10,
+      "flip": 0
+    }
+  },
+  "draws_validos_por_ponto": {
+    "min": 1,
+    "mediana": 8,
+    "max": 8
+  },
+  "a_distintos_por_ponto": {
+    "min": 1,
+    "mediana": 1,
+    "max": 6
+  },
+  "headline_voto_majoritario": {
+    "taxas_por_tipo": {
+      "context_policy": {
+        "n": 23,
+        "taxa": 0.5652
+      },
+      "observation_policy": {
+        "n": 12,
+        "taxa": 0.6667
+      },
+      "test_schedule": {
+        "n": 3,
+        "taxa": 0.3333
+      },
+      "termination": {
+        "n": 10,
+        "taxa": 0.1
+      }
+    },
+    "desfecho": {
+      "s1": false,
+      "s2": false,
+      "s3": true,
+      "desfecho": "s3"
+    },
+    "gate_medidos_sem_duais": {
+      "frac": 0.4211,
+      "abre": true
+    }
+  },
+  "headline_por_schedule_novo": {
+    "S3": {
+      "n_substituidos": 38,
+      "desfecho": {
+        "s1": false,
+        "s2": false,
+        "s3": true,
+        "desfecho": "s3"
+      },
+      "gate_sem_duais": {
+        "frac": 0.4211,
+        "abre": true
+      }
+    },
+    "S4": {
+      "n_substituidos": 40,
+      "desfecho": {
+        "s1": false,
+        "s2": false,
+        "s3": true,
+        "desfecho": "s3"
+      },
+      "gate_sem_duais": {
+        "frac": 0.5,
+        "abre": true
+      }
+    },
+    "S5": {
+      "n_substituidos": 38,
+      "desfecho": {
+        "s1": false,
+        "s2": false,
+        "s3": true,
+        "desfecho": "s3"
+      },
+      "gate_sem_duais": {
+        "frac": 0.4474,
+        "abre": true
+      }
+    },
+    "S6": {
+      "n_substituidos": 37,
+      "desfecho": {
+        "s1": false,
+        "s2": false,
+        "s3": true,
+        "desfecho": "s3"
+      },
+      "gate_sem_duais": {
+        "frac": 0.4474,
+        "abre": true
+      }
+    },
+    "S7": {
+      "n_substituidos": 42,
+      "desfecho": {
+        "s1": false,
+        "s2": false,
+        "s3": true,
+        "desfecho": "s3"
+      },
+      "gate_sem_duais": {
+        "frac": 0.4474,
+        "abre": true
+      }
+    }
+  },
+  "status_counts": {
+    "informativo": 56,
+    "identico": 139,
+    "sem_a_prime_re": 44,
+    "erro_replay": 1,
+    "a_prime_orig_irreproduzivel": 0
+  }
+}

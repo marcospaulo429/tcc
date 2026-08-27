@@ -1627,3 +1627,21 @@ e3 — folga quebra (<0.75): screening não transporta ao MBPP+ nem sob
 folga. Entre 0.75–0.90 ou padrões mistos: descritivo, sem claim.
 **Custo estimado:** ~350–500 replays, 6–10h GPU (4B). Roda após a coleta
 do pré-reg 36 (GPU sequencial).
+
+### DESFECHO 36 (2026-08-26): distribuição de a′ — d2 (sensível no ponto, invariante no agregado)
+Coleta S3–S7 completa: 240 tentativas, 56 informativas (a′ novo), 139
+idênticas ao a′ do census, 44 sem alternativa, 1 erro de replay; mediana
+de 8 draws válidos por ponto. **U = 36/46 = 0.783 → d2_sensivel** (por
+0.017; corte d1 era 0.80). Estrutura:
+- A distribuição de a′ é CONCENTRADA: mediana 1 a′ canônico distinto por
+  ponto (máx 6) — na maioria dos pontos o sampler só encontra o mesmo a′.
+- Flips por tipo: context_policy 7/21, test_schedule 2/3, observation 1/12,
+  termination 0/10 (o veredito de termination é imune ao draw).
+- Conforme declarado para d2, veredito por voto majoritário: desfecho s3
+  inalterado; gate medidos sem duais 0.4211 → ABRE.
+- Headline por schedule novo: s3 e gate aberto em 5/5 schedules
+  (frac 0.421–0.500). A conclusão agregada é invariante ao draw.
+Leitura: C(d) pontual herda a variância do sampler em ~1/5 dos pontos
+(concentrada nos tipos de contexto), mas nenhuma conclusão do paper
+depende de um draw específico — o que o review pedia para caracterizar.
+Custo real: ~115 replays (bem abaixo do estimado; 139 idênticos grátis).
