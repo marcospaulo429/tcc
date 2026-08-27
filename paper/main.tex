@@ -674,13 +674,14 @@ Our tasks are designed, not sampled from a public benchmark --- a
 motivated limitation: the measurement needs control of
 destroyable-information position, calibrated per-stratum recoverability,
 and deterministic fractional reward, which no public benchmark provides
-jointly. We ran the
-missing experiment in reduced form on MBPP+ and HumanEval+ (pre-regs
-16/20/25): the floor replicates exactly in every cell (3{,}668 nulls) and
-screening replicates unconditionally (Table~\ref{tab:synthesis}), while
-every pressure cell saturates away, so the regime contrast stays
-untested externally (Appendix~\ref{app:replication}); the phenomenon is
-no task-design artifact.
+jointly. We ran the missing experiment in reduced form on MBPP+ and
+HumanEval+ (pre-regs 16/20/25): the floor replicates exactly in every cell
+(3{,}668 nulls) and screening replicates unconditionally
+(Table~\ref{tab:synthesis}), while every pressure cell saturates away ---
+and an exhaustive in-window census (pre-reg 37) exhausted the
+de-saturation route --- so the regime contrast stays untested externally
+(Appendix~\ref{app:replication}); the phenomenon is no task-design
+artifact.
 
 \subsection{Replication across models and pools (summary)}
 Appendix~\ref{app:replication} gives the full record: Qwen3-1.7B,
@@ -1779,6 +1780,7 @@ failed and the eleven partial. Failed predictions are reported in the main text 
 34 & Post-mortem of 33's collapse, two parts. (A) analytic power gate: license training only if $\geq$10 pool tasks have attractor margin $\geq$0.10 in $R_{\text{eff}}(\lambda)$ at some $\lambda$ (margins from 32's calibration data; design motivated by exploratory inspection, declared as such); (B) optimizer probe: outcome + corrected arms, 1 seed, lr $5\times$ smaller, budget $2\times$ larger, same pool/$\lambda^{*}$; declared outcomes p1 (both collapse) / p2 (arms separate) / p3 (one collapses) & (A) \textbf{no $\lambda$ yields $\geq$10 eligible tasks} (max 3 at margin 0.10; 8 at 0.08) --- the gate would have vetoed 33; (B) \textbf{p1}: both arms collapse token-exactly onto \emph{opposite} attractors with $\theta\approx 0$ ($\|\theta\|_\infty\leq 0.055$) --- landscape, not optimizer & held \\
 35 & Cross-family census (mirror of \#15 on a non-Qwen model): protocol-adherence smoke gate (3 episodes, action-parse rate $\geq$0.80) before any census rollout; candidate sequence and the no-fourth-candidate stopping rule declared in addenda 35a--c & \textbf{unrunnable as declared}: Mistral-7B-v0.3 parses 0.57 (after a role-merge serving shim), DeepSeek-Coder-6.7B 0.33 (raw-output probe: prose + code, ignores the action protocol entirely), Phi-3.5-mini 0.43; under the frozen harness, format adherence is itself family-dependent --- the Qwen3 restriction becomes a measured constraint, and cross-family screening remains an open question & held (gate fired 3$\times$) \\
 36 & $a'$ distribution: five further disjoint seed schedules (S3--S7) on all 48 measured census points, $\leq$8 draws per point pooled with census + pre-reg 30A; primary $U$ = fraction of points with unanimous verdict, outcomes d1 $\geq$0.80 / d2 [0.60,0.80) / d3 $<$0.60; secondaries: headline per schedule and under majority vote & \textbf{d2} by 0.017: $U = 36/46 = 0.783$; distribution concentrated (median 1 distinct $a'$, 139/240 draws identical); flips confined to context types, termination 0/10; headline s3 + open gate invariant in 5/5 schedules (0.42--0.50) and under majority vote & held (claim scoped) \\
+37 & De-saturated external pressure: exhaustive point census (max 99/trajectory) on the MBPP+ tasks inside the 4B's competence window (10 slack / 11 pressure, frozen baselines); power gate $\geq$5 non-saturated pivotal per cell; outcomes e1/e2/e3 declared & gate failed in \emph{both} cells (4 and 1 non-saturated $<5$) --- inconclusive as declared; descriptive: 15/15 pivotal screened incl.\ 5/5 non-saturated, all non-saturated mass from one task; the population route to external de-saturation is exhausted --- a powered external contrast needs a new environment & held (gate fired) \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
