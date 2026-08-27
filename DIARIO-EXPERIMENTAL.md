@@ -1762,3 +1762,127 @@ family**. NÃO é "generalizes across families": uma célula, um harness,
 um ambiente. O 35 fica reclassificado: fronteira de adesão ao protocolo
 JSON do V1, não fronteira de família. Custo real: ~450 replays + 60
 episódios, ~3h GPU. Qwen3-4B restaurado no serving ao final da cadeia.
+
+### PRÉ-REGISTRO 39 (2026-08-27, antes de qualquer rollout novo): o ramo positivo do gate — critério de margem por atrator + census + treino licenciado (Qwen3-8B, pool it.4 congelado)
+
+**Pergunta registrada (framing do review externo):** um gate positivo
+realmente prediz que replay credit é economicamente útil para treino?
+NÃO é "provar que nosso método funciona": é validar OU falsificar o ramo
+positivo da decision rule. Qualquer desfecho declarado abaixo é
+publicável.
+
+**Motivação.** O falso-negativo do 8B (entrada exploratória de
+2026-08-26): o gate per-task-vs-melhor-fixa veta 0/24 mesmo quando o
+alvo condicional domina TODA política fixa na média (+0.16 r_eff),
+porque um alvo que só exerce condicionalidade entre tasks não pode
+passar um critério per-task. O paper promete "the per-attractor
+correction awaits registration" — este é o registro. A correção é
+registrada ANTES de qualquer treino, sobre artefatos congelados; a
+inspeção exploratória de 2026-08-26 motivou o desenho e os números do
+gate analítico já são conhecidos (declarado por honestidade; o que o
+pré-registro protege é o census e o treino, que são novos).
+
+**Insumos congelados (nenhum novo rollout para o gate analítico):**
+- Pool: runs/v2_land35d/all24.json — as 24 tasks INTEIRAS (12 F + 12 P
+  de environment.tasks_swe35), sem re-seleção, sem cherry-picking.
+- Calibração 8B: runs/v2_land35_8b/calibrate_report.json (keep_always,
+  summarize_always, default/thr4500 × 24 tasks, greedy, λ recomputável
+  analiticamente de R e prompt_tokens).
+- Alvo condicional expressível: θ_oracle=[40,0,0,0,120] com CENTER_V2
+  (keep se n_writes=0, summarize senão), runs/v2_land35_8b/oraculo_report.json.
+- Modelo: Qwen/Qwen3-8B, mesmas flags de serving (max-model-len 8192,
+  APC OFF, sequencial, HF_HOME=~/hf_cache, gpu-mem 0.85). Config
+  harness: thr4500/mt25/keep6 (a mesma da calibração congelada).
+
+**GATE 1 — poder, por atrator, no nível do sinal de treino (analítico, 0 GPU).**
+- Critério registrado: margem_λ(atrator) = mean R_eff(λ) do alvo
+  condicional − mean R_eff(λ) do atrator, sobre as 24 tasks, para CADA
+  um dos 3 atratores fixos calibrados (os pontos de colapso alcançáveis
+  pela classe de política). Grade λ ∈ {0.1, 0.2, 0.5, 1.0, 2.0} (λ=0
+  excluído: sem preço de custo não há estimando de eficiência).
+  λ* = argmax_λ min_atrator margem_λ (empate → menor λ).
+- ABRE se min_atrator margem_λ*(·) ≥ 0.10. Sob greedy + APC off a
+  margem é determinística (piso zero) — "resolvível ao budget" =
+  exatamente reproduzível, sem exigência amostral.
+- Desfecho g0 (fecha em todo λ): STOP, negativo reportável — a correção
+  por atrator não basta neste landscape.
+- Sensibilidade reportada (não decisória): 0.15 e 0.08.
+
+**GATE 2 — census de screening com contabilidade registrada (GPU, novo).**
+A prescrição do paper (§8.4 iii) exige o census ANTES de pagar pelo
+treino com crédito; esta célula (8B, harness V2, pool 35) nunca foi
+censeada. Protocolo espelho do pré-reg 29/38 (census_v2):
+- Base: 24 episódios sob HarnessV2 default (thr4500/mt25/keep6), greedy.
+  Episódios com context overflow: EXCLUÍDOS do census (estimando de
+  medição, regra do 29) e reportados — a regra 32a (R=0) vale só para o
+  estimando de treino.
+- Piso (gate de instrumento, espelho do 38): 1 null replay por
+  trajetória válida a partir da 1ª decisão context_policy; exige ≥0.95
+  de reprodução EXATA de R. Falha → x0 (célula não mensurável, STOP).
+- Screening seletivo + census: FLIPS/ORDEM_TIPOS/MAX do pré-reg 29,
+  round-robin, a′ via sample_alternative_v2 com escalação; duais
+  last-mover (29a) marcados analíticos.
+- Contabilidade PRIMÁRIA (a mesma fixada no 32): fração não-screened
+  em pontos medidos SEM duais degenerados ≥ 0.20 → ABRE. As outras 3
+  contabilidades reportadas, não decisórias.
+- Desfecho c0 (census fecha com Gate 1 aberto): STOP antes do treino —
+  dissociação registrada entre landscape treinável e crédito que
+  compensa; o veto do census é exercido num landscape onde o poder
+  existe. Publicável como caso A.
+
+**TREINO LICENCIADO (só se Gate 1 E Gate 2 abrirem).**
+- Split registrado (pool inteiro, sem seleção): estratos
+  {f_mech = f_02/05/07/11 (resolvidas pelo mecanismo desenhado),
+  f_easy = f_00, f_hard = 7 F restantes, p = 12 P}; dentro de cada
+  estrato, ordenar por task_id; posições pares (0-index) → treino,
+  ímpares → held-out. Resultado: 12 treino / 12 held-out, com 2 f_mech
+  de cada lado. Split é função determinística do pool congelado.
+- 4 braços × 3 seeds (1/2/3), protocolo IDÊNTICO ao pré-reg 32/33:
+  outcome / ch / chm_cm / zero (controle não-treinado); rl.train_v2;
+  budget 1600 chamadas LLM por célula (dose-matched: episódios +
+  replays + a′ contam); lr 0.1, clip 1.0, k_credit 2, CENTER_V2;
+  λ = λ* do Gate 1; emenda 32a em vigor (overflow = R=0 no treino).
+- Contabilidade dual desde o desenho (lição do 31): braço outcome
+  TAMBÉM avaliado fatiado nos nº de episódios dos braços ch e chm_cm
+  por seed (re-eval greedy do θ no corte, fidelity gate do 31).
+- Avaliação: held-out (12 tasks), greedy, R_eff(λ*), θ final por
+  célula. Referências no held-out: 3 atratores + oráculo, computados
+  por SUBSET dos artefatos congelados (greedy determinístico — sem GPU
+  nova para referências).
+- Taxa de fallback do a′ no 8B: resultado reportável (census 4B:
+  87/114 a temp 0.8).
+
+**Desfechos do treino declarados ANTES de rodar (primário: held-out
+mean R_eff(λ*), comparação por seed):**
+- **d1 (ramo positivo VALIDADO):** chm_cm > outcome em ≥2/3 seeds SOB
+  AS DUAS contabilidades (dose- e episode-matched) E chm_cm held-out >
+  max(atratores fixos held-out) nesses seeds (escapou do colapso).
+- **d2 (ramo positivo FALSIFICADO informativamente):** ≥1 braço de
+  aprendizado escapa dos atratores (held-out > max(atratores) em ≥2/3
+  seeds) mas chm_cm ≤ outcome em ≥2/3 sob QUALQUER contabilidade →
+  gate aberto ⇏ vitória do crédito; o gate permanece só-veto e o paper
+  reporta a dissociação. Publicável como caso C.
+- **d3 (colapso recorrente):** nenhum braço > max(atratores) em 2/3
+  seeds → a correção por atrator ainda não basta; anatomia vai para o
+  design brief. Publicável.
+- Secundário (não decisório): chm_cm ≥ ch por seed; composição dos
+  colapsos (qual atrator); taxa de overflow por braço.
+- Linguagem registrada para QUALQUER desfecho: "in the pre-registered
+  gate-open landscape, arm X achieved A vs. B across 3 seeds under
+  matched episode/call budgets" — com média, per-seed, per-task,
+  nº exato de chamadas LLM, nº de replays e custo adicional do census.
+  NUNCA "credit training is better" sem escopo.
+
+**Custo estimado:** Gate 1: 0 GPU. Gate 2: 24 episódios base + ~24
+nulos + screening/census ~300–500 replays ≈ 3–5 h GPU (8B). Treino: 12
+células × 1600 chamadas ≈ 19.200 chamadas ≈ 12–24 h GPU. Referências
+held-out: 0 GPU (subset de artefatos). Total ≤ ~30 h GPU, dentro do
+orçamento autorizado (40–60 h). Servidor: troca para Qwen3-8B durante a
+fase inteira; Qwen3-4B restaurado ao final (padrão do 38).
+
+**Riscos declarados:** (i) trajetórias-base do default com overflow em
+excesso → census com N pequeno (reportado; se N válido < 12 tasks,
+census vira x0 por poder do instrumento — limiar registrado agora);
+(ii) episódios 8B mais lentos que o estimado → células podem parar por
+max_episodes=none/budget (stopped_by reportado); (iii) colapso d3
+mesmo com margem por atrator — desfecho previsto, não falha do desenho.
