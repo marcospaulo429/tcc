@@ -412,6 +412,7 @@ Model & Pool & Slack & Pressure & Reading \\
 4B & MBPP+ (60) & \multicolumn{2}{c}{0/66 (11/11 pivotal)} & screens unconditionally \\
 1.7B & MBPP+ (60) & \multicolumn{2}{c}{0/44 (24/24 pivotal)} & screens unconditionally \\
 4B & HumanEval+ (60) & \multicolumn{2}{c}{0/76 (42/42 pivotal)} & screens unconditionally \\
+Mistral-7B & V2 multi-file (60) & \multicolumn{2}{c}{22/43 non-screened} & s3; outcome-level transport (pre-reg 38) \\
 \bottomrule
 \end{tabular}
 \caption{\textbf{Synthesis: raw screening-off break counts by (model, pool,
@@ -632,7 +633,7 @@ requires does not exist on this stack. Both branches end in identified
 negatives, each predicted by pre-training measurement.
 
 \paragraph{Last-mover screening.} Terminal flips (continue$\to$terminate)
-make the joint arm analytically degenerate: the counterfactual episode
+make the joint arm analytically degenerate: the episode
 ends at the harness decision, the model's alternative never executes, and
 $R_{HM} \equiv R_H$ by determinism (addendum 29a). These 10 termination
 points mirror the central finding with the layers swapped:
@@ -675,7 +676,9 @@ cell (3{,}668 nulls) and screening replicates unconditionally
 an exhaustive in-window census (pre-reg 37) exhausted the de-saturation
 route --- so the regime contrast stays untested externally
 (Appendix~\ref{app:replication}); the phenomenon is no task-design
-artifact.
+artifact, and the cross-family axis has one cell and no regime contrast
+(pre-reg 38). The cross-family axis has one cell and no regime contrast
+(pre-reg 38).
 
 \subsection{Replication across models and pools (summary)}
 Appendix~\ref{app:replication} gives the full record (Qwen3-1.7B,
@@ -683,9 +686,9 @@ Qwen3-8B, a hardened pool, the pre-registered symmetric control). The
 floor replicates
 everywhere; screening replicates unconditionally on the 1.7B and both
 external environments; the 8B \emph{breaks} the shield at a flat rate in
-both regimes; the 4B also breaks on the curated pool. The claim re-scopes:
-\emph{whether} screening holds is a property of the (model, harness, task)
-triple, with break sets point-level disjoint across models. A
+both regimes, the 4B on the curated pool. The claim re-scopes to the
+(model, harness, task) triple, with break sets point-level disjoint
+across models. A
 cross-family census under the V1 JSON protocol was blocked by its own
 smoke gate (pre-reg 35); under the frozen V2 plain-text harness (pre-reg
 38) Mistral-7B passes the same gate at 1.00 and reproduces the registered
@@ -694,24 +697,22 @@ confined to a single model family.
 
 \subsection{Statistical caveats}
 
-\paragraph{Clustered inference.} Points within a task are not independent.
-The pressure-vs-slack contrast is 3 vs.\ 0 tasks (sign test
+\paragraph{Clustered inference.} Points within a task are not
+independent: the pressure-vs-slack contrast is 3 vs.\ 0 tasks (sign test
 $p=0.125$; point level $p=0.005$). We rest
 the screening claim on the task-clustered estimate (53/56, CI95
 $[0.87,1.00]$; 19/22 on unique points) together with cross-configuration
 break recurrence, not on the sign-test $p$-values (non-coin-flip only;
-Appendix~\ref{app:shield}).
-
-\paragraph{Multiplicity and post-treatment conditioning.} Only
+Appendix~\ref{app:shield}). Only
 pre-registered outcomes (Table~\ref{tab:ledger}) are confirmatory;
-borderline point-level values are descriptive, and
+borderline point-level values are descriptive; and
 saturation-conditioned rates are post-treatment.
 
 \subsection{Estimand caveats and the practical prescription}
 Appendix~\ref{app:estimand} details the estimand-level caveats: the shared
 sampled alternative coupling $C_M$ and $I$; the single-draw $a'$,
 bracketed on both stacks by re-sampling and $a'_s$ studies (V1 99/101,
-24/31; V2 pre-reg 30, \S\ref{sec:v2});
+24/31; V2 pre-reg 30);
 selection into measurement (53--73\% discarded, composition
 pointing \emph{against} the headline contrast); the $5.6\times$ episode
 tax; and the stochastic protocol. Re-drawing $a'$ flips
@@ -720,8 +721,8 @@ $\sim$22\% of point-level verdicts while every aggregate survives
 $C(d)$ inherits the sampler's variance.
 
 \paragraph{The practical prescription.} What to do on Monday morning:
-(i) log context size and position --- they carry most of the ranking
-value of $C_H$ (\S\ref{sec:critic}); (ii) turn prefix caching off before
+(i) log context size and position --- they carry most of $C_H$'s
+ranking value (\S\ref{sec:critic}); (ii) turn prefix caching off before
 trusting replay attribution; (iii) before paying for
 replay-credit training, run the screening census on recorded
 trajectories and apply the census and power gates as \emph{vetoes} (they
@@ -783,6 +784,7 @@ Interaction-corrected credit trains a better harness & no arm learns thr600; mar
 Learned critic beats cheap heuristics & context-size heuristic wins overall & refuted; $C_H\approx$ position + size \\
 Amortized credit transfers across environments & Spearman $0.03$/$-0.08$, chance & refuted (pre-reg 16) \\
 V2 collapse is a landscape property, not an optimizer artifact & analytic gate: no $\lambda$ gives $\geq$10 tasks with attractor margin $\geq$0.10 (max 3); probe at lr$/5$, budget$\times$2 still collapses token-exactly, $\theta\approx 0$ & held (pre-reg 34, both parts) \\
+Structure and coupling not confined to a single family & Mistral-7B under frozen V2 harness: smoke 1.00 (vs.\ 0.57 V1 JSON); floor 48/48 + 48/48 exact; s3; gate opens 3/4 accountings, closes strictest; $a'_s$ same bucket (3/6, $n{=}6$) & held, one cell (pre-reg 38) \\
 \bottomrule
 \end{tabular}
 \caption{T0 --- master claim ledger: every claim, its evidence, and its
@@ -1148,17 +1150,25 @@ per-model adjustment --- Mistral-7B-Instruct-v0.3 passes the smoke at
 1.00 (66 parses; 0.57 under the V1 JSON envelope) and the full census
 chain ran on the first candidate. The instrument transports: 48/48 nulls
 and 48/48 greedy null-flip replays exact. The registered outcome
-reproduces the Qwen cell at every declared level: census verdict
+reproduces the Qwen cell at the census and gate levels: census verdict
 \textbf{s3} (43 valid points; observation 0.62 $n{=}21$, context 0.83
-$n{=}6$, termination 0.13 $n{=}15$ --- termination again the least
-screened type), the gate opens under three accountings and closes under
+$n{=}6$, termination 0.13 $n{=}15$), the gate opens under three
+accountings and closes under
 the strictest (primary measured-without-duals $9/28 = 0.32$ vs.\ Qwen
 0.50; pivotal-without-duals 0.18 vs.\ 0.13, both closing), and the
-$a'_s$ coupling de-screens to the same declared bucket (3/6 vs.\ Qwen
-0.381; $n{=}6$, support not fine estimate). Selection composition
+$a'_s$ coupling lands in the same declared bucket (3/6 vs.\ Qwen
+0.381; $n{=}6$, CI95 spanning all declared buckets --- support, not an
+estimate). Termination is the least screened type in both families, but
+that agreement is largely by construction: both cells' termination
+points are dominated by analytically degenerate last-mover duals
+(addendum 29a); the informative transport is in context and
+observation. Selection composition
 differs and is reported: the Mistral sampler found an $a'$ at every
 census point (0 excluded, vs.\ 65/114 for Qwen), so the measured
-populations are selected differently. One cell, one harness, one
+populations are selected differently --- cross-family numerical rate
+comparisons are therefore confounded by selection, and what transports
+is the registered outcome level (s3, the gate pattern, the coupling
+bucket), not per-type point estimates. One cell, one harness, one
 environment: the finding is \emph{no longer confined to a single model
 family} --- not ``generalizes across families.''
 \paragraph{Floor and unconditional replications.} The floor
