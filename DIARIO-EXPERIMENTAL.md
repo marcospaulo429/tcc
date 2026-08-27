@@ -2013,3 +2013,20 @@ Declarada ANTES de tocar os dados. Motivada pela mesa de reviewers (R3-Q1 e AC):
 3. **Hipótese registrável (design brief)**: anti-correlação estrutural power↔census
    quando o censo é registrado em R e a margem em R_eff; contra-exemplo parcial:
    V2-4B (censo abriu 0.39, power fechou). Enunciada como previsão, não testada aqui.
+
+### Resultado da análise descritiva (R_eff nos 92 flips) — 2026-08-27
+
+- **Piso preservado exato em R_eff**: 17/17 nulos com dR_eff = 0.0 (tokens
+  reproduzem token-idênticos no replay nulo).
+- **Conjunto pivotal idêntico**: os 23 pontos com |dR_eff| ≥ margem (0.166) são
+  EXATAMENTE os 23 pivotais em R (termination 17, observation 4, test 1, context 1).
+- **Efeito só-tokens é 2ª ordem**: entre os 69 flips com dR = 0, mediana
+  |dR_eff| = 0.0035, máx = 0.0332 — 5× abaixo da margem do gate 1.
+- **Leitura**: a preocupação "censo registrado em R quando a margem vive em R_eff"
+  (R3-W1 da mesa) NÃO se materializa nesta célula: censear no estimando do treino
+  não revela massa de mediação nova na escala da margem. O fechamento do gate 2
+  fica com três sustentações independentes: (i) a′ inexistente (não-identificável
+  em qualquer estimando), (ii) pivotalidade em R concentrada em duais de
+  termination, (iii) recomputação em R_eff(λ*) sem massa nova. A hipótese de
+  anti-correlação power↔census segue registrável para OUTRAS células, mas perde o
+  mecanismo nesta. Artefatos: runs/preg39/releff_report.json, releff_rows.jsonl.
