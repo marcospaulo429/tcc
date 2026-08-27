@@ -66,7 +66,7 @@ for it, single-layer credit bills the harness for an effect the model
 screened off --- a double-counting error invisible unless both layers are
 measured on the same trajectory.
 
-We ask the question directly: on the same trajectory, what is the causal
+On the same trajectory, what is the causal
 contribution of a harness decision, of a model decision, and of their
 interaction? We answer with deterministic counterfactual replay:
 re-execute a recorded trajectory from any decision point with exactly one
@@ -97,10 +97,10 @@ dose-matched compute, screened points contribute \emph{exactly zero
 billed} per-decision signal at strictly positive replay cost, so whether
 credit can pay for itself is measurable \emph{before any training} by the
 same census that established screening (Corollary~\ref{cor:gate}). Four
-training acts validate this the hard way: three identified failures, then,
+training acts validate this: three identified failures, then,
 under a repaired objective, the first arm separation --- outcome-only wins
 at matched dose; corrected credit, correctly zero where the model shields,
-loses the gradient the single-layer bias was providing.
+loses the gradient the single-layer bias supplied.
 
 \paragraph{Contributions.}
 \begin{enumerate}
@@ -113,8 +113,8 @@ determinism.
 double-counting identity ($C_H = -I$ at screened points; $C_{HM} - C_M$ is
 the correction) and two verified mechanisms --- with a replication record
 showing the phenomenon is configuration- \emph{and} estimand-dependent:
-scoped to the (model, harness, task) triple, and convertible to exact
-additivity ($I=0$) by changing the counterfactual coupling.
+convertible to exact additivity ($I=0$) by changing the coupling, and no
+longer confined to a single model family (pre-reg 38).
 \item \textbf{Decision rule.} A compute-dominance bound and census gate
 (Proposition~\ref{prop:nfl}, Corollary~\ref{cor:gate}): measure and gate
 credit before training on it. Both branches were exercised \emph{through
@@ -635,14 +635,14 @@ negatives, each predicted by pre-training measurement.
 make the joint arm analytically degenerate: the counterfactual episode
 ends at the harness decision, the model's alternative never executes, and
 $R_{HM} \equiv R_H$ by determinism (addendum 29a). These 10 termination
-points mirror the central finding with the layers swapped --- \emph{the
-harness screens off the model}: screening-off is a fact about which layer
-moves last across the channel that reaches the reward.
+points mirror the central finding with the layers swapped:
+screening-off is a fact about which layer
+moves last on the channel that reaches the reward.
 
 \paragraph{Scope.} Three caveats bound the verdict. \textbf{Power and
 selection}: $n=48$ with 65 points excluded for want of an $a'$ makes
-per-type rates wide, and the exclusion selects on model entropy --- though
-the cut runs both ways: at excluded points the model is
+per-type rates wide, and the exclusion selects on model entropy ---
+though at excluded points the model is
 near-deterministic, so the correction is vacuous there by construction,
 and worst-case imputation of all 66 excluded points cannot close the
 measured-accounting gate ($24/114 = 0.21 \geq 0.20$) --- a bound covering
@@ -652,7 +652,7 @@ test scheduling ($n=3$) supports no claim, and restricting to types with
 $n \geq 10$ leaves s3 unchanged (context 14/23, observation 8/12, both
 $< 0.75$).
 \textbf{Estimand}: the pre-registered controls (pre-reg 30,
-Appendix~\ref{app:estimand}) discipline the verdict after the fact: it
+Appendix~\ref{app:estimand}) discipline the verdict: it
 survives both $a'$ re-draw schedules, and under the information-poor
 $a'_s$ the de-screened points turn exactly additive ($I=0$) --- so the
 V1-closed / V2-open contrast still compares verdicts under estimands
@@ -669,41 +669,43 @@ motivated limitation: the measurement needs control of
 destroyable-information position, calibrated per-stratum recoverability,
 and deterministic fractional reward, which no public benchmark provides
 jointly. We ran the missing experiment in reduced form on MBPP+ and
-HumanEval+ (pre-regs 16/20/25): the floor replicates exactly in every cell
-(3{,}668 nulls) and screening replicates unconditionally
+HumanEval+ (pre-regs 16/20/25): the floor replicates exactly in every
+cell (3{,}668 nulls) and screening replicates unconditionally
 (Table~\ref{tab:synthesis}), while every pressure cell saturates away ---
-and an exhaustive in-window census (pre-reg 37) exhausted the
-de-saturation route --- so the regime contrast stays untested externally
+an exhaustive in-window census (pre-reg 37) exhausted the de-saturation
+route --- so the regime contrast stays untested externally
 (Appendix~\ref{app:replication}); the phenomenon is no task-design
 artifact.
 
 \subsection{Replication across models and pools (summary)}
-Appendix~\ref{app:replication} gives the full record: Qwen3-1.7B,
-Qwen3-8B, a pool hardened to the 8B's competence, and the
-pre-registered symmetric control. The floor replicates
+Appendix~\ref{app:replication} gives the full record (Qwen3-1.7B,
+Qwen3-8B, a hardened pool, the pre-registered symmetric control). The
+floor replicates
 everywhere; screening replicates unconditionally on the 1.7B and both
 external environments; the 8B \emph{breaks} the shield at a flat rate in
 both regimes; the 4B also breaks on the curated pool. The claim re-scopes:
 \emph{whether} screening holds is a property of the (model, harness, task)
-triple, with break sets point-level disjoint across models, and the
-re-injection mechanism is neither necessary nor sufficient there --- all
-Qwen3-family; a pre-registered cross-family census was blocked by its own
-smoke gate (pre-reg 35, Appendix~\ref{app:replication}).
+triple, with break sets point-level disjoint across models. A
+cross-family census under the V1 JSON protocol was blocked by its own
+smoke gate (pre-reg 35); under the frozen V2 plain-text harness (pre-reg
+38) Mistral-7B passes the same gate at 1.00 and reproduces the registered
+V2 outcome --- s3, same gate pattern, same $a'_s$ bucket --- no longer
+confined to a single model family.
 
 \subsection{Statistical caveats}
 
 \paragraph{Clustered inference.} Points within a task are not independent.
-The pressure-vs-slack contrast is 3 tasks vs.\ 0 at task level (sign test
-$p = 0.125$) and $p = 0.005$ at point level. We report all levels and rest
+The pressure-vs-slack contrast is 3 vs.\ 0 tasks (sign test
+$p=0.125$; point level $p=0.005$). We rest
 the screening claim on the task-clustered estimate (53/56, CI95
 $[0.87,1.00]$; 19/22 on unique points) together with cross-configuration
-break recurrence --- not on the sign-test $p$-values (they certify only
-non-coin-flip; Appendix~\ref{app:shield}).
+break recurrence, not on the sign-test $p$-values (non-coin-flip only;
+Appendix~\ref{app:shield}).
 
 \paragraph{Multiplicity and post-treatment conditioning.} Only
 pre-registered outcomes (Table~\ref{tab:ledger}) are confirmatory;
-borderline point-level values are descriptive, and saturation-conditioned
-rates condition on a post-treatment variable.
+borderline point-level values are descriptive, and
+saturation-conditioned rates are post-treatment.
 
 \subsection{Estimand caveats and the practical prescription}
 Appendix~\ref{app:estimand} details the estimand-level caveats: the shared
@@ -720,10 +722,10 @@ $C(d)$ inherits the sampler's variance.
 \paragraph{The practical prescription.} What to do on Monday morning:
 (i) log context size and position --- they carry most of the ranking
 value of $C_H$ (\S\ref{sec:critic}); (ii) turn prefix caching off before
-trusting any replay-based attribution; (iii) before paying for
-replay-credit training, run the screening census on recorded trajectories and apply the census
-and power gates as \emph{vetoes} (they vetoed our V2 round) --- the use
-this paper validates; (iv) where the census shows screening, bill
+trusting replay attribution; (iii) before paying for
+replay-credit training, run the screening census on recorded
+trajectories and apply the census and power gates as \emph{vetoes} (they
+vetoed our V2 round); (iv) where the census shows screening, bill
 $C_{HM}-C_M$ or nothing --- never $C_H$.
 
 \section{Conclusion}
@@ -731,14 +733,14 @@ Three claims. \emph{Measurement}: harness credit, model credit, and
 their interaction are measurable on the same trajectory against an
 exactly-zero floor. \emph{Finding}: the reading is configuration- and
 estimand-dependent --- with slack our primary model screens off the
-harness (57/57) and single-layer credit double-counts ($C_H=-I$); an
-information-poor coupling turns the same points exactly additive; other
+harness (57/57) and single-layer credit double-counts ($C_H=-I$); a
+poorer coupling makes the same points exactly additive; other
 models, harnesses, and regimes break the shield. \emph{Decision rule}:
 measure and gate credit before training on it --- better credit did not
-train a better harness on either stack, each failure predicted in
-advance; the gate is a validated veto, its license a conjecture. We
-release the infrastructure and a 38-item ledger whose training negatives
-are the design brief for the missing benchmark (Appendix~\ref{app:brief}).
+train a better harness on either stack; the gate is a
+validated veto, its license a conjecture. We release the infrastructure
+and a 38-item ledger whose training negatives are the design brief for
+the missing benchmark (Appendix~\ref{app:brief}).
 \appendix
 \section{Master Claim Table}
 \label{app:claims}
@@ -1134,10 +1136,31 @@ not our parser: the models answer in prose plus fenced code, never
 emitting the action object. The declared stopping rule (no fourth
 candidate, no harness relaxation) fired: under a \emph{frozen} harness,
 adherence to the action format --- the precondition of measurement --- is
-itself family-dependent. The Qwen3 scope of every claim is therefore a
-measured constraint rather than an omission, and cross-family transport
-of screening remains open; measuring it requires per-family harness
-adaptation, which would confound the very comparison it enables.
+itself family-dependent --- but pre-reg 38 reclassifies the boundary:
+the barrier is the V1 JSON \emph{protocol}, not the family.
+\paragraph{Cross-family under the frozen V2 harness (pre-reg 38).} The V2
+stack uses a plain-text action protocol adopted for reasons independent
+of and prior to any cross-family design (addendum 28a). Re-registering
+the cross-family question against the \emph{frozen} V2 harness --- same
+smoke gate, a fresh instrument-validity gate (greedy null-flip floor,
+exact $\geq 0.95$), candidate order and stopping rule declared, no
+per-model adjustment --- Mistral-7B-Instruct-v0.3 passes the smoke at
+1.00 (66 parses; 0.57 under the V1 JSON envelope) and the full census
+chain ran on the first candidate. The instrument transports: 48/48 nulls
+and 48/48 greedy null-flip replays exact. The registered outcome
+reproduces the Qwen cell at every declared level: census verdict
+\textbf{s3} (43 valid points; observation 0.62 $n{=}21$, context 0.83
+$n{=}6$, termination 0.13 $n{=}15$ --- termination again the least
+screened type), the gate opens under three accountings and closes under
+the strictest (primary measured-without-duals $9/28 = 0.32$ vs.\ Qwen
+0.50; pivotal-without-duals 0.18 vs.\ 0.13, both closing), and the
+$a'_s$ coupling de-screens to the same declared bucket (3/6 vs.\ Qwen
+0.381; $n{=}6$, support not fine estimate). Selection composition
+differs and is reported: the Mistral sampler found an $a'$ at every
+census point (0 excluded, vs.\ 65/114 for Qwen), so the measured
+populations are selected differently. One cell, one harness, one
+environment: the finding is \emph{no longer confined to a single model
+family} --- not ``generalizes across families.''
 \paragraph{Floor and unconditional replications.} The floor
 replicates everywhere (pre-regs 14, 15, 16, all registered before running): the
 8B contributes 810 dedicated and 234 attached null replays and MBPP+
@@ -1777,9 +1800,10 @@ failed and the eleven partial. Failed predictions are reported in the main text 
 33 & V2 training, re-registered: single change --- $\lambda$ grid rescaled to $\{0.02..0.5\}$, ties break to larger $\lambda$; all else inherited from 32; declared outcomes s1 (credit $>$ outcome under both accountings) / s2 (learning without credit ordering) / s3 (no arm beats the best fixed attractor) & $\lambda^{*}=0.2$, 10 tasks; \textbf{s3}: 8/9 learning runs collapse token-exactly onto summarize-always (0.831 vs.\ 0.889 target), one outcome seed and the untrained control at keep-always ($-0.092$); episode-matched slices leave the bin unchanged (one transient mixed-policy slice at 0.301) & held \\
 30 & V2 estimand controls mirroring V1 items 21/26 (number reserved earlier; registered and run after 31--33): (A) $a'$ re-sampling on all 48 measured census points, two disjoint seed schedules at each point's census temperature, point-classification stability + recomputed headline per schedule; (B) $a'_s$ from the summarized state on keep$\to$summarize context points; declared outcomes r1/r2/r3, b1/b2/b3 & \textbf{r2}: classification draw-sensitive (17/23 stable) but s3 verdict and open gate survive both schedules (0.474/0.368 vs.\ 0.395); \textbf{b3}: screening $8/21=0.381$ under $a'_s$, all 13 non-screened points exactly additive ($I=0$, $C_H\neq 0$) & held; claim scoped \\
 34 & Post-mortem of 33's collapse, two parts. (A) analytic power gate: license training only if $\geq$10 pool tasks have attractor margin $\geq$0.10 in $R_{\text{eff}}(\lambda)$ at some $\lambda$ (margins from 32's calibration data; design motivated by exploratory inspection, declared as such); (B) optimizer probe: outcome + corrected arms, 1 seed, lr $5\times$ smaller, budget $2\times$ larger, same pool/$\lambda^{*}$; declared outcomes p1 (both collapse) / p2 (arms separate) / p3 (one collapses) & (A) \textbf{no $\lambda$ yields $\geq$10 eligible tasks} (max 3 at margin 0.10; 8 at 0.08) --- the gate would have vetoed 33; (B) \textbf{p1}: both arms collapse token-exactly onto \emph{opposite} attractors with $\theta\approx 0$ ($\|\theta\|_\infty\leq 0.055$) --- landscape, not optimizer & held \\
-35 & Cross-family census (mirror of \#15 on a non-Qwen model): protocol-adherence smoke gate (3 episodes, action-parse rate $\geq$0.80) before any census rollout; candidate sequence and the no-fourth-candidate stopping rule declared in addenda 35a--c & \textbf{unrunnable as declared}: Mistral-7B-v0.3 parses 0.57 (after a role-merge serving shim), DeepSeek-Coder-6.7B 0.33 (raw-output probe: prose + code, ignores the action protocol entirely), Phi-3.5-mini 0.43; under the frozen harness, format adherence is itself family-dependent --- the Qwen3 restriction becomes a measured constraint, and cross-family screening remains an open question & held (gate fired 3$\times$) \\
+35 & Cross-family census (mirror of \#15 on a non-Qwen model): protocol-adherence smoke gate (3 episodes, action-parse rate $\geq$0.80) before any census rollout; candidate sequence and the no-fourth-candidate stopping rule declared in addenda 35a--c & \textbf{unrunnable as declared}: Mistral-7B-v0.3 parses 0.57 (after a role-merge serving shim), DeepSeek-Coder-6.7B 0.33 (raw-output probe: prose + code, ignores the action protocol entirely), Phi-3.5-mini 0.43; under the frozen harness, format adherence is itself family-dependent --- the Qwen3 restriction becomes a measured constraint, and cross-family screening remains an open question & held (gate fired 3$\times$; boundary reclassified by \#38 as V1-protocol-specific) \\
 36 & $a'$ distribution: five further disjoint seed schedules (S3--S7) on all 48 measured census points, $\leq$8 draws per point pooled with census + pre-reg 30A; primary $U$ = fraction of points with unanimous verdict, outcomes d1 $\geq$0.80 / d2 [0.60,0.80) / d3 $<$0.60; secondaries: headline per schedule and under majority vote & \textbf{d2} by 0.017: $U = 36/46 = 0.783$; distribution concentrated (median 1 distinct $a'$, 139/240 draws identical); flips confined to context types, termination 0/10; headline s3 + open gate invariant in 5/5 schedules (0.42--0.50) and under majority vote & held (claim scoped) \\
 37 & De-saturated external pressure: exhaustive point census (max 99/trajectory) on the MBPP+ tasks inside the 4B's competence window (10 slack / 11 pressure, frozen baselines); power gate $\geq$5 non-saturated pivotal per cell; outcomes e1/e2/e3 declared & gate failed in \emph{both} cells (4 and 1 non-saturated $<5$) --- inconclusive as declared; descriptive: 15/15 pivotal screened incl.\ 5/5 non-saturated, all non-saturated mass from one task; the population route to external de-saturation is exhausted --- a powered external contrast needs a new environment & held (gate fired) \\
+38 & Cross-family under the \emph{frozen V2 plain-text harness} (\#35's barrier was the V1 JSON protocol; V2's plain-text protocol predates any cross-family design, addendum 28a): same smoke gate; instrument-validity gate (fresh greedy null-flip floor, exact $\geq$0.95); candidate order Mistral-7B $\to$ DeepSeek-Coder, no third, no per-model adjustment; outcomes X1 (s3 + open primary gate) / X2 (family-dependence) / X3 (both fail smoke) / X4 (floor fails); independent estimand outcomes E1/E2 ($a'_s$ bucket); addendum 38a (truncated-episode counting, registered before any smoke verdict) & \textbf{X1+E1}: Mistral-7B passes the smoke at 1.00 (vs.\ 0.57 under V1 JSON); floor transports (48/48 nulls, 48/48 greedy null-flips exact); census 43 valid points returns \textbf{s3} (observation 0.62, context 0.83, termination 0.13); the gate reproduces the Qwen pattern under all four accountings --- opens under three (primary $9/28=0.32$ vs.\ Qwen 0.50), closes under the strictest (0.18 vs.\ 0.13); $a'_s$ 3/6 screened, bucket b3 as Qwen (0.381); selection differs: 0 points excluded for want of $a'$ (vs.\ 65/114) & held \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
