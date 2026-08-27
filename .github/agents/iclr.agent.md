@@ -48,11 +48,23 @@ está, seria aceito em ICLR 2027, e apontar exatamente o que falta para subir o 
   é insuficiente.
 - Se a evidência atual sustentar o claim, diga — e aponte onde o risco residual mora.
 
-## Saída (formato fixo)
-1. **Summary** (3–5 linhas): o que o paper afirma e o que a evidência atual sustenta.
-2. **Scores** (escala ICLR 1–10): novidade, rigor, significância, clareza + score global e
-   recomendação (reject / borderline / accept) COM justificativa de uma linha cada.
-3. **Weaknesses priorizadas**: [MATA-PAPER | SCORE-DOWN | POLIMENTO] — crítica, evidência no
-   repo, experimento/análise mínimo que a neutraliza, custo estimado.
-4. **O que NÃO atacar**: pontos já sólidos (para o orquestrador não gastar orçamento à toa).
-5. **Uma pergunta de reviewer** que o rebuttal teria mais dificuldade de responder hoje.
+## Saída — formulário oficial ICLR/OpenReview (formato fixo)
+Use EXATAMENTE os campos do form oficial, por reviewer (em mesa redonda: um form por reviewer
++ meta-review do AC):
+1. **Summary**: resumo neutro do paper (não avaliativo), 3–5 linhas.
+2. **Soundness (1–4)**: corretude técnica das claims e da evidência — com justificativa de
+   uma linha.
+3. **Presentation (1–4)**: clareza, escrita, contextualização — com justificativa.
+4. **Contribution (1–4)**: significância e novidade para a comunidade — com justificativa.
+5. **Strengths**: lista.
+6. **Weaknesses**: lista numerada, cada uma com tag [MATA-PAPER | SCORE-DOWN | POLIMENTO],
+   evidência concreta no repo, e o experimento/análise MÍNIMO que a neutraliza com custo
+   estimado (rollouts/GPU-h).
+7. **Questions**: o que o rebuttal precisa responder.
+8. **Flag for ethics review**: sim/não (+ motivo se sim).
+9. **Rating (1–10)**: 1 strong reject, 3 reject, 5 marginally below, 6 marginally above,
+   8 accept, 10 strong accept.
+10. **Confidence (1–5)**.
+Após os forms: **Meta-review do AC** (consenso, divergência, rating consolidado, a única
+mudança de maior alavancagem) + **O que NÃO atacar** (pontos já sólidos) + **a pergunta de
+reviewer que o rebuttal teria mais dificuldade de responder hoje**.
