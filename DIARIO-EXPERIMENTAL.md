@@ -1645,3 +1645,16 @@ Leitura: C(d) pontual herda a variância do sampler em ~1/5 dos pontos
 (concentrada nos tipos de contexto), mas nenhuma conclusão do paper
 depende de um draw específico — o que o review pedia para caracterizar.
 Custo real: ~115 replays (bem abaixo do estimado; 139 idênticos grátis).
+
+### DESFECHO 37 (2026-08-26): pressão externa de-saturada — INCONCLUSIVO pelo gate nas duas células
+Censo exaustivo (max-per-traj 99) nas tasks in-window do MBPP+: g600 17
+pontos medidos (8 pivotais, 4 não-saturados), mt6 13 (7 pivotais, 1
+não-saturado). **Gate de ≥5 não-saturados falha nas duas células** —
+inconclusivo, sem leitura direcional, conforme declarado. Descritivo:
+15/15 pivotais screened (incluindo 5/5 não-saturados); TODA a massa
+não-saturada vem de uma única task (mbpp_7). Leitura: o censo exaustivo
+ESGOTOU a rota de de-saturação por população — mesmo restringindo a tasks
+com baseline in-window, os pontos counterfactuais do MBPP+ saturam (a
+task ou resiste a qualquer flip ou colapsa com todos). O contraste de
+regime com poder num ambiente externo exige ambiente novo (não outra
+análise do MBPP+), fora do escopo desta rodada. Custo real: ~90 replays.

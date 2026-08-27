@@ -1,0 +1,25 @@
+{
+  "g600": {
+    "pontos": 17,
+    "pivotais": 8,
+    "nao_saturados": 4,
+    "screened_piv": 8,
+    "screened_ns": 4,
+    "gate_5": false,
+    "tasks_ns": [
+      "mbpp_7"
+    ]
+  },
+  "mt6": {
+    "pontos": 13,
+    "pivotais": 7,
+    "nao_saturados": 1,
+    "screened_piv": 7,
+    "screened_ns": 1,
+    "gate_5": false,
+    "tasks_ns": [
+      "mbpp_7"
+    ]
+  },
+  "desfecho": "inconclusivo pelo gate nas duas celulas (4 e 1 nao-saturados < 5); descritivo: 15/15 pivotais screened incl. 5/5 nao-saturados; massa nao-saturada concentra em mbpp_7"
+}
