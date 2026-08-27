@@ -606,9 +606,10 @@ turned under-specification into a \emph{false negative}: the per-task
 criterion vetoes ($0/24$) even where the conditional target dominates
 every fixed policy. The registered per-attractor correction (pre-reg 39)
 opens the power gate ($\lambda^{*}=0.1$, min margin $0.166$) --- and the
-census closes it again, overdetermined: the 8B is near-deterministic at
-the paired points ($462/463$ resamples identical, so no estimand
-identifies $C_{HM}-C_M$), and a census recomputed in
+census closes it again by two independent mechanisms, one cross-checked
+in both estimands: the 8B is near-deterministic at the paired points
+($462/463$ resamples identical, so no estimand identifies
+$C_{HM}-C_M$), and recomputing the census in
 $R_{\text{eff}}(\lambda^{*})$ over the 92 paid flips returns the
 \emph{identical} pivotal set (token-only effects $\leq 0.033$); the rule
 vetoed the training unpaid. Robust across accountings on the 4B cell:
@@ -1829,13 +1830,25 @@ the partial ones. Failed predictions are reported in the main text where they oc
 \label{app:audit}
 Table~\ref{tab:audit} audits the two-gate decision rule (census gate,
 Corollary~\ref{cor:gate}; power gate, pre-regs 32/34/39) across every
-cell it touched. Each gate has opened at least once and vetoed at least
-once; the \emph{conjunction} (both open on the same cell) has not been
-observed. Whether it is attainable is a registrable question, not an
-assumption: the V2-4B row is a partial counter-example to structural
-anti-correlation (census open, power closed), and the
-$R_{\text{eff}}(\lambda^{*})$ recomputation on the 8B cell rules out the
-estimand-mismatch mechanism there (Appendix~\ref{app:brief}).
+cell it touched. Gate entries are prospective where the rule predated
+the outcome (pre-reg 39) and retrospective elsewhere; every post-hoc
+entry was declared in the experimental diary before computation, after
+--- and prompted by --- adversarial review. Each gate has opened at
+least once and vetoed at least once; the \emph{conjunction} (both open
+on the same cell) has not been observed. Whether it is attainable is a
+registrable question, not an assumption: the V2-4B row is a partial
+counter-example to structural anti-correlation (census open, power
+closed), and the $R_{\text{eff}}(\lambda^{*})$ recomputation on the 8B
+cell rules out the estimand-mismatch mechanism there
+(Appendix~\ref{app:brief}). Extending that recomputation to the
+stochastic cells shows the exact cross-check is specific to the
+near-deterministic cell: on the 4B and Mistral censuses, token-only
+crossings of the 0.10 scale reach 0.163--0.164, but the null-replay
+floor \emph{in $R_{\text{eff}}$} on the same cells has the same
+magnitude (max 0.166; Mistral greedy floor exactly 0.0) --- replay
+noise of the estimand, not decision effects. A census run natively in
+$R_{\text{eff}}$ on a stochastic cell therefore needs its own null
+floor, mirroring \S\ref{sec:floor}.
 
 \begin{table}[h]
 \centering\scriptsize
@@ -1844,7 +1857,7 @@ estimand-mismatch mechanism there (Appendix~\ref{app:brief}).
 \toprule
 Cell & Census gate & Power gate & Training & Rule vs.\ outcome \\
 \midrule
-V1 / Qwen3-4B & closes (retrospective): slack screening 57/57; non-screened pivotal mass $3/56{=}0.05$ (pressure $8/65{=}0.12$), both $<0.20$ & not defined at the time; not evaluated post hoc & paid (Acts 1--4, pre-reg 31): outcome $0.440 >$ $C_H$ $0.405 >$ corrected $0.392 =$ untrained, 3/3 seeds & veto correct; its counterfactual confirmed at matched dose \\
+V1 / Qwen3-4B & closes (retrospective): slack screening 57/57; non-screened pivotal mass $3/56{=}0.05$ (pressure $8/65{=}0.12$), both $<0.20$ & not defined at the time; post hoc (per-attractor mirror, registered grid): \emph{opens} on the registered 12-task pool (min margin 0.135 at the registered $\lambda^{*}{=}5$), closes on the full 52-task pool (best min margin 0.056) & paid (Acts 1--4, pre-reg 31): outcome $0.440 >$ $C_H$ $0.405 >$ corrected $0.392 =$ untrained, 3/3 seeds & veto correct; power opened post hoc on the trained pool and training still failed --- the power gate is necessary, not sufficient; the census veto was the binding one \\
 V2 / Qwen3-4B & opens (primary fixed ex ante $15/38{=}0.39$; 3/4 accountings open, strictest 0.13 closes) & postdates training; post hoc (pre-reg 34) closes: no $\lambda$ gives $\geq$10 tasks with margin $\geq$0.10 (max 3) & paid (pre-regs 32--33): s3 attractor collapse, 8/9 token-exact & full rule would have vetoed; the paid collapse is the veto's justification \\
 V2 / Qwen3-8B (exploratory) & not run (landscape study) & per-task version vetoes $0/24$ despite mean dominance $+0.16$ --- demonstrated false negative & not run & veto fired for the wrong reason; motivated the per-attractor correction (pre-reg 39) \\
 V2 / Mistral-7B (pre-reg 38) & opens on primary ($9/28{=}0.32$), closes strictest (0.18) & not evaluated (no training registered) & none by design & rule not invoked; instrument-replication cell \\
@@ -2064,12 +2077,17 @@ tokens is invisible to an outcome-level census. On the 39 cell this
 mechanism was then checked descriptively and did not bite: the census
 recomputed in $R_{\text{eff}}(\lambda^{*})$ returns the identical
 pivotal set (token-only effects $\leq 0.033$, $5\times$ below the
-margin). What remains open --- and registrable as this brief's first
+margin); the same recomputation on the stochastic 4B and Mistral cells
+is bounded by their own null-replay floor in $R_{\text{eff}}$ ($\leq
+0.166$), so the exactness is specific to the near-deterministic cell
+(Appendix~\ref{app:audit}). What remains open --- and registrable as this brief's first
 prediction --- is whether the two gates anti-correlate structurally
 across cells: trainable margins may co-occur with exactly the low model
 entropy at paired points that empties the census. The V2-4B cell
-(census open, power closed) is a partial counter-example; a cell with
-both gates open has not been observed (Table~\ref{tab:audit}).
+(census open, power closed) is a partial counter-example; the V1
+post-hoc evaluation preserves the pattern (power opens on the trained
+pool, census closed retrospectively); a cell with both gates open has
+not been observed (Table~\ref{tab:audit}).
 
 \bibliographystyle{iclr2026_conference}
 \bibliography{refs}
