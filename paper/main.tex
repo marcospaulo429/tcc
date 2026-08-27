@@ -122,7 +122,7 @@ training} --- closed on the single-file stack (outcome-only wins at
 matched dose), open on the multi-file stack (training collapses onto a
 fixed attractor) --- and the corrected power gate's first opening was
 itself vetoed by the census (near-deterministic cell; pre-reg 39,
-\S\ref{sec:v2}).
+\S\ref{sec:v2}); the rule's positive branch remains unexercised.
 \item \textbf{The record.} A 39-item pre-registration ledger with failures
 reported as results, control-task construct validation, and a claims table
 (Table~\ref{tab:claims}) auditable against the ledger
@@ -600,15 +600,17 @@ open: opens under three, closes under the strictest.}
 \label{tab:gate}
 \end{table}
 
-We report all four rather than adjudicate post hoc; the denominator and
-the treatment of degenerate points must themselves be registered. An 8B
-follow-up (Appendix~\ref{app:brief}) turned under-specification into a
-\emph{false negative}: where the conditional target dominates every
-fixed policy on average, the per-task criterion still vetoes ($0/24$).
-The registered per-attractor correction (pre-reg 39) opens the power
-gate ($\lambda^{*}=0.1$, min margin $0.166$) --- and the census closes
-it again: the 8B is near-deterministic at the paired points ($462/463$
-resamples identical), the primary denominator is empty, and the rule
+We report all four; denominator and degenerate-point treatment must
+themselves be registered. An 8B follow-up (Appendix~\ref{app:brief})
+turned under-specification into a \emph{false negative}: the per-task
+criterion vetoes ($0/24$) even where the conditional target dominates
+every fixed policy. The registered per-attractor correction (pre-reg 39)
+opens the power gate ($\lambda^{*}=0.1$, min margin $0.166$) --- and the
+census closes it again, overdetermined: the 8B is near-deterministic at
+the paired points ($462/463$ resamples identical, so no estimand
+identifies $C_{HM}-C_M$), and a census recomputed in
+$R_{\text{eff}}(\lambda^{*})$ over the 92 paid flips returns the
+\emph{identical} pivotal set (token-only effects $\leq 0.033$); the rule
 vetoed the training unpaid. Robust across accountings on the 4B cell:
 substantial non-screened pivotal mass (15 points, $|I|$ up to $0.73$),
 richer stacks de-screen as the anatomy predicts, and the training
@@ -619,14 +621,13 @@ experiment is licensed under the measured-points accounting.
 first run \emph{aborted at calibration} ($\lambda$ does not transport
 across token magnitudes); re-registered ($\lambda^{*}=0.2$, 10
 margin-verified tasks), it
-returned the declared outcome \textbf{s3, attractor collapse}: every
-learning arm collapses onto a fixed attractor --- 8/9 runs
-\emph{token-exactly} onto summarize-always (held-out $R_{\text{eff}}$
-0.831 vs.\ 0.889 for the dominant expressible target; control at
-keep-always) --- before any credit
+returned the declared outcome \textbf{s3, attractor collapse}: 8/9 runs
+collapse \emph{token-exactly} onto summarize-always (held-out
+$R_{\text{eff}}$ 0.831 vs.\ 0.889 for the dominant target; control at
+keep-always) before any credit
 ordering becomes testable. A registered probe (pre-reg 34) locates the
-failure in the \emph{landscape}, not the optimizer: at $5\times$ smaller
-learning rate and $2\times$ budget both arms still collapse token-exactly
+failure in the \emph{landscape}, not the optimizer: at lr$/5$ and
+budget$\times 2$ both arms still collapse token-exactly
 ($\theta \approx 0$, opposite attractors), and no $\lambda$ yields even 3
 tasks with attractor margin $\geq 0.10$ --- the pool a power-gated re-run
 requires does not exist on this stack. Both branches end in identified
@@ -725,7 +726,7 @@ ranking value (\S\ref{sec:critic}); (ii) turn prefix caching off before
 trusting replay attribution; (iii) before paying for
 replay-credit training, run the screening census in the estimand the
 training will bill and apply the census and power gates as \emph{vetoes}
-(they vetoed both our V2 rounds); (iv) where the census shows screening, bill
+(Table~\ref{tab:audit} audits the rule across all five cells); (iv) where the census shows screening, bill
 $C_{HM}-C_M$ or nothing --- never $C_H$.
 
 \section{Conclusion}
@@ -1155,7 +1156,7 @@ reproduces the Qwen cell at the census and gate levels: census verdict
 $n{=}6$, termination 0.13 $n{=}15$), the gate opens under three
 accountings and closes under
 the strictest (primary measured-without-duals $9/28 = 0.32$ vs.\ Qwen
-0.50; pivotal-without-duals 0.18 vs.\ 0.13, both closing), and the
+$15/38 = 0.39$ under the matched accounting; pivotal-without-duals 0.18 vs.\ 0.13, both closing), and the
 $a'_s$ coupling lands in the same declared bucket (3/6 vs.\ Qwen
 0.381; $n{=}6$, CI95 spanning all declared buckets --- support, not an
 estimate). Termination is the least screened type in both families, but
@@ -1813,8 +1814,8 @@ the partial ones. Failed predictions are reported in the main text where they oc
 35 & Cross-family census (mirror of \#15 on a non-Qwen model): protocol-adherence smoke gate (3 episodes, action-parse rate $\geq$0.80) before any census rollout; candidate sequence and the no-fourth-candidate stopping rule declared in addenda 35a--c & \textbf{unrunnable as declared}: Mistral-7B-v0.3 parses 0.57 (after a role-merge serving shim), DeepSeek-Coder-6.7B 0.33 (raw-output probe: prose + code, ignores the action protocol entirely), Phi-3.5-mini 0.43; under the frozen harness, format adherence is itself family-dependent --- the Qwen3 restriction becomes a measured constraint, and cross-family screening remains an open question & held (gate fired 3$\times$; boundary reclassified by \#38 as V1-protocol-specific) \\
 36 & $a'$ distribution: five further disjoint seed schedules (S3--S7) on all 48 measured census points, $\leq$8 draws per point pooled with census + pre-reg 30A; primary $U$ = fraction of points with unanimous verdict, outcomes d1 $\geq$0.80 / d2 [0.60,0.80) / d3 $<$0.60; secondaries: headline per schedule and under majority vote & \textbf{d2} by 0.017: $U = 36/46 = 0.783$; distribution concentrated (median 1 distinct $a'$, 139/240 draws identical); flips confined to context types, termination 0/10; headline s3 + open gate invariant in 5/5 schedules (0.42--0.50) and under majority vote & held (claim scoped) \\
 37 & De-saturated external pressure: exhaustive point census (max 99/trajectory) on the MBPP+ tasks inside the 4B's competence window (10 slack / 11 pressure, frozen baselines); power gate $\geq$5 non-saturated pivotal per cell; outcomes e1/e2/e3 declared & gate failed in \emph{both} cells (4 and 1 non-saturated $<5$) --- inconclusive as declared; descriptive: 15/15 pivotal screened incl.\ 5/5 non-saturated, all non-saturated mass from one task; the population route to external de-saturation is exhausted --- a powered external contrast needs a new environment & held (gate fired) \\
-38 & Cross-family under the \emph{frozen V2 plain-text harness} (\#35's barrier was the V1 JSON protocol; V2's plain-text protocol predates any cross-family design, addendum 28a): same smoke gate; instrument-validity gate (fresh greedy null-flip floor, exact $\geq$0.95); candidate order Mistral-7B $\to$ DeepSeek-Coder, no third, no per-model adjustment; outcomes X1 (s3 + open primary gate) / X2 (family-dependence) / X3 (both fail smoke) / X4 (floor fails); independent estimand outcomes E1/E2 ($a'_s$ bucket); addendum 38a (truncated-episode counting, registered before any smoke verdict) & \textbf{X1+E1}: Mistral-7B passes the smoke at 1.00 (vs.\ 0.57 under V1 JSON); floor transports (48/48 nulls, 48/48 greedy null-flips exact); census 43 valid points returns \textbf{s3} (observation 0.62, context 0.83, termination 0.13); the gate reproduces the Qwen pattern under all four accountings --- opens under three (primary $9/28=0.32$ vs.\ Qwen 0.50), closes under the strictest (0.18 vs.\ 0.13); $a'_s$ 3/6 screened, bucket b3 as Qwen (0.381); selection differs: 0 points excluded for want of $a'$ (vs.\ 65/114) & held \\
-39 & Positive branch of the gate (8B, frozen 24-task pool): per-attractor power criterion --- margin of the conditional target over \emph{each} expressible attractor in mean $R_{\text{eff}}(\lambda)$, on frozen calibration artifacts (exploratory inspection declared); $\lambda^{*}$ by max-min rule; fresh mediation census on the cell (mirror of 29/38, primary accounting fixed a priori); if both gates open, licensed training (4 arms $\times$ 3 seeds, 1600 calls/cell, dose- and episode-matched); declared outcomes g0/x0/c0/d1/d2/d3 & \textbf{c0}: power gate \emph{opens} (min margin 0.166 at $\lambda^{*}=0.1$, robust at 0.15/0.08) --- first power-verified landscape; census instrument valid (17 tasks, nulls 17/17, greedy floor 17/17 exact) but yields \emph{zero} measurable non-dual points: $a'$ absent at 18/18 escalated points; declared post-hoc probe: 462/463 resamples token-identical, zero parse failures --- model near-deterministic at paired points; primary denominator empty, rule vetoes, training unpaid ($\approx$4 GPU-h of 40--60 authorized) & held (veto exercised) \\
+38 & Cross-family under the \emph{frozen V2 plain-text harness} (\#35's barrier was the V1 JSON protocol; V2's plain-text protocol predates any cross-family design, addendum 28a): same smoke gate; instrument-validity gate (fresh greedy null-flip floor, exact $\geq$0.95); candidate order Mistral-7B $\to$ DeepSeek-Coder, no third, no per-model adjustment; outcomes X1 (s3 + open primary gate) / X2 (family-dependence) / X3 (both fail smoke) / X4 (floor fails); independent estimand outcomes E1/E2 ($a'_s$ bucket); addendum 38a (truncated-episode counting, registered before any smoke verdict) & \textbf{X1+E1}: Mistral-7B passes the smoke at 1.00 (vs.\ 0.57 under V1 JSON); floor transports (48/48 nulls, 48/48 greedy null-flips exact); census 43 valid points returns \textbf{s3} (observation 0.62, context 0.83, termination 0.13); the gate reproduces the Qwen pattern under all four accountings --- opens under three (primary $9/28=0.32$ vs.\ Qwen $15/38=0.39$ matched), closes under the strictest (0.18 vs.\ 0.13); $a'_s$ 3/6 screened, bucket b3 as Qwen (0.381); selection differs: 0 points excluded for want of $a'$ (vs.\ 65/114) & held \\
+39 & Positive branch of the gate (8B, frozen 24-task pool): per-attractor power criterion --- margin of the conditional target over \emph{each} expressible attractor in mean $R_{\text{eff}}(\lambda)$, on frozen calibration artifacts (exploratory inspection declared); $\lambda^{*}$ by max-min rule; fresh mediation census on the cell (mirror of 29/38, primary accounting fixed a priori); if both gates open, licensed training (4 arms $\times$ 3 seeds, 1600 calls/cell, dose- and episode-matched); declared outcomes g0/x0/c0/d1/d2/d3 & \textbf{c0}: power gate \emph{opens} (min margin 0.166 at $\lambda^{*}=0.1$, robust at 0.15/0.08) --- first power-verified landscape; census instrument valid (24-task pool frozen, split 13/11; 7 overflow-excluded $\to$ 17 valid tasks; nulls 17/17, greedy floor 17/17 exact) but yields \emph{zero} measurable non-dual points: $a'$ absent at 18/18 escalated points; declared post-hoc probe: 462/463 resamples token-identical, zero parse failures --- model near-deterministic at paired points; primary denominator empty, rule vetoes, training unpaid ($\approx$4 GPU-h of 40--60 authorized) & held (veto exercised) \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
@@ -1822,6 +1823,38 @@ the partial ones. Failed predictions are reported in the main text where they oc
 (\S\ref{sec:training}); \#13 led to the competence-window analysis
 (\S\ref{sec:interaction}).}
 \label{tab:ledger}
+\end{table}
+
+\section{Decision-Rule Audit}
+\label{app:audit}
+Table~\ref{tab:audit} audits the two-gate decision rule (census gate,
+Corollary~\ref{cor:gate}; power gate, pre-regs 32/34/39) across every
+cell it touched. Each gate has opened at least once and vetoed at least
+once; the \emph{conjunction} (both open on the same cell) has not been
+observed. Whether it is attainable is a registrable question, not an
+assumption: the V2-4B row is a partial counter-example to structural
+anti-correlation (census open, power closed), and the
+$R_{\text{eff}}(\lambda^{*})$ recomputation on the 8B cell rules out the
+estimand-mismatch mechanism there (Appendix~\ref{app:brief}).
+
+\begin{table}[h]
+\centering\scriptsize
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lllll}
+\toprule
+Cell & Census gate & Power gate & Training & Rule vs.\ outcome \\
+\midrule
+V1 / Qwen3-4B & closes (retrospective): slack screening 57/57; non-screened pivotal mass $3/56{=}0.05$ (pressure $8/65{=}0.12$), both $<0.20$ & not defined at the time; not evaluated post hoc & paid (Acts 1--4, pre-reg 31): outcome $0.440 >$ $C_H$ $0.405 >$ corrected $0.392 =$ untrained, 3/3 seeds & veto correct; its counterfactual confirmed at matched dose \\
+V2 / Qwen3-4B & opens (primary fixed ex ante $15/38{=}0.39$; 3/4 accountings open, strictest 0.13 closes) & postdates training; post hoc (pre-reg 34) closes: no $\lambda$ gives $\geq$10 tasks with margin $\geq$0.10 (max 3) & paid (pre-regs 32--33): s3 attractor collapse, 8/9 token-exact & full rule would have vetoed; the paid collapse is the veto's justification \\
+V2 / Qwen3-8B (exploratory) & not run (landscape study) & per-task version vetoes $0/24$ despite mean dominance $+0.16$ --- demonstrated false negative & not run & veto fired for the wrong reason; motivated the per-attractor correction (pre-reg 39) \\
+V2 / Mistral-7B (pre-reg 38) & opens on primary ($9/28{=}0.32$), closes strictest (0.18) & not evaluated (no training registered) & none by design & rule not invoked; instrument-replication cell \\
+V2 / Qwen3-8B (pre-reg 39) & closes: empty primary denominator ($a'$ absent 18/18; 462/463 resamples identical; $R_{\text{eff}}(\lambda^{*})$ recomputation: identical pivotal set, token-only effects $\leq 0.033$) & opens: min per-attractor margin 0.166 at $\lambda^{*}{=}0.1$ (first opening) & vetoed unpaid ($\approx$19{,}200 calls; $\approx$4 GPU-h spent of 40--60 authorized) & first exercise of the veto under verified power; rule decided ex ante \\
+\bottomrule
+\end{tabular}}
+\caption{Decision-rule audit: every cell the two-gate rule touched, the
+state of each gate, what was paid, and whether the rule's verdict
+matches the outcome.}
+\label{tab:audit}
 \end{table}
 
 \section{Null-Replay Reconciliation}
@@ -2027,7 +2060,16 @@ $C_{HM}-C_M$ has no contrast to measure. This adds a sixth requirement:
 is costed (report $a'$ availability as a precondition diagnostic), and
 the census must screen in the estimand the training bills
 ($R_{\text{eff}}$ at $\lambda^{*}$), not raw $R$ --- a margin priced in
-tokens is invisible to an outcome-level census.
+tokens is invisible to an outcome-level census. On the 39 cell this
+mechanism was then checked descriptively and did not bite: the census
+recomputed in $R_{\text{eff}}(\lambda^{*})$ returns the identical
+pivotal set (token-only effects $\leq 0.033$, $5\times$ below the
+margin). What remains open --- and registrable as this brief's first
+prediction --- is whether the two gates anti-correlate structurally
+across cells: trainable margins may co-occur with exactly the low model
+entropy at paired points that empties the census. The V2-4B cell
+(census open, power closed) is a partial counter-example; a cell with
+both gates open has not been observed (Table~\ref{tab:audit}).
 
 \bibliographystyle{iclr2026_conference}
 \bibliography{refs}
