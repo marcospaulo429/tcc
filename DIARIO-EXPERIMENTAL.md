@@ -2030,3 +2030,34 @@ Declarada ANTES de tocar os dados. Motivada pela mesa de reviewers (R3-Q1 e AC):
   termination, (iii) recomputação em R_eff(λ*) sem massa nova. A hipótese de
   anti-correlação power↔census segue registrável para OUTRAS células, mas perde o
   mecanismo nesta. Artefatos: runs/preg39/releff_report.json, releff_rows.jsonl.
+
+## ANÁLISE DESCRITIVA 2 PÓS-DESFECHO 39 (não-decisional) — 2026-08-27
+
+Declarada ANTES de computar (schemas/contagens inspecionados, nenhum desfecho
+lido). Motivada pela rodada 2 da mesa (R1-W2, R3-W1): completar a tab:audit a
+custo zero de GPU.
+
+1. **Power gate per-atrator post hoc na célula V1** (artefatos congelados
+   c1c_margem/c1d_margem/pool.json): critério espelho do pré-reg 39 — margem do
+   alvo condicional (thr600) sobre CADA atrator expressável (keep_always,
+   summarize_always) em mean R_eff(λ), grade λ = a registrada do Act 4
+   {2, 5, 10, 25}, λ* = argmax da margem mínima (empate → menor λ), ABRE sse
+   margem mín ≥ 0.10. Conjuntos: (a) primário: todas as 52 tasks medidas nos
+   reports de margem; (b) secundário: as 12 viáveis registradas (6 train +
+   6 heldout). Desfechos possíveis: abre/fecha em cada conjunto; qualquer um é
+   publicável e preenche a linha V1 da tab:audit. NÃO reabre decisão de treino
+   (o treino V1 já rodou e está reportado).
+2. **Censo em R_eff recomputado nas células V2-4B e Mistral-7B** (espelho da
+   análise 1 do bloco anterior, generalizada): λ = 0.2 (λ* registrado do
+   pré-reg 33; Mistral herda por ser o mesmo stack/magnitude de tokens),
+   limiar de escala = 0.10 (margem registrada). Estágios: nulos (esperado
+   dR_eff = 0), piso quando existir, screening (V2-4B: 690 flips; Mistral: 277).
+   Métricas: identidade do conjunto {dR≠0} vs {|dR_eff| ≥ 0.10}, mediana/máx
+   |dR_eff| dos flips com dR = 0 (efeito só-tokens). Testa se a inocuidade da
+   recomputação (célula 8B) é geral ou não. Não altera nenhum desfecho
+   registrado; alimenta a hipótese de anti-correlação e a linha correspondente
+   da tab:audit.
+3. **Polimentos declarados no paper** (sem dados novos): carimbo temporal da
+   recomputação (pós-desfecho, pré-declarada, motivada pela mesa);
+   "overdetermined" → dois mecanismos independentes com um cross-check em ambos
+   os estimandos; nota prospectivo/retrospectivo na tab:audit.
