@@ -2061,3 +2061,27 @@ custo zero de GPU.
    recomputação (pós-desfecho, pré-declarada, motivada pela mesa);
    "overdetermined" → dois mecanismos independentes com um cross-check em ambos
    os estimandos; nota prospectivo/retrospectivo na tab:audit.
+
+### Resultados da análise descritiva 2 (2026-08-27)
+
+**2.1 Power gate V1 post hoc** (`experiments/power_v1.py`,
+`runs/preg39/power_v1_report.json`): no pool cheio (52 tasks) FECHA — melhor
+min-margem 0.056 em λ=25 (margens sobre keep negativas em λ≤10). No pool
+registrado de treino (12 viáveis) ABRE — min-margem 0.135 no λ*=5 registrado
+(0.209 em λ=10). Leitura: a única célula em que a regra autoriza treino é a
+célula onde o treino de fato rodou (Act 4) e colapsou para keep_always — o
+gate filtra sinal identificável, não garante sucesso do otimizador
+(necessário, não suficiente). Responde R1-W2: o ramo positivo FOI exercido
+(retrospectivamente) e o desfecho já está no paper.
+
+**2.2 Censo em R_eff, células V2-4B e Mistral** (`experiments/releff_cells.py`,
+`runs/preg39/releff_cells_report.json`, λ=0.2, limiar 0.10): a identidade dos
+conjuntos pivotais NÃO se mantém — V2-4B screening 114 (R) vs 116 (R_eff),
+máx só-tokens 0.163; Mistral 49 vs 85, máx 0.164. Porém o piso de replay nulo
+em R_eff nas mesmas células tem magnitude idêntica (máx 0.166 no 4B, 0.166 no
+Mistral; piso greedy do Mistral = 0.0 exato): os cruzamentos só-tokens são
+ruído de replay estocástico do estimando R_eff, não efeito da decisão trocada.
+Conclusão honesta: o cross-check exato nos dois estimandos vale na célula
+quase-determinística (8B, máx 0.033); nas células estocásticas um censo em
+R_eff exigiria piso próprio. Nada registrado é alterado (censos foram
+registrados em R; R_eff só entra nos power gates, que são médias por task).
