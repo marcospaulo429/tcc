@@ -1712,3 +1712,15 @@ será reportado como "no longer confined to a single model family",
 nunca "generalizes across families".
 **Custo estimado:** smoke ~0,5–1h/modelo; pipeline ~700–1000 replays,
 12–20h GPU (7B na 4090). Tudo sequencial; 4B restaurado ao final.
+
+### ADENDO 38a (2026-08-26, infraestrutura, antes de qualquer veredito de smoke): episódio truncado por contexto
+Primeira execução do smoke Mistral: 2/3 episódios COMPLETOS com reward
+0.90/0.91 (o modelo opera o protocolo V2), crash no 3º por 400 de estouro
+de contexto no serving de 8k — a MESMA exceção que a célula Qwen/v2_folga
+sofre em 3/60 tasks do base (29); propriedade do stack, não da família.
+O smoke não estava preparado para episódio abortado (exceção não tratada
+→ a cadeia leu como reprovação, INCORRETO). Correção de infraestrutura:
+episódio truncado entra na contagem com as decisões até o abort; métrica
+e gate INALTERADOS (taxa = ok/(ok+retry) ≥ 0.80). Nenhum veredito de
+smoke foi determinado antes desta correção; a cadeia foi interrompida
+antes de qualquer contato com o candidato 2. Re-execução do zero.
