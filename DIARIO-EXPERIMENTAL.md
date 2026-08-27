@@ -1886,3 +1886,26 @@ census vira x0 por poder do instrumento — limiar registrado agora);
 (ii) episódios 8B mais lentos que o estimado → células podem parar por
 max_episodes=none/budget (stopped_by reportado); (iii) colapso d3
 mesmo com margem por atrator — desfecho previsto, não falha do desenho.
+
+**ADENDO 39a (2026-08-27, antes de qualquer rollout):** a consequência
+aritmética declarada no split ("Resultado: 12 treino / 12 held-out")
+estava errada. A REGRA registrada (estratos, ordenação por task_id,
+pares→treino, ímpares→held-out) produz 13 treino / 11 held-out: f_easy
+tem 1 task (→treino), f_hard tem 7 (→4/3). A regra permanece
+exatamente como registrada; corrigimos apenas a derivação. f_mech
+continua 2/2. Também: environment.tasks_swe35 adicionado ao
+environment/registry.py (_MODULES) — sem isso, NENHUM replay (census ou
+braços de crédito) resolveria as tasks do pool 35; correção de infra
+pré-dados, coberta pelos testes existentes.
+
+**ADENDO 39b (2026-08-27, antes do census):** precisão sobre o piso: o
+protocolo é o ESPELHO EXATO do estágio piso do 38 (null replay no 1º
+candidato de screening da trajetória, sufixo greedy) — que é a decisão
+context_policy de maior score quando existe (ORDEM_TIPOS começa por
+context_policy), e outro tipo apenas em trajetórias sem candidato de
+contexto. Gate inalterado: ≥0.95 exatos. Implementação:
+experiments/preg39.py + experiments/preg39_chain.sh; Gate 1 já rodado
+(analítico, 0 GPU): ABRE com λ*=0.1, margem mínima 0.166 (vs keep
+0.166, vs summarize 0.3006, vs default 0.2568), robusto às
+sensibilidades 0.15 e 0.08; split pela regra registrada = 13 treino /
+11 held-out, f_mech 2/2.
