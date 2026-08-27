@@ -1658,3 +1658,57 @@ com baseline in-window, os pontos counterfactuais do MBPP+ saturam (a
 task ou resiste a qualquer flip ou colapsa com todos). O contraste de
 regime com poder num ambiente externo exige ambiente novo (não outra
 análise do MBPP+), fora do escopo desta rodada. Custo real: ~90 replays.
+
+### PRÉ-REGISTRO 38 (2026-08-26, antes de rodar): cross-family sob harness V2 congelado (protocolo texto plano)
+Motivação: mesa redonda 9 + review externa — crítica 6 (Qwen-only)
+documentada mas não fechada. Insight: o desfecho 35 é específico do
+PROTOCOLO JSON do V1. O V2 usa protocolo de ação em TEXTO PLANO
+(LIST/READ/WRITE/TEST/FINISH) por razões INDEPENDENTES e anteriores a
+qualquer desenho cross-family: adendo 28a (Qwen3-4B, 0 write_file em
+437 tool_calls sob envelope JSON; recalibração registrada antes do
+census 29). Logo existe um harness já congelado, já usado no census
+principal, plausivelmente executável por famílias não-Qwen.
+
+**Hipótese:** a ESTRUTURA causal transporta de família: (i) fenômeno —
+a célula nova reproduz o desfecho registrado da célula Qwen/v2_folga
+(s3: heterogeneidade por tipo; gate medidos-sem-duais aberto); (ii)
+acoplamento — sob a′_s a taxa screened cai ao bucket b3 (<0.75) com
+de-screening para aditividade (I_s=0), como no Qwen (0.381, pré-reg 30B).
+**Manipulada:** SÓ a família do modelo. Congelados no commit 63bf249:
+HarnessV2 v2_folga default, EpisodeV2/parser plain-text, tasks_swe (60),
+serving idêntico (vLLM 8321, APC off, max-model-len 8192, greedy
+seed 1234), a′ temp 0.8 seeds 2001–2008 + escalonamento 1.2/3001–3008
+(29b), a′_s seeds 6001–6008 (30B), seleção 28b (≤2/tipo, ≤6/traj).
+**Candidatos (ordem fixa, sem 3º, sem ajuste por modelo pós-resultado):**
+1. mistralai/Mistral-7B-Instruct-v0.3; 2. deepseek-ai/deepseek-coder-6.7b-instruct
+(máxima distância comportamental; review externa). Se ambos passarem o
+smoke, o census roda no 1º da ordem (orçamento de uma célula).
+**Transporte declarado:** TCC_MERGE_ROLES=1 (canonicalização do adendo
+35a) aplicado apenas a template com alternância estrita (Mistral); a
+sequência canônica de mensagens é idêntica — não é mudança de harness.
+**Smoke gate (forma idêntica ao 35):** 3 episódios nas tasks declaradas
+swe_agendador_v1, swe_cache_v1, swe_config_merge_v1, config v2_folga;
+taxa = tool_call não-forçado / (ok + retries) ≥ 0.80. Falhou → próximo
+candidato.
+**Gate de validade do instrumento (antes de qualquer leitura):** piso da
+célula nova = nulos full-forced (60) + piso greedy NOVO (replay com flip
+nulo no 1º candidato de screening por trajetória, sufixo greedy, ≤60
+replays): exatos ≥0.95 e desvios listados; abaixo → X4 (instrumento não
+transporta; célula sem leitura de screening).
+**Pipeline (1º aprovado):** base 60×v2_folga → nulos → piso greedy →
+screening 28b → census a′ (2 passes 29b) → braço a′_s (30B, context
+keep→summarize) → relatório. Estágios retomáveis; comparador declarado =
+célula Qwen/v2_folga (context 0.50 n18, obs 0.60 n10, test 0.33 n3,
+term 0.00 n7; desfecho s3; gate 0.50 abre) e 30B (screened_s 0.381, b3).
+**Desfechos declarados:** X1 = desfecho s3 E gate aberto (fenômeno
+transporta no nível do desfecho registrado); X2 = s1/s2 ou gate fecha
+(dependência de família DENTRO do mesmo harness/protocolo — a tripla
+ganha o eixo família; igualmente publicável). Estimando, independente:
+E1 = bucket a′_s b3 (acoplamento transporta); E2 = outro bucket
+(acoplamento dependente de família). X3 = ambos falham smoke (fronteira
+de adesão a protocolo persiste em texto plano; 35 NÃO é reclassificado).
+X4 = piso falha. Compromisso de linguagem: qualquer resultado positivo
+será reportado como "no longer confined to a single model family",
+nunca "generalizes across families".
+**Custo estimado:** smoke ~0,5–1h/modelo; pipeline ~700–1000 replays,
+12–20h GPU (7B na 4090). Tudo sequencial; 4B restaurado ao final.
