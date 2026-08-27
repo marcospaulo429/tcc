@@ -1925,3 +1925,69 @@ fenômeno (modelo quase determinístico mesmo a temp 1.2). O desfecho c0
 NÃO será revertido pela sonda; ela só qualifica a interpretação.
 Custo: ~300 chamadas, sem replays. O treino segue NÃO executado (regra
 registrada).
+
+### DESFECHO 39 (2026-08-27): c0 — o veto do census disparou num landscape onde o poder existe; treino não executado
+
+**Gate 1 (analítico, 0 GPU): ABRIU.** λ* = 0.1; margem mínima por
+atrator do alvo condicional na média de R_eff = **0.166** (vs
+keep_always 0.166, summarize_always 0.3006, default 0.2568), robusta às
+sensibilidades 0.15 e 0.08. Split pela regra registrada (adendo 39a):
+13 treino / 11 held-out, f_mech 2/2. A correção por atrator no nível do
+sinal de treino faz o que prometia: destrava o falso-negativo do
+critério per-task (que vetava 0/24).
+
+**Gate 2 (census 8B, novo): FECHOU → c0 pela regra registrada; o treino
+NÃO foi executado.** Instrumento válido: base 24 episódios → 17
+trajetórias válidas (7 F com context overflow sob a config default,
+excluídas e reportadas; ≥12 ✓), nulos 17/17 exatos, piso greedy 17/17
+(1.00 ≥ 0.95). Screening: 92 flips medidos; dR≠0 por tipo:
+termination 17/17, observation 4/29, test_schedule 1/17,
+**context_policy 1/29**. Census: 23 pontos pivotais; a′ encontrado em
+apenas 5 — TODOS duais definicionais de termination (braço HM
+analítico, adendo 29a); 18/18 sem a′ mesmo na escalação a temp 1.2.
+Contabilidade primária (medidos_sem_duais): **0/0 — denominador
+vazio**, gate não abre → c0. As quatro células: com_duais 4/5 = 0.80
+(abre); sem_duais 0/0 (nulo); pivotal_com 4/23 = 0.17 (fecha);
+pivotal_sem 0/23 = 0.00 (fecha).
+
+**Anatomia (sonda 39c, pós-hoc, não-decisória):** 320 amostragens de a′
+(20 pontos × 2 temps × 8 seeds) + 144 resoluções de fase 2 = 464 saídas
+do 8B. **Zero tentativas inválidas de parse, zero fase-2 sem bloco;
+462/463 ações token-idênticas à original** (1 divergente, ~0.2%);
+22/40 células ponto×temp com 8/8 idênticas. A ausência de a′ é
+propriedade da célula (Qwen3-8B quase determinístico nos pontos j,
+mesmo a temp 1.2), não falha do amostrador.
+
+**Leitura registrada.** Nesta célula, a pivotalidade em R vive quase
+inteira em termination (duais last-mover por construção); flips de
+contexto mudam R em 1/29. A margem que abriu o Gate 1 é preço de
+TOKENS (R_eff), não de R — e o census registrado rastreia mediação em
+R. O c0 é exatamente a dissociação declarada no pré-registro: landscape
+treinável (Gate 1 aberto) + nenhum contraste mensurável de mediação
+(Gate 2 fechado) → o veto dispara e o treino não é pago. É o PRIMEIRO
+exercício do ramo de veto da decision rule num landscape com poder
+verificado — a licença deixou de ser conjectura de papel.
+
+**Duas lições para o design brief (Apêndice L):** (i) o census de
+screening deve medir a mediação NO MESMO estimando do sinal de treino
+(R_eff precificado em λ*), não em R — um benchmark cujo sinal vive no
+custo é invisível a um census de outcome; (ii) crédito mediado por a′
+pressupõe entropia do modelo em j: com política quase determinística,
+C_HM − C_M é não-identificável — a disponibilidade de a′ deve ser
+reportada como diagnóstico de pré-condição da célula.
+
+**Custos exatos.** Census: 24 episódios base + 17 replays de piso + 92
+replays de screening + 5 replays M + ~328 amostragens de a′ ≈ 2h14 de
+GPU (11:44→13:58). Sonda: 464 chamadas, 0 replays, ~1h30. Treino: NÃO
+executado — ~19.200 chamadas (~12–24 h GPU) não pagas porque a regra
+mandou não pagar. Fase D total ≈ 4h de GPU dos 40–60 autorizados.
+Qwen3-4B restaurado no serving.
+
+**Linguagem para o paper:** "In the pre-registered landscape where the
+analytic per-attractor power gate opens (min margin 0.166 at λ* = 0.1),
+the registered mediation census yielded zero measurable non-dual
+points — the model is near-deterministic at the paired decision points
+(462/463 identical resamples) — and per the pre-registered rule the
+credit-training license was vetoed; no training was paid for." NUNCA
+"o método falhou" nem "o método funciona": o que foi validado é o ramo
+de veto da regra de decisão operando fora do landscape de calibração.
