@@ -1909,3 +1909,19 @@ experiments/preg39.py + experiments/preg39_chain.sh; Gate 1 já rodado
 0.166, vs summarize 0.3006, vs default 0.2568), robusto às
 sensibilidades 0.15 e 0.08; split pela regra registrada = 13 treino /
 11 held-out, f_mech 2/2.
+
+**ADENDO 39c (2026-08-27, após leitura do gate 2, antes do desfecho):**
+o gate 2 fechou pela regra registrada (desfecho mecânico c0), mas com
+uma configuração que a regra não antecipou: a contabilidade primária
+ficou com denominador VAZIO (0 pontos medidos sem duais) — os únicos 5
+pontos mensuráveis do census são duais definicionais de termination.
+Causa próxima: sample_alternative_v2 não encontrou a′ em 19/23 pontos
+do passe 1 e 18/18 do escalonamento (~300 tentativas). Antes de
+escrever o desfecho, rodamos uma SONDA pós-hoc declarada exploratória
+e NÃO-decisória (experiments/anatomia39.py): reamostra a′ nos pontos
+falhados gravando cada tentativa (inválida × igual-ao-original), sem
+nenhum replay. Objetivo: distinguir instrumento (parse falha no 8B) de
+fenômeno (modelo quase determinístico mesmo a temp 1.2). O desfecho c0
+NÃO será revertido pela sonda; ela só qualifica a interpretação.
+Custo: ~300 chamadas, sem replays. O treino segue NÃO executado (regra
+registrada).
