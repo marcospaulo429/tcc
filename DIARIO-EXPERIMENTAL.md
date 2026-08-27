@@ -1991,3 +1991,25 @@ points — the model is near-deterministic at the paired decision points
 credit-training license was vetoed; no training was paid for." NUNCA
 "o método falhou" nem "o método funciona": o que foi validado é o ramo
 de veto da regra de decisão operando fora do landscape de calibração.
+
+## ANÁLISE DESCRITIVA PÓS-DESFECHO 39 (não-decisional) — 2026-08-27
+
+Declarada ANTES de tocar os dados. Motivada pela mesa de reviewers (R3-Q1 e AC):
+
+1. **Pivotalidade do censo 39 recomputada em R_eff(λ*=0.1)** sobre os 92 flips de
+   screening já pagos (zero rollouts novos). Contabilidade espelha o pré-reg 31:
+   R_eff(ramo) = R − λ·prompt_tokens/1e5, com prompt_tokens do ramo flipado =
+   prefixo pago das decisões ORIGINAIS [0:entry] + total do replay (entry = último
+   ponto canônico ≤ index, como no build_flip_queue). Piso: mesmos nulos do estágio
+   piso recomputados em R_eff (esperado: idênticos → piso exato preservado).
+   Reportar por tipo: n(dR_eff≠0), mediana e máx |dR_eff|, comparados à margem do
+   gate 1 (0.166). NÃO altera desfecho c0 (a ausência de a′ torna C_HM−C_M
+   não-identificável em qualquer estimando); serve para separar as duas causas
+   independentes do fechamento (entropia zero nos pontos pareados × censo
+   registrado em R quando a margem vive em R_eff).
+2. **Tabela de auditoria da regra de decisão** (paper, apêndice): célula × estado
+   de cada gate × razão mecânica × desfecho × compute pago/economizado — dados já
+   publicados no ledger, só consolidação.
+3. **Hipótese registrável (design brief)**: anti-correlação estrutural power↔census
+   quando o censo é registrado em R e a margem em R_eff; contra-exemplo parcial:
+   V2-4B (censo abriu 0.39, power fechou). Enunciada como previsão, não testada aqui.
