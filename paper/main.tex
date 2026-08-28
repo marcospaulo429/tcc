@@ -606,7 +606,7 @@ turned under-specification into a \emph{false negative}: the per-task
 criterion vetoes ($0/24$) even where the conditional target dominates
 every fixed policy. The registered per-attractor correction (pre-reg 39)
 opens the power gate ($\lambda^{*}=0.1$, min margin $0.166$) --- and the
-census closes it again by two independent mechanisms, one cross-checked
+census closes it again by two distinct mechanisms, one cross-checked
 in both estimands: the 8B is near-deterministic at the paired points
 ($462/463$ resamples identical, so no estimand identifies
 $C_{HM}-C_M$), and recomputing the census in
@@ -727,6 +727,7 @@ ranking value (\S\ref{sec:critic}); (ii) turn prefix caching off before
 trusting replay attribution; (iii) before paying for
 replay-credit training, run the screening census in the estimand the
 training will bill and apply the census and power gates as \emph{vetoes}
+--- necessary, not sufficient
 (Table~\ref{tab:audit} audits the rule across all five cells); (iv) where the census shows screening, bill
 $C_{HM}-C_M$ or nothing --- never $C_H$.
 
@@ -738,9 +739,11 @@ estimand-dependent --- with slack our primary model screens off the
 harness (57/57) and single-layer credit double-counts ($C_H=-I$); a
 poorer coupling makes the same points exactly additive; other
 models, harnesses, and regimes break the shield. \emph{Decision rule}:
-measure and gate credit before training on it --- better credit did not
-train a better harness on either stack, and the gate's first
-power-verified opening was itself vetoed by the census. We release the
+measure and gate credit before training on it --- and the gates read
+necessary, not sufficient: better credit did not train a better harness
+on either stack, V1's retrospective opening preceded a failed training,
+and the first prospective opening was itself vetoed by the census. We
+release the
 infrastructure and a 39-item ledger whose training negatives are the
 design brief for the missing benchmark (Appendix~\ref{app:brief}).
 \appendix
@@ -1842,13 +1845,16 @@ closed), and the $R_{\text{eff}}(\lambda^{*})$ recomputation on the 8B
 cell rules out the estimand-mismatch mechanism there
 (Appendix~\ref{app:brief}). Extending that recomputation to the
 stochastic cells shows the exact cross-check is specific to the
-near-deterministic cell: on the 4B and Mistral censuses, token-only
-crossings of the 0.10 scale reach 0.163--0.164, but the null-replay
-floor \emph{in $R_{\text{eff}}$} on the same cells has the same
-magnitude (max 0.166; Mistral greedy floor exactly 0.0) --- replay
-noise of the estimand, not decision effects. A census run natively in
-$R_{\text{eff}}$ on a stochastic cell therefore needs its own null
-floor, mirroring \S\ref{sec:floor}.
+near-deterministic cell, and distributionally so: every token-only
+crossing of the 0.10 scale lies within the same cell's null-replay
+support in $R_{\text{eff}}$ ($39/39$ on the 4B, $44/44$ on Mistral, all
+$\leq 0.166$; median permutation $p$ against the null $0.18$ and
+$0.41$; $p<0.05$ in $4/39$ and $1/44$, as exchangeability predicts).
+The stronger diagnostic: the null floor itself crosses the 0.10 scale
+in $30\%$ (4B) and $60\%$ (Mistral) of null replays --- the registered
+scale sits below the $R_{\text{eff}}$ noise floor of these cells, so a
+census run natively in $R_{\text{eff}}$ on a stochastic cell needs its
+own null floor, mirroring \S\ref{sec:floor}.
 
 \begin{table}[h]
 \centering\scriptsize
@@ -1857,7 +1863,7 @@ floor, mirroring \S\ref{sec:floor}.
 \toprule
 Cell & Census gate & Power gate & Training & Rule vs.\ outcome \\
 \midrule
-V1 / Qwen3-4B & closes (retrospective): slack screening 57/57; non-screened pivotal mass $3/56{=}0.05$ (pressure $8/65{=}0.12$), both $<0.20$ & not defined at the time; post hoc (per-attractor mirror, registered grid): \emph{opens} on the registered 12-task pool (min margin 0.135 at the registered $\lambda^{*}{=}5$), closes on the full 52-task pool (best min margin 0.056) & paid (Acts 1--4, pre-reg 31): outcome $0.440 >$ $C_H$ $0.405 >$ corrected $0.392 =$ untrained, 3/3 seeds & veto correct; power opened post hoc on the trained pool and training still failed --- the power gate is necessary, not sufficient; the census veto was the binding one \\
+V1 / Qwen3-4B & closes (retrospective): slack screening 57/57; non-screened pivotal mass $3/56{=}0.05$ (pressure $8/65{=}0.12$), both $<0.20$ & not defined at the time; post hoc (per-attractor mirror, registered grid): closes on the full 52-task pool (declared primary; best min margin 0.056), \emph{opens} on the registered 12-task training pool (declared secondary; min margin 0.135 at the registered $\lambda^{*}{=}5$) --- that pool was itself margin-selected, so the opening is partly by construction; the informative content is the failure under an open gate & paid (Acts 1--4, pre-reg 31): outcome $0.440 >$ $C_H$ $0.405 >$ corrected $0.392 =$ untrained, 3/3 seeds & veto correct; power opened post hoc on the trained pool and training still failed --- the power gate is necessary, not sufficient; the census veto was the binding one \\
 V2 / Qwen3-4B & opens (primary fixed ex ante $15/38{=}0.39$; 3/4 accountings open, strictest 0.13 closes) & postdates training; post hoc (pre-reg 34) closes: no $\lambda$ gives $\geq$10 tasks with margin $\geq$0.10 (max 3) & paid (pre-regs 32--33): s3 attractor collapse, 8/9 token-exact & full rule would have vetoed; the paid collapse is the veto's justification \\
 V2 / Qwen3-8B (exploratory) & not run (landscape study) & per-task version vetoes $0/24$ despite mean dominance $+0.16$ --- demonstrated false negative & not run & veto fired for the wrong reason; motivated the per-attractor correction (pre-reg 39) \\
 V2 / Mistral-7B (pre-reg 38) & opens on primary ($9/28{=}0.32$), closes strictest (0.18) & not evaluated (no training registered) & none by design & rule not invoked; instrument-replication cell \\
