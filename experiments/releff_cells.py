@@ -54,6 +54,7 @@ def _entry(traj, index: int) -> int:
 def _analisa(base: Path) -> dict:
     idx = _base_idx(base)
     rep = {}
+    por_estagio = {}
     for estagio, dirname in (("nulos", "nulos_trajs"), ("piso", "piso_trajs"),
                              ("screening", "screening_trajs")):
         if not (base / dirname).is_dir():
@@ -78,11 +79,31 @@ def _analisa(base: Path) -> dict:
         piv_eff = sum(1 for l in linhas if abs(l["dR_eff"]) >= LIMIAR)
         identicos = all((l["dR"] != 0) == (abs(l["dR_eff"]) >= LIMIAR) for l in linhas)
         so_tokens = [abs(l["dR_eff"]) for l in linhas if l["dR"] == 0]
+        por_estagio[estagio] = linhas
         rep[estagio] = {
             "n": len(linhas), "pivotais_R": piv_r, "ge_limiar_Reff": piv_eff,
             "conjuntos_identicos": identicos,
             "mediana_so_tokens": round(statistics.median(so_tokens), 4) if so_tokens else None,
             "max_so_tokens": round(max(so_tokens), 4) if so_tokens else None}
+    # Análise 2.2b: cruzamentos só-tokens vs distribuição nula de |dR_eff|
+    if "nulos" in por_estagio and "screening" in por_estagio:
+        nulos = sorted(abs(l["dR_eff"]) for l in por_estagio["nulos"])
+        n = len(nulos)
+        cruz = sorted(abs(l["dR_eff"]) for l in por_estagio["screening"]
+                      if l["dR"] == 0 and abs(l["dR_eff"]) >= LIMIAR)
+        detal = [{"dR_eff": round(v, 4),
+                  "quantil_nulo": round(sum(1 for x in nulos if x <= v) / n, 3),
+                  "p_perm": round(sum(1 for x in nulos if x >= v) / n, 3)}
+                 for v in cruz]
+        reverso = sum(1 for l in por_estagio["screening"]
+                      if l["dR"] != 0 and abs(l["dR_eff"]) < LIMIAR)
+        rep["cruzamentos_2_2b"] = {
+            "n_cruzamentos": len(cruz), "n_nulos": n,
+            "max_nulo": round(nulos[-1], 4),
+            "todos_no_suporte_nulo": all(v <= nulos[-1] for v in cruz),
+            "p_perm_min": min((d["p_perm"] for d in detal), default=None),
+            "reverso_pivotal_R_abaixo_limiar_Reff": reverso,
+            "detalhe": detal}
     return rep
 
 

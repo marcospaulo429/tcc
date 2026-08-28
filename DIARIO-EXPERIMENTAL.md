@@ -2100,3 +2100,17 @@ dentro do suporte/quantis não extremos (sustenta "ruído do estimando") ou
 além do suporte (reportar e enfraquecer o escopo no paper). Qualquer um é
 publicável. Requer persistir linhas por flip em releff_cells.py (mesmo
 cômputo determinístico já executado).
+
+### Resultado da análise 2.2b (2026-08-27)
+
+(`experiments/releff_cells.py` estendido; `runs/preg39/releff_cells_report.json`)
+Todos os cruzamentos só-tokens estão individualmente dentro do suporte nulo da
+própria célula (V2-4B: 39/39 ≤ 0.166; Mistral: 44/44 ≤ 0.166). Quantis:
+mediana do p de permutação 0.179 (4B) e 0.407 (Mistral); p < 0.05 em 4/39 e
+1/44 — compatível com o esperado sob intercambialidade (≈2 por célula a 5%).
+Diagnóstico mais forte: o próprio piso nulo cruza a escala 0.10 em 35/117
+(30%, 4B) e 29/48 (60%, Mistral) dos replays — a escala registrada está
+ABAIXO do piso de ruído de R_eff nessas células; qualquer censo nativo em
+R_eff ali é não-potente sem piso próprio. Reverso (pivotal em R, < 0.10 em
+R_eff): 37 (4B) e 8 (Mistral), mesma leitura. Sustenta "ruído do estimando"
+distribucionalmente, não só por máximos.
