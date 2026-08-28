@@ -2085,3 +2085,18 @@ Conclusão honesta: o cross-check exato nos dois estimandos vale na célula
 quase-determinística (8B, máx 0.033); nas células estocásticas um censo em
 R_eff exigiria piso próprio. Nada registrado é alterado (censos foram
 registrados em R; R_eff só entra nos power gates, que são médias por task).
+
+## ANÁLISE DESCRITIVA 2.2b (não-decisional) — 2026-08-27
+
+Declarada ANTES de computar. Motivada pela rodada 3 da mesa (R2-W1 = R3-W2:
+"máx-vs-máx não é distribucional"). Extensão da análise 2.2, mesmos dados,
+zero rollouts: para cada célula estocástica (V2-4B, Mistral), situar cada
+cruzamento só-tokens (dR = 0 e |dR_eff| ≥ 0.10) na distribuição nula de
+|dR_eff| da MESMA célula (replays nulos, análise 2.2): (a) quantil empírico
+de cada cruzamento; (b) p de permutação = fração de nulos com |dR_eff| ≥ o
+valor do cruzamento; (c) verificação individual (não só o máximo) de que cada
+cruzamento está dentro do suporte nulo. Desfechos possíveis: cruzamentos
+dentro do suporte/quantis não extremos (sustenta "ruído do estimando") ou
+além do suporte (reportar e enfraquecer o escopo no paper). Qualquer um é
+publicável. Requer persistir linhas por flip em releff_cells.py (mesmo
+cômputo determinístico já executado).
