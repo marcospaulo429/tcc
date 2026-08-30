@@ -2114,3 +2114,55 @@ ABAIXO do piso de ruído de R_eff nessas células; qualquer censo nativo em
 R_eff ali é não-potente sem piso próprio. Reverso (pivotal em R, < 0.10 em
 R_eff): 37 (4B) e 8 (Mistral), mesma leitura. Sustenta "ruído do estimando"
 distribucionalmente, não só por máximos.
+
+## 2026-08-27 — PRÉ-REGISTRO 40 (antes de rodar): quarto braço da grade fatorial — R(h′,a)
+
+Motivação: auditoria externa (Boclin). A grade fatorial 2×2 do ponto de
+intervenção {(h,a),(h,a′),(h′,a),(h′,a′)} tem só 3 células medidas: o braço
+C_H é R(h′, f(h′)) — modelo responde AO VIVO ao contexto flipado — ou seja,
+um efeito total (direto + mediado), não a célula fatorial R(h′,a). A célula
+R(h′,a) nunca foi executada, e sem ela I = C_HM − C_H − C_M não é interação
+fatorial. (A Figura 1 do paper inclusive rotula errado o braço H como a_{t+1}
+forçada — bug de exposição a corrigir independentemente do desfecho.)
+
+**Predição do auditor (testável):** nos pontos screened de folga, a ação
+original a foi gerada VENDO o contexto intacto e portanto re-injeta a
+informação necessária (ex.: o valor lido de um arquivo) — logo R(h′,a) = R
+e a interação fatorial legítima I_fact = C_HM − C_Ha − C_M = 0 (screening
+como artefato da grade incompleta). Refutação: R(h′,a) < R em fração
+relevante ⇒ a informação necessária vive no contexto de turnos POSTERIORES,
+não dentro de a; screening tem componente genuíno de recuperação pelo modelo.
+
+**População:** todos os pontos com C_M e C_HM medidos. V1: cf_results.jsonl
+de teste3_{g450,g600,g900} (folga; 17+21+19=57) e teste3_{mt4,mt6,mt8}
+(pressão; 22+21+22=65). V2: census_rows+census_esc_rows com C_M,C_HM
+não-nulos (48; destes, 10 hm_analitico de termination têm quarto braço
+TAMBÉM analítico: flip terminate em i encerra o episódio antes de j, logo
+R(h′,a) ≡ R_H sem replay). Spans com retry excluídos (mesma recusa dos censos).
+
+**Procedimento:** 1 replay greedy por ponto. Fila = decisões originais do
+entry ao ponto do modelo, com flip do harness em i e a AÇÃO ORIGINAL a
+(canônica, sem "forced") em j. V1: fila [cp: flip, tc: a] a partir de
+cp_index — idêntica à fila nula já validada, exceto o flip. V2:
+_fila_dupla(traj, i, flip, j, _canon(dj.chosen_action)). Mesmo servidor
+vLLM (8321, Qwen3-4B, APC off, greedy seed 1234). Execução SEQUENCIAL —
+paralelismo intra-GPU vetado pelo incidente _ls600_concorrente; a máquina
+tem 1 GPU, então não há paralelismo entre instâncias (desvio declarado do
+plano verbal "paralelizar": vetado pela premissa de determinismo).
+Gate prévio: revalidação nula (2 pontos/config, fila nula), todos exatos,
+senão aborta. Script: experiments/quarto_braco.py; rows em runs/preg40/.
+
+**Desfechos declarados (primário = fração dos pontos screened de folga,
+C_HM=C_M exato em g450/g600/g900, com R(h′,a) = R exato):**
+- s1 (auditor confirmado): ≥ 0.90 ⇒ screening nos pontos de folga é
+  majoritariamente artefato da grade incompleta; tese do paper reescrita
+  para dominância do estimando/medição; I reinterpretado como contraste de
+  efeito total, não interação fatorial.
+- s2 (misto): 0.50–0.90 ⇒ mapa por ponto (artefato vs recuperação real);
+  paper reporta as duas componentes.
+- s3 (auditor refutado): < 0.50 ⇒ screening tem componente genuíno de
+  recuperação pelo modelo; tese original fortalecida.
+Secundários: distribuição de I_fact = C_HM − C_Ha − C_M por config/tipo;
+comportamento nos 8 pontos de quebra da pressão; C_Ha (efeito direto do
+harness) vs C_H (efeito total) — divergência mede quanto o braço vivo
+mistura mediação. Custo: ~160 replays + 12 nulos. Reportamos qualquer desfecho.
