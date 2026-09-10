@@ -2166,3 +2166,59 @@ Secundários: distribuição de I_fact = C_HM − C_Ha − C_M por config/tipo;
 comportamento nos 8 pontos de quebra da pressão; C_Ha (efeito direto do
 harness) vs C_H (efeito total) — divergência mede quanto o braço vivo
 mistura mediação. Custo: ~160 replays + 12 nulos. Reportamos qualquer desfecho.
+
+### DESFECHO 40 (2026-08-30): quarto braço R(h′,a) — s1, auditor (Boclin)
+CONFIRMADO nos pontos screened de folga
+
+**Gate nulo: PASSOU.** 16/16 replays de revalidação nula exatos (12 V1 =
+2 pontos × 6 configs; 4 V2 = 2 pontos × 2 configs) — execução autorizada.
+
+**Endpoint primário: s1.** 57 pontos screened de folga (C_HM = C_M exato,
+g450/g600/g900): **56/57 com R(h′,a) = R exato → fração 0.9825 ≥ 0.90.**
+A predição do auditor está confirmada na folga: a ação original a, gerada
+VENDO o contexto intacto, re-injeta a informação necessária; trocar a
+decisão do harness em i e forçar a ação original em j restaura o reward.
+O screening nos pontos de folga é majoritariamente ARTEFATO DA GRADE
+INCOMPLETA, não recuperação genuína pelo modelo.
+
+**Secundários (registrados conforme o pré-reg):**
+- V1 folga por config: g450 17/17 exatos (I_fact = 0 em todos); g900
+  19/19; g600 20/21 (única quebra da folga, |I_fact| = 0.0769).
+- V1 pressão (mt4/mt6/mt8, 65 pontos): 8 quebras listadas em
+  v1_quebras_pressao (api_router cp0 em mt6/mt8 com I_fact = 0.375 mesmo
+  com exact_ha — ponto NÃO screened; l_log_parser e l_vending_machine com
+  R(h′,a) < R). Fora da folga, R(h′,a) < R em fração relevante: a
+  informação necessária às vezes vive no contexto de turnos POSTERIORES
+  — a componente genuína existe, mas não nos pontos screened.
+- Divergência efeito total vs direto: C_H ≠ C_Ha em **83/122 pontos V1
+  (68%)** — o braço vivo C_H mistura mediação na maioria dos pontos;
+  C_Ha (direto) é o estimando fatorial correto.
+- V2 (48 pontos, 0 erros de replay): context_policy 13/23 exatos
+  (I_fact médio +0.018, máx 0.364); observation_policy 4/12 exatos
+  (máx |I_fact| = 1.0 — tipo mais instável); termination 10/10
+  analíticos (flip encerra antes de j ⇒ R(h′,a) ≡ R_H por construção;
+  9/10 com I_fact = 0); test_schedule 2/3.
+
+**Leitura registrada (consequência s1, pré-declarada no pré-reg 40).**
+I = C_HM − C_H − C_M NÃO é interação fatorial: C_H é efeito TOTAL
+(modelo responde ao vivo ao contexto flipado) e a célula R(h′,a) mostra
+que, na folga, I_fact = C_HM − C_Ha − C_M = 0. I passa a ser lido como
+contraste entre efeito total e soma dos efeitos diretos — medida de
+QUANTO o braço vivo mistura mediação (68% dos pontos V1), não sinal de
+interação causal. A tese do paper se desloca para dominância do
+estimando/medição, conforme declarado.
+
+**Pendências abertas por este desfecho:** (i) Figura 1 rotula o braço H
+como a_{t+1} forçada — bug de exposição, a corrigir INDEPENDENTEMENTE
+do desfecho (já declarado no pré-reg); (ii) reinterpretação de I no
+texto principal (Measurement/Finding) e no Apêndice da grade fatorial;
+(iii) linguagem: screening nos pontos de folga = "artefact of the
+incomplete factorial grid"; NUNCA "interação não existe" — fora da
+folga e em observation_policy há componente genuína.
+
+**Custos exatos.** 186 rollouts sequenciais (16 nulos de gate + 122
+replays V1 + 38 replays V2; os 10 termination V2 são analíticos, sem
+replay), 176 trajetórias de replay gravadas em runs/preg40/replays/,
+janela registrada 20:09→20:16 (mesma sessão do pré-reg, APC off, greedy
+seed 1234, Qwen3-4B porta 8321). Artefatos: runs/preg40/{gate,v1,v2}_rows.jsonl
++ report.json.
