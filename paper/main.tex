@@ -55,8 +55,13 @@ Dose-matched training exercised both branches: outcome-only RL wins on
 the closed branch; the open branch collapses onto a fixed attractor; and
 the power gate's first opening was itself vetoed by the census (the model
 is near-deterministic at the paired points) --- a validated, exercised
-veto. We release the
-apparatus and a 39-item registration ledger whose evidential force
+veto. Completing the $2\times 2$ factorial grid with the missing cell
+$R(h', a)$ (pre-reg 40) shows that at 56/57 slack screened points the
+forced original action restores $R$ exactly: slack screening is an
+artifact of the incomplete grid, and $I$ is a total-vs-direct contrast
+that measures how much the live harness arm mixes in mediation (68\% of
+points), not a factorial interaction. We release the
+apparatus and a 40-item registration ledger whose evidential force
 rests on its reported failures.
 \end{abstract}
 
@@ -97,7 +102,16 @@ action as mediator~\citep{pearl2001direct} (Remark~\ref{rem:mediation})
 --- so ``the model's action depends on the harness'' is the design's
 premise, not an objection to it. $I$ is the mediation diagnostic:
 $I = -C_H$ means the model's response absorbs the entire harness effect;
-$I = 0$ means the layers compose additively.
+$I = 0$ means the layers compose additively. These three arms leave one
+cell of the $2\times 2$ grid $\{(h,a),(h,a'),(h',a),(h',a')\}$
+unmeasured: $R(h',a)$, the harness flip with the \emph{original} action
+forced. An external audit predicted that filling it would dissolve
+slack screening; we registered and ran the fourth arm (pre-reg 40,
+\S\ref{sec:interaction}). It did: $R(h',a) = R$ at 56/57 slack screened
+points, so the factorial interaction $I_{\text{fact}} = C_{HM} - C_{Ha} -
+C_M$ is zero there, and $I$ as defined above is a contrast between the
+\emph{total} harness effect and the sum of \emph{direct} effects --- a
+measure of mediation, not of interaction.
 
 The headline finding: whether interaction vanishes is a property of the
 (model, harness, task) \emph{triple} and of the counterfactual coupling
@@ -132,8 +146,12 @@ vLLM's automatic prefix caching silently breaks greedy determinism.
 double-counting identity ($C_H = -I$ at screened points; correction
 $C_{HM} - C_M$) and two verified mechanisms --- with a replication record
 showing the phenomenon is configuration- and estimand-dependent:
-convertible to exact additivity by changing the coupling, and not
-confined to one model family (pre-reg 38).
+convertible to exact additivity by changing the coupling, not
+confined to one model family (pre-reg 38), and --- once the fourth
+factorial cell $R(h',a)$ is measured --- an artifact of the incomplete
+grid at slack points (56/57 exact; pre-reg 40): the live $C_H$ arm is a
+total effect that differs from the direct effect $C_{Ha}$ at 68\% of
+measured points.
 \item \textbf{Decision rule.} A compute-dominance bound and census gate
 (Proposition~\ref{prop:nfl}, Corollary~\ref{cor:gate}): measure and gate
 credit before training on it. Both branches were exercised through
@@ -141,7 +159,7 @@ training (closed: outcome-only wins at matched dose; open: collapse onto
 a fixed attractor), and the corrected power gate's first opening was
 itself vetoed by the census (pre-reg 39, \S\ref{sec:v2}); the rule's
 positive branch remains unexercised.
-\item \textbf{The record.} A 39-item pre-registration ledger with failures
+\item \textbf{The record.} A 40-item pre-registration ledger with failures
 reported as results, control-task construct validation, and a claims
 table auditable against it (Tables~\ref{tab:claims}, \ref{tab:ledger}).
 \end{enumerate}
@@ -239,16 +257,24 @@ $\lambda$ is recomputable.
 \draw[farr] (d1) -- (d2); \draw[farr] (d2) -- (h);
 \draw[farr] (h) -- (a); \draw[farr] (a) -- (rest); \draw[farr] (rest) -- (R);
 \node[left=4pt of d1, align=right] {recorded\\(prefix forced)};
-% braço H
+% braço H (modelo responde AO VIVO ao contexto flipado)
 \node[hdec, below=20pt of h, fill=orange!35] (h1) {$h'_t$};
-\node[mdec, right=8pt of h1] (a1) {$a_{t+1}$};
+\node[dec, right=8pt of h1] (a1) {live};
 \node[dec, right=8pt of a1] (r1c) {live};
 \node[rew, right=8pt of r1c] (R1) {$R_{H}$};
 \draw[arr] (h.south) -- (h1.north);
 \draw[farr] (h1) -- (a1); \draw[farr] (a1) -- (r1c); \draw[farr] (r1c) -- (R1);
-\node[right=6pt of R1] {$C_H = R - R_H$};
+\node[right=6pt of R1] {$C_H = R - R_H$ (total)};
+% braço Ha (quarto braço fatorial, pré-reg 40: flip + ação ORIGINAL forçada)
+\node[hdec, below=20pt of h1, fill=orange!35] (h4) {$h'_t$};
+\node[mdec, right=8pt of h4] (a4) {$a_{t+1}$};
+\node[dec, right=8pt of a4] (r4c) {live};
+\node[rew, right=8pt of r4c] (R4) {$R_{Ha}$};
+\draw[arr] (h.south) to[out=-110, in=115] (h4.north);
+\draw[farr] (h4) -- (a4); \draw[farr] (a4) -- (r4c); \draw[farr] (r4c) -- (R4);
+\node[right=6pt of R4] {$C_{Ha} = R - R_{Ha}$ (direct)};
 % braço M
-\node[hdec, below=20pt of h1] (h2) {$h_t$};
+\node[hdec, below=20pt of h4] (h2) {$h_t$};
 \node[mdec, right=8pt of h2, fill=blue!30] (a2) {$a'$};
 \node[dec, right=8pt of a2] (r2c) {live};
 \node[rew, right=8pt of r2c] (R2) {$R_{M}$};
@@ -264,10 +290,13 @@ $\lambda$ is recomputable.
 \draw[farr] (h3) -- (a3); \draw[farr] (a3) -- (r3c); \draw[farr] (r3c) -- (R3);
 \node[right=6pt of R3] {$C_{HM} = R - R_{HM}$};
 \end{tikzpicture}}
-\caption{The three-arm replay at one interaction point. The recorded
-prefix is forced up to the harness decision $h_t$; each arm changes
-exactly one thing (the harness decision, the model action, or both) and
-runs live from there. \emph{Screening-off} is the event $C_{HM} = C_M$:
+\caption{The four-arm replay at one interaction point. The recorded
+prefix is forced up to the harness decision $h_t$; from the intervened
+decision on, the loop runs live. In the $H$ arm the model is re-queried
+under the flipped context (total effect); in the $Ha$ arm the flip is
+paired with the \emph{original} action forced (direct effect; fourth
+factorial cell, pre-reg 40); the $M$ and $HM$ arms force the sampled
+alternative $a'$. \emph{Screening-off} is the event $C_{HM} = C_M$:
 the harness flip adds nothing beyond the model's alternative.}
 \label{fig:method}
 \end{figure}
@@ -472,6 +501,54 @@ Proposition~\ref{prop:nfl} organizes \S\ref{sec:training} and
 (summaries destroy nothing by construction) the method returns $C_H = 0$
 in 11/12 measured points; the exception is a \emph{behavioral} formatting
 pathway, not an informational one (Appendix~\ref{app:formal}).
+
+\paragraph{The fourth factorial cell: $R(h',a)$ (pre-reg 40).}
+The three arms above measure three of the four cells of the $2\times 2$
+grid at a point, $\{(h,a),(h,a'),(h',a),(h',a')\}$. The $C_H$ arm is
+$R(h', f(h'))$ --- the model answers the flipped context live --- so it
+is a \emph{total} effect (direct plus mediated), not the factorial cell
+$R(h',a)$, and $I = C_{HM} - C_H - C_M$ is not a factorial interaction.
+An external audit (Boclin) made this concrete and predicted, testably:
+at slack screened points the original action $a$ was generated
+\emph{seeing} the intact context and therefore re-injects the destroyed
+information itself, so $R(h',a) = R$ and the factorial interaction
+$I_{\text{fact}} = C_{HM} - C_{Ha} - C_M$ is exactly zero --- screening
+as an artifact of the incomplete grid. We registered the prediction with
+three declared outcomes (s1 $\geq 0.90$ / s2 / s3 $< 0.50$ on the
+fraction of slack screened points with $R(h',a) = R$ exact) and ran one
+greedy replay per point with the harness flip at $i$ and the canonical
+original action forced at $j$: all 122 V1 points (57 slack, 65 pressure)
+and all 48 V2 census points with measured $C_M$ and $C_{HM}$ (10
+termination duals analytic: the flip ends the episode before $j$, so
+$R(h',a) \equiv R_H$). A null re-validation gate (16/16 exact) preceded
+execution.
+
+\textbf{Outcome s1: the auditor is confirmed.} At the 57 slack screened
+points $R(h',a) = R$ exactly in \textbf{56/57} (0.982); g450 17/17 and
+g900 19/19 with $I_{\text{fact}} = 0$ throughout, g600 20/21 (the one
+break has $|I_{\text{fact}}| = 0.077$). Slack screening-off is therefore
+majoritarily an artifact of the incomplete grid, not model recovery:
+forcing $a$ under $h'$ restores $R$ because $a$ already carries what the
+summary destroyed. Three secondaries qualify the reading. (i) Under
+pressure the cell is informative: $R(h',a) < R$ at recurring points
+(\texttt{l\_log\_parser}, \texttt{l\_vending\_machine} in mt4/mt6/mt8)
+and \texttt{api\_router} cp0 has $I_{\text{fact}} = 0.375$ even with
+$R(h',a) = R$ --- the information needed sometimes lives in \emph{later}
+turns' context, so a genuine model-recovery component exists outside
+slack. (ii) The total and direct harness effects differ at
+\textbf{83/122} V1 points (68\%) and 19/48 V2 points: the live arm mixes
+mediation in most measurements, and $C_{Ha}$ is the correct factorial
+estimand. (iii) On V2 the cell is type-dependent: context 13/23 exact,
+test-schedule 2/3, observation 4/12 (the least stable type,
+$|I_{\text{fact}}|$ up to $1.0$), termination 9/10 with
+$I_{\text{fact}} = 0$ by construction. Consequently $I$ throughout this
+paper is a \emph{total-vs-direct contrast} --- a measure of how much the
+live arm mixes mediation --- and the identity $C_H = -I$ at screened
+points (Proposition~\ref{prop:dc}) reads as: the single-layer estimator
+bills the harness for a total effect whose direct component is zero.
+The measurement claim (per-decision credits on the same trajectory, at a
+zero floor) is unchanged; the estimand it delivers is now named
+correctly (Remark~\ref{rem:factorial}).
 
 \section{The Structure of Harness Credit}
 \label{sec:critic}
@@ -818,6 +895,7 @@ Amortized credit transfers across environments & Spearman $0.03$/$-0.08$, chance
 V2 collapse is a landscape property, not an optimizer artifact & analytic gate: no $\lambda$ gives $\geq$10 tasks with attractor margin $\geq$0.10 (max 3); probe at lr$/5$, budget$\times$2 still collapses token-exactly, $\theta\approx 0$ & held (pre-reg 34, both parts) \\
 Structure and coupling not confined to a single family & Mistral-7B under frozen V2 harness: smoke 1.00 (vs.\ 0.57 V1 JSON); floor 48/48 + 48/48 exact; s3; gate opens 3/4 accountings, closes strictest; $a'_s$ same bucket (3/6, $n{=}6$) & held, one cell (pre-reg 38) \\
 The gates decide before training pays & per-attractor power gate opens (min margin 0.166 at $\lambda^{*}{=}0.1$); mediation census: zero non-dual points, $462/463$ resamples token-identical; training vetoed unpaid & held; veto branch exercised (pre-reg 39) \\
+Slack screening is an artifact of the incomplete factorial grid; $I$ is a total-vs-direct contrast & fourth cell $R(h',a)$: 56/57 slack screened points exact ($I_{\text{fact}}=0$); $C_H \neq C_{Ha}$ at 83/122 V1 points; pressure and V2 observation points break the cell & confirmed, outcome s1 (pre-reg 40); auditor's prediction held \\
 \bottomrule
 \end{tabular}
 \caption{T0 --- master claim ledger: every claim, its evidence, and its
@@ -923,6 +1001,30 @@ construction, which is precisely why the design forces $a'$. That the
 forced $a'$ carries factual-world information into the counterfactual
 context is not a confound but the estimand choice the $a'$ vs.\ $a'_s$
 contrast measures.
+\end{remark}
+
+\begin{remark}[Factorial cell and the status of $I$]
+\label{rem:factorial}
+Write $R_{Ha} = R(\mathrm{do}(h', a))$ for the fourth cell of the
+$2\times 2$ grid --- the harness flip with the \emph{original} action
+forced --- and $C_{Ha} = R_0 - R_{Ha}$ for the \emph{direct} effect of the
+harness flip (mediator held at its factual value). The factorial
+interaction at the point is $I_{\text{fact}} = C_{HM} - C_{Ha} - C_M$,
+whereas $I = C_{HM} - C_H - C_M$ substitutes the total effect $C_H$ for
+the direct one, so $I = I_{\text{fact}} - (C_H - C_{Ha})$: the two
+coincide exactly when total and direct harness effects agree, i.e.\ when
+the model's live response to $h'$ carries no reward-relevant mediation.
+The fourth arm (pre-reg 40, \S\ref{sec:interaction}) measured
+$C_H \neq C_{Ha}$ at 83/122 V1 points and $I_{\text{fact}} = 0$ with
+$R_{Ha} = R_0$ at 56/57 slack screened points. Hence at slack screened
+points $I = -(C_H - C_{Ha}) = -C_H$ --- Proposition~\ref{prop:dc}(ii) is
+unchanged as algebra, but its reading is: single-layer $C_H$ bills the
+harness a total effect whose factorial direct component is zero, because
+the factual action already re-injects the destroyed information. The
+double-counting correction $C_{HM} - C_M$ remains the marginal
+contribution of the harness flip in the $a'$ world; $C_{Ha}$ is the
+additional estimand a joint trainer should prefer when billing the
+harness for effects the model's \emph{factual} action does not absorb.
 \end{remark}
 
 \begin{lemma}[Coalescence]
@@ -1826,7 +1928,7 @@ pilot runs that preceded the formal ledger are preserved in the artifact
 tree). Its
 evidential force rests on the recorded failures, not on the registration
 mechanism itself. Table~\ref{tab:ledger} lists
-all 39 pre-registrations with their outcomes, including the failed and
+all 40 pre-registrations with their outcomes, including the failed and
 the partial ones. Failed predictions are reported in the main text where they occur.
 
 \begin{table}[h]
@@ -1875,6 +1977,7 @@ the partial ones. Failed predictions are reported in the main text where they oc
 37 & De-saturated external pressure: exhaustive point census (max 99/trajectory) on the MBPP+ tasks inside the 4B's competence window (10 slack / 11 pressure, frozen baselines); power gate $\geq$5 non-saturated pivotal per cell; outcomes e1/e2/e3 declared & gate failed in \emph{both} cells (4 and 1 non-saturated $<5$) --- inconclusive as declared; descriptive: 15/15 pivotal screened incl.\ 5/5 non-saturated, all non-saturated mass from one task; the population route to external de-saturation is exhausted --- a powered external contrast needs a new environment & held (gate fired) \\
 38 & Cross-family under the \emph{frozen V2 plain-text harness} (\#35's barrier was the V1 JSON protocol; V2's plain-text protocol predates any cross-family design, addendum 28a): same smoke gate; instrument-validity gate (fresh greedy null-flip floor, exact $\geq$0.95); candidate order Mistral-7B $\to$ DeepSeek-Coder, no third, no per-model adjustment; outcomes X1 (s3 + open primary gate) / X2 (family-dependence) / X3 (both fail smoke) / X4 (floor fails); independent estimand outcomes E1/E2 ($a'_s$ bucket); addendum 38a (truncated-episode counting, registered before any smoke verdict) & \textbf{X1+E1}: Mistral-7B passes the smoke at 1.00 (vs.\ 0.57 under V1 JSON); floor transports (48/48 nulls, 48/48 greedy null-flips exact); census 43 valid points returns \textbf{s3} (observation 0.62, context 0.83, termination 0.13); the gate reproduces the Qwen pattern under all four accountings --- opens under three (primary $9/28=0.32$ vs.\ Qwen $15/38=0.39$ matched), closes under the strictest (0.18 vs.\ 0.13); $a'_s$ 3/6 screened, bucket b3 as Qwen (0.381); selection differs: 0 points excluded for want of $a'$ (vs.\ 65/114) & held \\
 39 & Positive branch of the gate (8B, frozen 24-task pool): per-attractor power criterion --- margin of the conditional target over \emph{each} expressible attractor in mean $R_{\text{eff}}(\lambda)$, on frozen calibration artifacts (exploratory inspection declared); $\lambda^{*}$ by max-min rule; fresh mediation census on the cell (mirror of 29/38, primary accounting fixed a priori); if both gates open, licensed training (4 arms $\times$ 3 seeds, 1600 calls/cell, dose- and episode-matched); declared outcomes g0/x0/c0/d1/d2/d3 & \textbf{c0}: power gate \emph{opens} (min margin 0.166 at $\lambda^{*}=0.1$, robust at 0.15/0.08) --- first power-verified landscape; census instrument valid (24-task pool frozen, split 13/11; 7 overflow-excluded $\to$ 17 valid tasks; nulls 17/17, greedy floor 17/17 exact) but yields \emph{zero} measurable non-dual points: $a'$ absent at 18/18 escalated points; declared post-hoc probe: 462/463 resamples token-identical, zero parse failures --- model near-deterministic at paired points; primary denominator empty, rule vetoes, training unpaid ($\approx$4 GPU-h of 40--60 authorized) & held (veto exercised) \\
+40 & Fourth factorial cell $R(h',a)$ (external audit, Boclin): the $C_H$ arm is a total effect $R(h', f(h'))$, not the cell $R(h',a)$; auditor predicts $R(h',a) = R$ and $I_{\text{fact}} = C_{HM} - C_{Ha} - C_M = 0$ at slack screened points (screening as artifact of the incomplete grid). One greedy replay per point (flip at $i$, canonical original action forced at $j$) on all 122 V1 and 48 V2 points with measured $C_M, C_{HM}$ (10 termination duals analytic); null re-validation gate first; primary = fraction of slack screened points with $R(h',a) = R$ exact, outcomes s1 $\geq 0.90$ / s2 / s3 $< 0.50$ & gate 16/16 exact; \textbf{s1}: 56/57 = 0.982 (g450 17/17, g900 19/19, g600 20/21); $C_H \neq C_{Ha}$ at 83/122 V1 and 19/48 V2 points; pressure breaks recur (\texttt{l\_log\_parser}, \texttt{l\_vending\_machine}; \texttt{api\_router} cp0 $I_{\text{fact}} = 0.375$); V2 by type: context 13/23, observation 4/12, test-schedule 2/3 exact, termination 9/10 $I_{\text{fact}}=0$; 186 rollouts, 0 replay errors; Figure~\ref{fig:method} relabeled (H arm was drawn as forced $a_{t+1}$) & held; $I$ reinterpreted as total-vs-direct contrast \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
