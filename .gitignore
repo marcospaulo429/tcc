@@ -220,3 +220,6 @@ __marimo__/
 # experimentos e venvs locais
 runs/
 .venv-vllm/
+
+# pacotes de artefatos brutos (runs/ empacotado para transferência)
+release/
