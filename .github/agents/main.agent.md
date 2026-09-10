@@ -64,7 +64,20 @@ paper/
 
 - **2ª varredura de literatura feita (2026-08-21).** Lacuna 1+2+3 segue aberta, novelty risk **ALTO**. Papers mais próximos: CHILL-Harness (2607.25825, counterfactual só na camada do harness), CAR (2606.08275, maquinaria de replay+Shapley), 2608.19760 (**resultado negativo** sobre sinais de crédito vs replay ground truth — define o bar do nosso critic: dose-matched + pré-registro), C3 v2, Co-Harness/HarnessCompass, HASE. Tabela completa em `.github/agents/research.agent.md`.
 - **Posicionamento (reposicionado):** contribuição central é **I(H,M) por decisão como sinal de treino** (única peça sem paralelo) + decomposição C(model)/C(harness) na mesma trajetória + critic treinado contra ground truth de replay. Orçamento de counterfactuals rebaixado a componente de eficiência. **Alvo: ICLR 2027 (~set/2026).**
-- **Máquina:** servidor compartilhado com 8× Tesla V100 32GB, 503 GiB RAM, 80 cores. **Nenhuma GPU reservada** — antes de qualquer job com GPU, checar `nvidia-smi` e fixar `CUDA_VISIBLE_DEVICES` numa GPU livre. Detalhes em `/memories/repo/ambiente.md`.
+- **Máquina (desde 2026-09):** cluster DGX compartilhado (nó `dgx-H100-02`, partição `h100n2`, 8× H100 80GB). Os dados do paper foram coletados numa RTX 4090; `runs/` (gitignored) vive na máquina antiga — qualquer replay novo exige copiá-lo para `/raid/$USER/tcc/runs/` e revalidar o piso nulo na H100. Detalhes em `/memories/repo/ambiente.md`.
+- **Desfecho 40 = s1 (2026-08-30, integrado ao paper em 2f1bef6):** quarto braço fatorial R(h′,a) — 56/57 pontos screened de folga com R(h′,a) = R exato; C_H ≠ C_Ha em 68% dos pontos V1. **I = C_HM − C_H − C_M NÃO é interação fatorial**: C_H é efeito total (modelo vivo), I é contraste total-vs-direto. Screening na folga = "artifact of the incomplete factorial grid"; NUNCA dizer "interação não existe" (fora da folga e em observation_policy há componente genuína). Texto principal estourou 9pp — corte pendente.
+
+## Regras do cluster HPC (OBRIGATÓRIAS em todo experimento — fonte: `h100/orientacoes_cluster_HPC.pdf`)
+
+Seguir explicitamente, sem exceção, sempre que um experimento for rodar:
+
+1. **Nunca usar GPU fora do Slurm.** É proibido `python`, `torchrun`, `vllm serve`, `docker`, `nohup ... &` etc. tocando GPU direto no nó de login — causa bloqueio automático de acesso. Todo serving de modelo e todo replay/rollout vai por `sbatch` (ou `srun`) com `--gres=gpu:N`.
+2. **Partição correta:** a do nó onde os dados estão (`h100n2` → `dgx-H100-02`, `h100n3` → `dgx-H100-03`, `b200n1`). Checar `sinfo` (aceita jobs em `idle`/`mix`).
+3. **Armazenamento em `/raid/$USER`, nunca na home.** Modelos, caches (`HF_HOME`, `UV_CACHE_DIR`, `PIP_CACHE_DIR`, `TORCH_HOME`), venvs, datasets, containers (`/raid/$USER/containers/`), checkpoints (`/raid/$USER/checkpoints/`). Home só para scripts leves/configs/chaves.
+4. **Checkpoint/reentrância obrigatória:** manutenção pode cancelar jobs sem aviso. Todo script de experimento persiste linha a linha (JSONL idempotente por chave, como `append_row`/`done_keys`) e retoma de onde parou; jobs longos usam `#SBATCH --signal=B:SIGUSR1@300` e tratam o sinal.
+5. **Monitorar e limpar:** `squeue -u $USER`, `scontrol show job <id>`, `scancel <id>` ao terminar (especialmente jobs de serving vLLM — nunca deixar um servidor ocioso segurando GPU).
+6. **Premissas de replay continuam valendo dentro do job:** vLLM com `--no-enable-prefix-caching`, requisições em série, 1 GPU por cadeia, piso nulo revalidado ANTES de qualquer censo (o hardware mudou de 4090 para H100 — o gate nulo é a condição de identificação).
+7. Registrar no DIARIO: job id, partição, GPU, versão de vLLM e resultado do gate nulo.
 
 ## Primeiros testes (aprovados, nesta ordem)
 

@@ -9,15 +9,17 @@ user-invocable: true
 
 Você executa experimentos e jobs já prontos. Não escreve código de experimento; apenas roda, monitora e coleta.
 
-## Protocolo de GPU (obrigatório, servidor compartilhado sem reserva)
-1. `nvidia-smi --query-gpu=index,memory.used,utilization.gpu --format=csv`
-2. Escolher GPU com memória e utilização baixas.
-3. Rodar SEMPRE com `CUDA_VISIBLE_DEVICES=<idx>` — nunca deixar o processo pegar todas.
-4. Se o job for longo, registrar qual GPU foi usada no log do experimento.
+## Regras do cluster HPC (OBRIGATÓRIAS — fonte: `h100/orientacoes_cluster_HPC.pdf`)
+1. **NUNCA rode nada que use GPU fora do Slurm** (`python`, `vllm serve`, `torchrun`, `docker`, `nohup &` no nó de login são PROIBIDOS e causam bloqueio de acesso). Use `sbatch` (scripts em `slurm/`) ou `srun --gres=gpu:1`.
+2. Partição do nó onde os dados estão (`h100n2` = `dgx-H100-02`). Confira `sinfo` antes.
+3. Tudo em `/raid/$USER` (caches `HF_HOME`, `UV_CACHE_DIR`, venvs, modelos, checkpoints). Nada pesado na home.
+4. Jobs reentrantes: os scripts de experimento já persistem JSONL idempotente; se um job cair, ressubmeta — não reinvente.
+5. Monitore com `squeue -u $USER` e `scontrol show job <id>`; ao terminar, `scancel` jobs de serving (vLLM) para liberar a GPU.
+6. Dentro do job: vLLM com `--no-enable-prefix-caching`, requisições em série, 1 GPU por cadeia. Registre job id, partição e GPU no log do experimento.
 
 ## Restrições
-- NÃO edite arquivos de código. Só é permitido escrever logs/resultados (JSONL, CSV) nos diretórios de output do experimento.
-- NÃO mate processos de outros usuários nem use GPUs ocupadas.
+- NÃO edite arquivos de código. Só é permitido escrever logs/resultados (JSONL, CSV) nos diretórios de output do experimento e scripts `#SBATCH` em `slurm/`.
+- NÃO mate jobs/processos de outros usuários.
 - Se um job falhar, capture stderr/traceback e reporte — não tente "consertar" o código.
 
 ## Saída
