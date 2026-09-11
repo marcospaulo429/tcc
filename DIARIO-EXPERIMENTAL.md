@@ -2694,3 +2694,65 @@ externo 4B) com Holm; (iii) o mesmo para H_w. O p = 0.011 do abstract
 sai ou vira descritivo conforme (ii).
 
 **Custo:** 0 GPU. Entra no ledger como #43 seja qual for o desfecho.
+
+### DESFECHO 43 (2026-09-11): h1 — a mediação proximal é medida, não implicada, no estrato informativo (21/23); mas 63/84 do headline estão no estrato last-mover
+
+Script experiments/preg43.py (6 testes em tests/test_preg43.py), report
+runs/preg43/report.json. 0 rollouts; 0 pontos sem trajetória; asserts
+(37/36, 49/48, 23/13, 12/4, 74/51) passaram. Vocabulário de tool_calls
+confirmado: V1/externo {write_file, run_tests, finish}; V2 {read_file,
+run_tests, list_files, write_file} — `write_file` é a única ação que altera
+o estado que R lê nos dois stacks, então H_w está bem definido em ambos.
+
+**Pool headline (V1 folga ∪ externo 4B, 86 pivotais, 84 com NDE = 0):**
+H_w = 0 em 63/86 (0.733); **dos 84 pontos com NDE = 0, 63 (0.75) estão no
+estrato last-mover** (a ação pareada é a última escrita do episódio
+original) — o R1 tinha razão na proporção. **Endpoint primário: NDE = 0
+em 21/23 = 0.913 no estrato H_w ≥ 1 → h1.** Por população: V1 folga 12/13
+(0.923), externo 9/10 (0.900). Sensibilidades: H ≥ 2: 23/25 (0.920);
+H_env ≥ 1: 84/86. Distribuições: V1 folga H_w {0:24, 1:9, 2:3, 4:1};
+externo {0:39, 1:2, 2:6, 5:2}; V1 pressão {0:28, 1:14, 2:3, 3:1}.
+
+**Outras populações (endpoint H_w ≥ 1):** V1 pressão 11/18 (0.611); **8B
+2/25 (0.080)** — no 8B, onde há escrita posterior, a mediação é quase toda
+distal (coerente com 17/17 NDE ≠ 0 nos não-screened do 42); V2 context
+6/14 (0.429); V2 observation 4/11 (0.364). Ou seja: o 36/37 do 4B no
+estrato informativo é 12/13, enquanto o 8B no mesmo estrato é 2/25 — a
+mediação proximal é propriedade do modelo × pool, e a quarta célula
+discrimina isso.
+
+**Checagem de implicação (NDE = 0 em H_w = 0):** 1.0 em V1 folga (24/24),
+V1 pressão (28/28), externo (39/39) e 8B (49/49). **V2: 3 violações**
+(context 7/9: swe_expressoes_v3 folga cp41 C_Ha = −0.083, swe_csvtable_v4
+pressão cp19 −0.091; observation 0/1: swe_versoes_v4 pressão cp5 −0.10) +
+termination 0/2 (direto por construção). Interpretação — e correção da
+minha própria premissa do pré-registro: **H_w = 0 no episódio ORIGINAL não
+torna NDE = 0 um teorema**. A Cor. behav exige sufixos de ação idênticos
+nos DOIS ramos; com a_j forçada e o resto ao vivo, o ramo h′ pode
+acrescentar uma escrita que o original não tinha. Logo, no estrato
+"implicado", NDE = 0 ainda é uma medição de que o ramo h′ não acrescentou
+escrita relevante — verificada em 140/140 pontos V1/externo/8B e violada
+em 3/9+1 pontos V2 (R(h′,a) > R: o modelo, vendo o contexto sumarizado,
+escreveu mais e acertou mais). O paper deve dizer as duas coisas: 75% do
+headline está no estrato onde a mediação é o esperado sob a Cor. behav
+(mas não garantido), e 21/23 no estrato onde ela é informativa.
+
+**Testes de horizonte (família de 6, H; p analítico → Holm | p permutação
+por task → Holm):** V1 folga 0.026 → 0.104 | 0.073 → 0.44; **V1 pressão
+0.0008 → 0.0047** | 0.40 → 0.97; V2 total (38, sem termination) 0.031 →
+0.104 | 0.27 → 0.97; **V2 context 0.011 → 0.056** | 0.099 → 0.49; V2
+observation 0.43 | 0.89; externo 0.037 → 0.104 | 0.24 → 0.97. Com H_w: V1
+pressão 1.2e-5 → 7e-5 (analítico); nada sobrevive à permutação por task
+(estatística em nível de task: diferença de médias de mediana(H) entre
+tasks com/sem algum NDE ≠ 0; 20.000 perms, seed 43). **Conforme
+pré-registrado, o p = 0.011 sai do abstract e vira descritivo**; o único
+teste que sobrevive a Holm (V1 pressão, analítico) não sobrevive ao
+cluster por task. A direção é uniforme nas 6 populações (mediana H maior
+onde NDE ≠ 0), o que se reporta como padrão descritivo, não como teste.
+
+**Custo:** 0 GPU. Ledger #43 → held (h1 no primário; premissa de
+implicação corrigida; horizonte rebaixado a descritivo). Entra no paper:
+título ("Mostly Proximally Mediated"), abstract (21/23 ao lado do 36/37;
+p sai), §4.4 (estrato last-mover e informativo; 8B 2/25), Tab. 2 (coluna
+H_w ≥ 1), App. estimand "Multiplicity" (família de horizonte + Holm +
+permutação), ledger #43, claims table.
