@@ -271,6 +271,15 @@ def main():
         ge1 = sorted(p["H_w"] for p in pontos if p["H_w"] >= 1)
         out["mediana_Hw_em_ge1"] = statistics.median(ge1) if ge1 else None
         out["n_ge1"] = len(ge1)
+        # decisões únicas (task, cp_index): medeia se todos os seus pontos medeiam
+        for nome, f in (("ge1", lambda h: h >= 1), ("eq1", lambda h: h == 1)):
+            dec: dict[tuple, list[bool]] = {}
+            for p in pontos:
+                if f(p["H_w"]):
+                    dec.setdefault((p["task_id"], p["cp_index"]), []).append(p["nde0"])
+            out[f"decisoes_unicas_{nome}"] = {
+                "k": sum(all(v) for v in dec.values()), "n": len(dec),
+                "tasks": len({t for t, _ in dec})}
         return out
 
     por_hw = {nome: _por_hw(pontos) for nome, pontos in pop.items()}
