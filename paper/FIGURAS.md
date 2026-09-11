@@ -13,7 +13,7 @@ Main-text figures are sized for a single ICLR column (width ≤ 5.5 in).
 | Fig. 2 `fig:scatter` | `figures/f6_mediation_scatter.pdf` | Total vs. direct harness effect, TE = C_H (x) vs. NDE = C_Ha (y). (a) V1: 122 points by regime (slack / pressure); (b) V2: 48 points by decision type. Lines: y = 0 (full mediation) and y = x (no mediation). Annotations 36/37, 39/46, termination 0/10. Jitter σ = 0.015. Adds external cells automatically when `runs/preg42/rows.jsonl` exists. | `runs/preg40/v1_rows.jsonl`, `runs/preg40/v2_rows.jsonl` (asserted against `runs/preg41/report.json`) |
 | Fig. 3 `fig:census` | `figures/f7_mediation_census.pdf` | Census in the mediation reading: fraction of reward-pivotal points with C_Ha ≠ 0 by population (V1 slack 1/37, V1 pressure 7/46) and V2 type (context 10/23, observation 8/12, test-schedule 1/3, termination 10/10); dashed line at the 0.20 census-gate threshold. Adds pre-reg 42 cells when present. | same as Fig. 2 |
 | Table 1 `tab:glossary` | inline | Glossary of configuration names (gN, mtK, q8/q17, mbpp/he, cur, ls, V1/V2, CI95) and pre-registered outcome codes. | — |
-| Table 2 `tab:med` | inline | Mediation table (pre-reg 41): pivotal counts, C_Ha = 0 counts, and horizon medians per population/type; consistency row R(h′, a′_s) = R_H 36/44. | `runs/preg41/report.json` |
+| Table 2 `tab:med` | inline | Mediation table (pre-regs 41–43): pivotal counts, C_Ha = 0 counts, C_Ha = 0 at H_w ≥ 1 (a later write exists), and descriptive horizon medians per population/type. | `runs/preg41/report.json`, `runs/preg42/report.json`, `runs/preg43/report.json` |
 
 ## Appendix
 
@@ -28,7 +28,7 @@ Main-text figures are sized for a single ICLR column (width ≤ 5.5 in).
 | `tab:scoreboard` | inline | Every screening-off count with its endpoint (57/57, 53/56, 56/57 + 36/37, split, re-sampling, a′_s, pressure breaks). | `runs/preg40`, `runs/preg41`, `experiments/results/` |
 | `tab:synthesis` | inline | Raw screening-off break counts by (model, pool, regime). | `experiments/results/2026-08-24_replicacao.json` |
 | `tab:gate` | inline | V2 census gate under the four accountings (with/without duals × measured/all pivotal). | `runs/census_v2/` |
-| `tab:acts`, `tab:positioning`, `tab:nulls`, `tab:ledger`, `tab:audit` | inline | Training acts; related-work positioning; null-replay reconciliation per run; 42-item pre-registration ledger; decision-rule audit. | reports in `runs/` and `experiments/results/` |
+| `tab:acts`, `tab:positioning`, `tab:nulls`, `tab:ledger`, `tab:audit` | inline | Training acts; related-work positioning; null-replay reconciliation per run; 43-item pre-registration ledger; decision-rule audit. | reports in `runs/` and `experiments/results/` |
 
 ## Regenerating
 
