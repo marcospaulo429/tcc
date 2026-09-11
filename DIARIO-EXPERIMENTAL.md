@@ -3028,3 +3028,50 @@ Atenção: a 1.7B satura em falha na pressão (11/12) — os pivotais são
 poucos; n efetivo será reportado ao lado.
 Job **32342** (`slurm/preg45.sbatch`, h100n2, gpu:1, porta 8323) submetido
 2026-09-11 — PD (Priority); 32318 (pré-reg 44) continua PD (Resources).
+
+## 2026-09-11 — Mesa ICLR rodada 19 (isolada, paper/ HEAD pós-lote r18 + Fig. 2 em 3 painéis)
+
+R1 6 / R2 5 / R3 6 → AC **5.67, Borderline** (3ª rodada seguida em 5.67:
+o teto por edição está atingido; R2 só sobe com o 44). Atendidas da r18
+(não reciclar): 8B por decisão única, abstract curto com n, exemplo
+grade_curve, screening break, tabela por task, duas hipóteses, custo por
+ponto utilizável, 1.7B declarada, glossário App. H, Fig. 2 3 painéis,
+Remark CDE/NDE/NIE.
+
+**Objeções NOVAS:** R1-1 [soundness] o estrato informativo H_w é definido
+no episódio GRAVADO; o que importa é se há escrita posterior NO RAMO Ha
+(contexto sumarizado, sufixo ao vivo) — se o modelo sob h′ termina logo
+após a, C_Ha = 0 volta a ser esperado → tabular escritas/turnos restantes
+no ramo Ha para os 23 headline e 25 do 8B a partir dos replays gravados
+(0 GPU). R1-2 a quarta célula só foi medida onde existe a′ (herda seleção
+por entropia sem razão de estimando) → R(h′,a) nos harness-pivotais sem
+a′ (~100–130 rollouts) ou declarar em Threats. R1-3 re-medir C_H na H100
+nos 10 pontos externos H_w≥1 (~10 rollouts). R1-4 abstract: "0/7 at its
+screening breaks" — quem localiza é o censo; a 4ª célula acrescenta
+I_fact = 0 (aditividade). R2-1 44 (rodando). R2-3 baseline de estado
+V(s) no braço outcome (mesmo custo do 44; +0.5). R2-4 separar
+pré-condições de medição do gate de treino na regra. R2-5 .bib com chaves
+não citadas (shapley1953, tcpo…); options/HRL ausentes. R3-1 [PIOROU]
+Fig. 2(b) e Fig. 7 mostram frações NÃO estratificadas (36/37…) — a única
+figura do headline contradiz a leitura do paper → barras empilhadas por
+H_w = 0 (cinza "expected") e H_w ≥ 1 (k/n colorido). R3-2 [PIOROU]
+legenda da Tab. 1 virou depósito de resultados → 3 linhas; decomposição
+do 8B vira duas linhas da tabela. R3-3 §4.4(ii) frase de 15 linhas →
+quatro frases (a) esperado (b) medido 4B (c) 8B em decisões (d) horizonte
+descritivo. R3-5 jargão no abstract ("screening breaks", "slack"). R3-6
+shield/screening misto nos apêndices. R3-7 §5 (crítico) → apêndice;
+unidades uniformes (decisões).
+
+**Top-3 do AC:** (1) [0 GPU, ~5 h] Fig. 2(b)/Fig. 7 estratificadas por
+H_w + auditoria de escritas no ramo Ha (R3 6→7; R1 Soundness 4 se
+confirmar); (2) [GPU, rodando] 44 no paper (R2 5→6 negativo, 5→7
+positivo); (3) [~10 GPU-min] 4ª célula nos harness-pivotais sem a′ (R1
++0.5–1, R3 +0.5) ou frase em Threats.
+**Não mexer:** Fig. 1, §3, §4.1, Remarks, estratificação H_w + "post
+hoc", Lema pg, claims/ledger, Reproducibility, exemplo grade_curve. Não
+"vender" mais gate/treino.
+**Pergunta mais difícil:** "Nos 21 pontos em que C_Ha = 0 é chamado de
+medido, quantos ramos Ha executaram de fato uma escrita depois de a sob o
+contexto sumarizado?" — está nos traces.
+**Teto:** só edição 6.0–6.33; 44 positivo → R2 7, R3 7; 44 negativo → R2
+6; 1.7B proximal → R3 7; ambos positivos + top-1 → 7.0.
