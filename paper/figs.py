@@ -1,4 +1,4 @@
-"""Gera as figuras F1-F5 do paper a partir dos artefatos em experiments/results/ e runs/.
+"""Gera as figuras F1-F7 do paper a partir dos artefatos em experiments/results/ e runs/.
 
 Uso: uv run python paper/figs.py  (salva PDFs em paper/figures/)
 """
@@ -138,33 +138,48 @@ def fig3() -> None:
         nn.append((a["n"] - a["n_screened_exact"], a["n"]))
         nns.append((a["n_breaks_nonsat"], a["n_nonsat"]))
 
-    x = np.arange(len(labels))
-    w = 0.38
-    fig, ax = plt.subplots(figsize=(10.8, 2.4))
     cols = ([COL_SLACK] * 3 + [COL_PRESS] * 3 + ["#6a51a3"] * 2
             + ["#a63603"] * 3 + ["#e6550d"] * 2 + ["#08519c"] * 2 + ["#238b45"] * 2)
-    ax.bar(x - w / 2, raw, w, color=cols, alpha=0.55, label="raw")
-    ax.bar(x + w / 2, cond, w, color=cols, hatch="//", label="non-saturated only")
-    for i in range(len(labels)):
-        ax.text(x[i] - w / 2, raw[i] + 0.015, "%d/%d" % nn[i], ha="center", fontsize=6.5)
-        ax.text(x[i] + w / 2, cond[i] + 0.015, "%d/%d" % nns[i], ha="center", fontsize=6.5)
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels)
-    ax.set_ylabel("screening-off break rate")
-    ax.set_ylim(0, 0.62)
-    ax.axvspan(-0.5, 2.5, color=COL_SLACK, alpha=0.05)
-    ax.axvspan(2.5, 5.5, color=COL_PRESS, alpha=0.05)
-    ax.axvspan(7.5, 10.5, color="#a63603", alpha=0.05)
-    ax.axvspan(10.5, 12.5, color="#e6550d", alpha=0.05)
-    ax.axvspan(12.5, 14.5, color="#08519c", alpha=0.05)
-    ax.axvspan(14.5, 16.5, color="#238b45", alpha=0.05)
-    ax.text(1.0, 0.56, "budget slack (Qwen3-4B)", ha="center", fontsize=8, color=COL_SLACK)
-    ax.text(4.0, 0.56, "budget pressure", ha="center", fontsize=8, color=COL_PRESS)
-    ax.text(9.0, 0.56, "Qwen3-8B (raw flat)", ha="center", fontsize=8, color="#a63603")
-    ax.text(11.5, 0.56, "8B curated", ha="center", fontsize=8, color="#e6550d")
-    ax.text(13.5, 0.56, "4B curated", ha="center", fontsize=8, color="#08519c")
-    ax.text(15.5, 0.56, "MBPP+ (4B)", ha="center", fontsize=8, color="#238b45")
-    ax.legend(loc="center right", frameon=False)
+    w = 0.38
+    fig, (ax_top, ax_bot) = plt.subplots(2, 1, figsize=(5.5, 3.8))
+    rows = [(ax_top, slice(0, 8)), (ax_bot, slice(8, 17))]
+    for ax, sl in rows:
+        idx = range(*sl.indices(len(labels)))
+        x = np.arange(len(list(idx)))
+        r = raw[sl]
+        c = cond[sl]
+        ax.bar(x - w / 2, r, w, color=cols[sl], alpha=0.55, label="raw")
+        ax.bar(x + w / 2, c, w, color=cols[sl], hatch="//",
+               label="non-saturated only")
+        for i, j in enumerate(idx):
+            ax.text(x[i] - w / 2, r[i] + 0.015, "%d/%d" % nn[j], ha="center",
+                    fontsize=6.5)
+            ax.text(x[i] + w / 2, c[i] + 0.015, "%d/%d" % nns[j], ha="center",
+                    fontsize=6.5)
+        ax.set_xticks(x)
+        ax.set_xticklabels(labels[sl], fontsize=6.5)
+        ax.set_ylabel("break rate", fontsize=8)
+        ax.set_ylim(0, 0.62)
+        ax.set_xlim(-0.6, len(x) - 0.4)
+    # linha de cima: 4B slack/pressure + 1.7B
+    ax_top.axvspan(-0.5, 2.5, color=COL_SLACK, alpha=0.05)
+    ax_top.axvspan(2.5, 5.5, color=COL_PRESS, alpha=0.05)
+    ax_top.text(1.0, 0.55, "budget slack (Qwen3-4B)", ha="center", fontsize=6.5,
+                color=COL_SLACK)
+    ax_top.text(4.0, 0.55, "budget pressure", ha="center", fontsize=6.5,
+                color=COL_PRESS)
+    ax_top.text(6.5, 0.55, "1.7B", ha="center", fontsize=6.5, color="#6a51a3")
+    # linha de baixo: 8B, curated, MBPP+
+    ax_bot.axvspan(-0.5, 2.5, color="#a63603", alpha=0.05)
+    ax_bot.axvspan(2.5, 4.5, color="#e6550d", alpha=0.05)
+    ax_bot.axvspan(4.5, 6.5, color="#08519c", alpha=0.05)
+    ax_bot.axvspan(6.5, 8.5, color="#238b45", alpha=0.05)
+    ax_bot.text(1.0, 0.55, "Qwen3-8B (raw flat)", ha="center", fontsize=6.5,
+                color="#a63603")
+    ax_bot.text(3.5, 0.55, "8B curated", ha="center", fontsize=6.5, color="#e6550d")
+    ax_bot.text(5.5, 0.55, "4B curated", ha="center", fontsize=6.5, color="#08519c")
+    ax_bot.text(7.5, 0.55, "MBPP+ (4B)", ha="center", fontsize=6.5, color="#238b45")
+    ax_top.legend(loc="center right", frameon=False, fontsize=6.5)
     fig.tight_layout()
     fig.savefig(OUT / "f3_regime_dependence.pdf", bbox_inches="tight")
     plt.close(fig)
@@ -201,30 +216,176 @@ def fig4() -> None:
     plt.close(fig)
 
 
-# ------------------------------------------------ F5: treino (C1/C1b)
+# ------------------------------------------------ F5: treino (Act 4 / C1d)
 def fig5() -> None:
-    c1b = load(RES / "2026-08-23_c1b_summary.json")["seeds"]
     arms = ["outcome", "ch", "chm_cm", "zero"]
     labels = ["outcome-only", "$C(H)$", "$C_{HM}{-}C_M$", "zero (control)"]
+    vals_by_arm = {
+        arm: [load(RUNS / f"c1d_{arm}_s{s}" / "summary.json")["heldout"]["mean_R_eff"]
+              for s in (1, 2, 3)]
+        for arm in arms
+    }
+    # atratores held-out sob lambda*=5 (pré-reg 27): keep/thr600 do c1c_margem,
+    # summarize-always do c1d_margem; R_eff = R - 5*tokens/1e5
+    pool = load(RUNS / "c1d_margem" / "pool.json")
+    held = pool["heldout"]
+    lam = pool["lambda_star"]
+    mr = load(RUNS / "c1c_margem" / "margem_report.json")
+    summ = load(RUNS / "c1d_margem" / "summ_report.json")
+
+    def reff_mean(entries: list[dict]) -> float:
+        return sum(e["reward"] - lam * e["prompt_tokens"] / 1e5 for e in entries) / len(entries)
+
+    thr600 = reff_mean([mr[t]["thr600"] for t in held])
+    keep = reff_mean([mr[t]["keep"] for t in held])
+    summ_always = reff_mean([summ[t] for t in held])
+    assert abs(thr600 - 0.455) < 5e-3 and abs(keep - 0.392) < 5e-3 \
+        and abs(summ_always - (-0.031)) < 5e-3, (thr600, keep, summ_always)
+
     fig, ax = plt.subplots(figsize=(4.6, 2.3))
     rng = np.random.default_rng(1)
     for i, arm in enumerate(arms):
-        vals = [c1b[s][arm]["heldout_R_eff"] for s in ["1", "2", "3"]]
         xs = i + rng.normal(0, 0.04, 3)
-        ax.plot(xs, vals, "o", ms=6, color=COL_PRESS if arm in ("ch", "chm_cm") else COL_SLACK)
-    ax.axhline(0.398, color="#1b7837", ls="--", lw=1)
-    ax.text(3.45, 0.41, "thr600 (best fixed)", fontsize=7, color="#1b7837", ha="right")
-    ax.axhline(0.237, color=COL_GREY, ls=":", lw=1)
-    ax.text(3.45, 0.25, "keep-always", fontsize=7, color=COL_GREY, ha="right")
-    ax.axhline(-0.464, color="#c0392b", ls=":", lw=1)
-    ax.text(3.45, -0.45, "summarize-always (collapse)", fontsize=7, color="#c0392b", ha="right")
+        ax.plot(xs, vals_by_arm[arm], "o", ms=6,
+                color=COL_PRESS if arm in ("ch", "chm_cm") else COL_SLACK)
+    # controle episode-matched (pré-reg 31): outcome fatiado no N do braço ch
+    em = load(RUNS / "ato4_em" / "summary.json")["cells"]
+    em_vals = [em[f"ch_match_s{s}"]["mean_R_eff"] for s in (1, 2, 3)]
+    xs = 0 + rng.normal(0, 0.04, 3) + 0.18
+    ax.plot(xs, em_vals, "o", ms=6, mfc="none", mec=COL_SLACK, mew=1.2,
+            label="episode-matched (pre-reg 31)")
+    ax.axhline(thr600, color="#1b7837", ls="--", lw=1)
+    ax.text(3.45, thr600 + 0.012, "thr600 (best fixed)", fontsize=7,
+            color="#1b7837", ha="right")
+    ax.axhline(keep, color=COL_GREY, ls=":", lw=1)
+    ax.text(3.45, keep - 0.045, "keep-always", fontsize=7, color=COL_GREY, ha="right")
+    ax.axhline(summ_always, color="#c0392b", ls=":", lw=1)
+    ax.text(3.45, summ_always + 0.012, "summarize-always", fontsize=7,
+            color="#c0392b", ha="right")
     ax.set_xticks(range(4))
     ax.set_xticklabels(labels)
     ax.set_ylabel("held-out $R_{\\mathrm{eff}}$")
-    ax.set_ylim(-0.6, 0.55)
-    ax.set_title("C1b (stable optimization): 3 seeds per arm")
+    ax.set_ylim(-0.1, 0.5)
+    ax.legend(frameon=False, fontsize=6.5, loc="lower left")
+    ax.set_title("Act 4 (sane objective, pre-reg 27): 3 seeds per arm")
     fig.tight_layout()
     fig.savefig(OUT / "f5_training.pdf", bbox_inches="tight")
+    plt.close(fig)
+
+
+# --------------------------- F6: mediação TE vs NDE (scatter, pré-reg 40)
+V2_TYPE_COLS = {
+    "context_policy": COL_SLACK,
+    "observation_policy": "#1b7837",
+    "test_schedule": "#6a51a3",
+    "termination": "#c0392b",
+}
+
+
+def _load_jsonl(p: Path) -> list[dict]:
+    return [json.loads(l) for l in p.open()]
+
+
+def fig6_mediation_scatter() -> None:
+    v1 = _load_jsonl(RUNS / "preg40" / "v1_rows.jsonl")
+    v2 = _load_jsonl(RUNS / "preg40" / "v2_rows.jsonl")
+    slack = {"g450", "g600", "g900"}
+
+    piv_slack = [r for r in v1 if r["cfg"] in slack and r["C_H"] != 0]
+    piv_press = [r for r in v1 if r["cfg"] not in slack and r["C_H"] != 0]
+    assert len(piv_slack) == 37
+    assert sum(1 for r in piv_slack if r["C_Ha"] == 0) == 36
+    term = [r for r in v2 if r["tipo"] == "termination"]
+    assert sum(1 for r in term if r["C_H"] != 0 and r["C_Ha"] != 0) == 10
+
+    rng = np.random.default_rng(40)
+
+    def jit(vals: list[float]) -> np.ndarray:
+        return np.asarray(vals) + rng.normal(0, 0.015, len(vals))
+
+    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(5.5, 2.15), sharey=True)
+    for ax in (ax_a, ax_b):
+        ax.axhline(0, color="k", lw=0.8)
+        lim = [-1.15, 1.15]
+        ax.plot(lim, lim, ls="--", color=COL_GREY, lw=0.8)
+        ax.set_xlim(lim)
+        ax.set_ylim(lim)
+        ax.set_xlabel("TE $=C(H)$")
+
+    for rows, col, lab in [
+        ([r for r in v1 if r["cfg"] in slack], COL_SLACK, "slack (g450/600/900)"),
+        ([r for r in v1 if r["cfg"] not in slack], COL_PRESS, "pressure (mt4/6/8)"),
+    ]:
+        ax_a.plot(jit([r["C_H"] for r in rows]), jit([r["C_Ha"] for r in rows]),
+                  "o", ms=3, alpha=0.6, color=col, label=lab, mew=0)
+    ext = RUNS / "preg42" / "rows.jsonl"
+    if ext.exists():
+        rows = _load_jsonl(ext)
+        ax_a.plot(jit([r["C_H"] for r in rows]), jit([r["C_Ha"] for r in rows]),
+                  "x", ms=3.5, color="#333333", label="external cells (pre-reg 42)")
+    ax_a.set_ylabel("NDE $=C(H_a)$")
+    ax_a.set_title("(a) V1 harness (n=122)")
+    ax_a.text(0.03, 0.96, "slack pivotal: 36/37 on $y{=}0$\npressure: 39/46",
+              transform=ax_a.transAxes, fontsize=6.5, va="top")
+    ax_a.legend(frameon=False, fontsize=6, loc="lower right", handletextpad=0.2)
+
+    for tipo, col in V2_TYPE_COLS.items():
+        rows = [r for r in v2 if r["tipo"] == tipo]
+        ax_b.plot(jit([r["C_H"] for r in rows]), jit([r["C_Ha"] for r in rows]),
+                  "o", ms=3, alpha=0.65, color=col, label=tipo.replace("_", " "), mew=0)
+    ax_b.set_title("(b) V2 factorial (n=48)")
+    ax_b.text(0.03, 0.96, "termination: 0/10 on $y{=}0$",
+              transform=ax_b.transAxes, fontsize=6.5, va="top")
+    ax_b.legend(frameon=False, fontsize=6, loc="lower right", handletextpad=0.2)
+    fig.tight_layout()
+    fig.savefig(OUT / "f6_mediation_scatter.pdf", bbox_inches="tight")
+    plt.close(fig)
+
+
+# ------------------- F7: censo de mediação (fração NDE != 0 nos pivotais)
+def fig7_mediation_census() -> None:
+    v1 = _load_jsonl(RUNS / "preg40" / "v1_rows.jsonl")
+    v2 = _load_jsonl(RUNS / "preg40" / "v2_rows.jsonl")
+    slack = {"g450", "g600", "g900"}
+
+    def frac(rows: list[dict]) -> tuple[int, int]:
+        piv = [r for r in rows if r["C_H"] != 0]
+        return sum(1 for r in piv if r["C_Ha"] != 0), len(piv)
+
+    pops = [
+        ("V1 slack (g450/600/900)", frac([r for r in v1 if r["cfg"] in slack]), COL_SLACK),
+        ("V1 pressure (mt4/6/8)", frac([r for r in v1 if r["cfg"] not in slack]), COL_PRESS),
+    ]
+    for tipo in ["context_policy", "observation_policy", "test_schedule", "termination"]:
+        pops.append((f"V2 {tipo.replace('_', ' ')}",
+                     frac([r for r in v2 if r["tipo"] == tipo]), V2_TYPE_COLS[tipo]))
+    ext = RUNS / "preg42" / "rows.jsonl"
+    if ext.exists():
+        rows = _load_jsonl(ext)
+        for pref in sorted({r["cfg"].split("_")[0] for r in rows}):
+            pops.append((f"external {pref}",
+                         frac([r for r in rows if r["cfg"].startswith(pref)]),
+                         "#333333"))
+
+    ks = [k for _, (k, _n), _ in pops]
+    ns = [n for _, (_k, n), _ in pops]
+    assert (ks[0], ns[0]) == (1, 37) and (ks[1], ns[1]) == (7, 46), (ks, ns)
+    fracs = [k / n if n else 0.0 for k, n in zip(ks, ns)]
+
+    fig, ax = plt.subplots(figsize=(5.5, 1.75))
+    y = np.arange(len(pops))[::-1]
+    ax.barh(y, fracs, color=[c for _, _, c in pops], alpha=0.8, height=0.65)
+    for yi, f, k, n in zip(y, fracs, ks, ns):
+        ax.text(f + 0.015, yi, f"{k}/{n}", va="center", fontsize=6.5)
+    ax.axvline(0.20, color="k", ls="--", lw=0.8)
+    ax.text(0.215, len(pops) - 0.72, "census gate threshold", fontsize=6.5,
+            va="center", ha="left")
+    ax.set_yticks(y)
+    ax.set_yticklabels([name for name, _, _ in pops], fontsize=7)
+    ax.set_xlabel("fraction of pivotal points with NDE $\\neq 0$ (unmediated)")
+    ax.set_xlim(0, 1.12)
+    fig.tight_layout()
+    fig.savefig(OUT / "f7_mediation_census.pdf", bbox_inches="tight")
     plt.close(fig)
 
 
@@ -234,4 +395,6 @@ if __name__ == "__main__":
     fig3()
     fig4()
     fig5()
+    fig6_mediation_scatter()
+    fig7_mediation_census()
     print("figuras salvas em", OUT)
