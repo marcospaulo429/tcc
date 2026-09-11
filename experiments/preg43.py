@@ -275,6 +275,35 @@ def main():
 
     por_hw = {nome: _por_hw(pontos) for nome, pontos in pop.items()}
     por_hw["pool_headline"] = _por_hw(pool)
+    # desagregados citados na Tab. 2 do paper (por benchmark; 8B por blindagem)
+    por_hw["ext4b_mbpp"] = _por_hw([p for p in pop["ext4b"] if p["cfg"].startswith("mbpp")])
+    por_hw["ext4b_he"] = _por_hw([p for p in pop["ext4b"] if p["cfg"].startswith("he")])
+    q8_scr = {(r["cfg"], r["task_id"], r["cp_index"]): r["screened"]
+              for r in r42 if r["cfg"] in CELLS_Q8}
+    por_hw["q8_screened"] = _por_hw(
+        [p for p in pop["q8"] if q8_scr[(p["cfg"], p["task_id"], p["cp_index"])]])
+    por_hw["q8_nonscreened"] = _por_hw(
+        [p for p in pop["q8"] if not q8_scr[(p["cfg"], p["task_id"], p["cp_index"])]])
+
+    # n efetivo e IC Clopper–Pearson do endpoint H_w >= 1 (pool headline)
+    def _cp_ci(k: int, n: int) -> list[float]:
+        from scipy.stats import beta
+        lo = beta.ppf(0.025, k, n - k + 1) if k > 0 else 0.0
+        hi = beta.ppf(0.975, k + 1, n - k) if k < n else 1.0
+        return [_r(lo), _r(hi)]
+
+    inf = [p for p in pool if p["H_w"] >= 1]
+    dec: dict[tuple, list[bool]] = {}
+    tsk: dict[str, list[bool]] = {}
+    for p in inf:
+        dec.setdefault((p["task_id"], p["cp_index"]), []).append(p["nde0"])
+        tsk.setdefault(p["task_id"], []).append(p["nde0"])
+    k_pts, n_pts = sum(p["nde0"] for p in inf), len(inf)
+    k_dec, n_dec = sum(all(v) for v in dec.values()), len(dec)
+    k_tsk, n_tsk = sum(all(v) for v in tsk.values()), len(tsk)
+    n_efetivo = {"pontos": {"k": k_pts, "n": n_pts, "ci95_cp": _cp_ci(k_pts, n_pts)},
+                 "decisoes_unicas": {"k": k_dec, "n": n_dec, "ci95_cp": _cp_ci(k_dec, n_dec)},
+                 "tasks_unicas": {"k": k_tsk, "n": n_tsk}}
 
     report = {
         "meta": {
@@ -294,6 +323,7 @@ def main():
         "testes_horizonte": {"H": _mw_familia(familia, "H"),
                              "H_w": _mw_familia(familia, "H_w")},
         "adendo_43a_por_Hw": por_hw,
+        "n_efetivo_Hw_ge1_headline": n_efetivo,
     }
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "report.json").write_text(

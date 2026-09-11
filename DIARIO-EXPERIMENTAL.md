@@ -2934,3 +2934,23 @@ e 2/2 (externo). O contraste 8B vs 4B NÃO é confundido com horizonte de
 escrita — entra na Tab. 2 (coluna mediana H_w) e no App. F. Também
 visível: na V1 pressão a mediação proximal cai com H_w (11/14 → 0/3 →
 0/1), a única população onde o horizonte ordena monotonicamente.
+
+**Auditoria `revisor` do lote r17 (2ff0126).** Corrigido: abstract dizia
+"2/25 at matched write horizon" (2/25 é H_w ≥ 1; o pareado é 2/20) →
+2/20; "reward-pivotal" → "harness-pivotal" no abstract; "as construction
+predicts" → "leads one to expect" (3 ocorrências — coerente com "default,
+not a theorem"); ledger #43 "3 V2 context points" → "3 V2 non-termination
+points (2 context, 1 observation)"; caption Tab. 2 idem; "vs. 280" →
+"284/280/279" (episódios do braço outcome por seed); nota de escopo do
+Lema pg explicita que o Act 4 usa média móvel global de R_eff (não V(s))
+e regra (v) diz "expectation is C_H up to a positive factor"; rodapé sobre
+uma registração adicional (44) "filed and unrun at submission time".
+Rastreabilidade (achado 3): preg43.py agora emite
+`n_efetivo_Hw_ge1_headline` (21/23 CP [0.7196, 0.9893]; 14/16 decisões
+CP [0.6165, 0.9845]; 13/15 tasks) e `adendo_43a_por_Hw` desagregado por
+benchmark (mbpp mediana 2, n≥1 = 6; he mediana 2, n≥1 = 4) e por
+blindagem do 8B (screened 2/8, non-screened 0/17, ambos mediana 1) —
+todos os números da Tab. 2 agora rastreiam ao report.json. Achado 10
+(precedência registro→computação do 43a não auditável por hash): o
+registro e o desfecho do 43a foram commitados juntos (commit "exp: adendo
+43a"); a ordem no arquivo é a única evidência — declarado aqui.
