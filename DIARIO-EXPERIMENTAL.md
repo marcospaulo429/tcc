@@ -2519,3 +2519,79 @@ C_H/C_M/C_HM; sem resíduos de linguagem ("never separated", "not
 identified", "explains 2608", "generalizes across families"); refs de
 tabela/figura simbólicas e corretas após a reorganização. Item menor
 aberto: regra v1.0(v) não diz qual CDE usar quando C_Ha ≠ C_HM − C_M.
+
+**Correção do registro acima:** os jobs 32249/32250 RODARAM em
+2026-09-11 12:54 (o Slurm liberou GPU antes do estimado), 4 min após o
+commit f33684a. O texto "preg42 pendente" era verdadeiro na hora do commit;
+o desfecho vem abaixo.
+
+### DESFECHO 42 (2026-09-11): s1 — a mediação pela próxima ação replica fora da tripla V1/4B (48/49 externo; 8B 51/57 screened, 0/17 não-screened)
+
+**Execução (Slurm, nó dgx-H100-02, partição h100n2, vLLM 0.8.5.post1,
+APC off, série, greedy seed 1234, max_tokens 1200):** job **32249** (GPU 0,
+Qwen3-4B, porta 8321, 6m14s, exit 0): gate + 4 células externas; job
+**32250** (GPU 1, Qwen3-8B, porta 8322, 4m54s, exit 0): só `q8_g600` —
+`sbatch --export=ALL,GATE_CELLS=a,b,c` quebra a lista nas vírgulas, então
+q8_mt4/q8_mt6 não rodaram (exemplo no .sbatch corrigido). Job **32303**
+(q8_mt4 + q8_mt6, porta 8322) submetido 15:26 e concluído 15:31 — o
+secundário 8B abaixo já é completo. Rollouts: 20 gate + 143 + 97 = 260; 0
+timeouts, 0 erros. Rows: runs/preg42/{gate_rows,rows}.jsonl;
+report.json. Contagens conferidas à mão contra runs/teste3_*/cf_results.jsonl
+(n, pivotais e screened por célula batem: mbpp_g600 31/3/31, mbpp_mt6
+35/5/35, he_g600 38/20/38, he_mt6 39/21/39, q8_g600 28/22/23, q8_mt4
+35/26/28, q8_mt6 34/26/28).
+
+**Gate nulo (condição de identificação na H100): 20/20 exatos, ΔR = 0.0**
+(2 pontos × {g450, g600, g900, mbpp_g600, mbpp_mt6, he_g600, he_mt6,
+q8_g600, q8_mt4, q8_mt6}). Piso zero transporta da 4090 para a H100 em
+ambos os modelos.
+
+**Primário (4B externo, pivotal ∧ screened, endpoint pré-registrado):
+48/49 = 0.980 → s1.** Por célula: mbpp_g600 3/3, mbpp_mt6 4/5, he_g600
+20/20, he_mt6 21/21. n efetivo: 49 pontos = **29 pares únicos (task,
+cp_index) / 29 tasks; 28/29 pares exatos em toda célula**. |TE| mediana
+0.80 nos 49 (he 0.625, mbpp 0.83–0.86). 43/49 saturados (R = 1.0) — as
+células externas são o regime saturado que o census já descrevia; a
+mediação replica nele. Única quebra: **mbpp_7 cp0 em mt6**: C_H = 0.4,
+C_Ha = 0.4, C_M = 0, C_HM = 0 → I_fact = −0.4: a ação original a NÃO
+re-injeta sob h′ (NDE = TE, mediação zero pela próxima ação), mas o a′
+amostrado re-injeta (C_HM = 0). Mesmo padrão do l_log_parser V1: a
+informação é consumida depois de j.
+
+**Secundários 4B:** não-pivotais 91/94 exatos; as 3 exceções têm TE = 0 e
+NDE ≠ 0 (mbpp_7 cp12 g600 C_Ha = 0.4; he_4 cp0 g600 0.222 e mt6 0.111):
+ao vivo o modelo compensa o flip (TE = 0), mas com a ação original fixa o
+flip custa — mascaramento do efeito total, não caminho direto. TE ≠ NDE
+em 51/143; I_fact = 0 em 139/143 (os 4 ≠ 0 são exatamente as 4 quebras
+acima, máx |I_fact| 0.4).
+
+**Secundário 8B (q8_g600 + q8_mt4 + q8_mt6 = 97 pontos; jobs 32250 e
+32303 — este último GPU 1, porta 8322, 4m09s, exit 0, gate q8_mt4/q8_mt6
+4/4 exatos → gate total 20/20):** pivotal ∧ screened **51/57 = 0.895**
+(21 pares únicos/18 tasks; 18/21 pares exatos em toda config) — no limiar
+s1/s2 do secundário (o endpoint primário é só 4B externo). Por célula:
+g600 16/17, mt4 18/20, mt6 17/20. As 6 quebras screened são 3 tasks:
+l_log_parser cp0 ×3 (C_H = 1.0, C_Ha = 0.77–0.85, C_M = C_HM = 1.0),
+api_router cp0 ×2 (C_H = 1.0, C_Ha = 0.125, C_M = C_HM = 1.0) e
+l_door_controller cp6 mt6 (C_H = 0.23, C_Ha = 0.08). Em 5/6 o ponto é
+"screened" porque AMBOS os braços com a′ falham a task inteira (C_M = C_HM
+= 1.0): screening por saturação em falha do braço M, não por re-injeção —
+e aí a quarta célula mostra NDE ≈ TE (efeito quase todo não mediado pela
+próxima ação). **Pivotal ∧ não-screened: 0/17 exatos** — os 17 pontos
+onde o 8B quebra o shield (as 5 tasks cp0 do pré-reg 15 em 3 configs +
+l_door_controller cp0/cp3) têm NDE ≠ 0 em 17/17, com I_fact = 0 exato em
+15/17 (aditivo: C_HM = C_Ha, C_M = 0) e os 2 restantes = l_door_controller
+(I_fact = −0.08, +0.46, a sinergia não-saturada já reportada). Leitura: no
+8B, não-screened ⇒ NDE ≠ 0 (17/17) e screened ⇒ NDE = 0 (51/57): a "massa
+não-screened" do census coincide com a massa de efeito direto — coerência
+entre as duas leituras do census (Cor. gate). Não-pivotais 23/23. I_fact
+= 0 em 88/97; TE ≠ NDE em 74/97. Saturação: 54/57 pivotais screened com R
+= 1.0.
+
+**Custo total:** 20 gate + 240 replays = 260 rollouts, ~15 min de GPU H100
+em 3 jobs (32249, 32250, 32303), 0 GPU-h de treino, 0 timeouts, 0 erros.
+Ledger #42 → held (s1 no primário; 8B secundário 0.895 no limiar). Entra
+no paper: abstract (uma frase), §4.4 parágrafo externo, Tab. 2 (linhas
+externas + 8B), Fig. 2/3 (células do 42), App. Replication (8B quarta
+célula), ledger, claims table, Threats (o ramo s3 não se materializou;
+limitação passa a ser "regime saturado" e "uma família").

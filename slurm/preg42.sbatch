@@ -10,7 +10,9 @@
 #   MODEL       (default Qwen/Qwen3-4B)  — também exportado como TCC_MODEL
 #   GATE_CELLS  (default g450,g600,g900,mbpp_g600,mbpp_mt6,he_g600,he_mt6)
 #   RUN_CELLS   (default mbpp_g600,mbpp_mt6,he_g600,he_mt6)
-# Ex. 8B: sbatch --export=ALL,MODEL=Qwen/Qwen3-8B,GATE_CELLS=q8_g600,q8_mt4,q8_mt6,RUN_CELLS=q8_g600,q8_mt4,q8_mt6 slurm/preg42.sbatch
+# Ex. 8B (listas com vírgula NÃO podem ir dentro de --export=ALL,...: o sbatch
+# quebra o valor nas vírgulas — job 32250 rodou só q8_g600 por isso; exporte no shell):
+#   PORT=8322 MODEL=Qwen/Qwen3-8B GATE_CELLS=q8_mt4,q8_mt6 RUN_CELLS=q8_mt4,q8_mt6 sbatch --export=ALL slurm/preg42.sbatch
 set -uo pipefail
 cd /raid/user_marcospaulo/tcc
 mkdir -p runs/logs runs/preg42

@@ -303,7 +303,7 @@ def fig6_mediation_scatter() -> None:
     def jit(vals: list[float]) -> np.ndarray:
         return np.asarray(vals) + rng.normal(0, 0.015, len(vals))
 
-    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(5.5, 2.15), sharey=True)
+    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(5.5, 2.0), sharey=True)
     for ax in (ax_a, ax_b):
         ax.axhline(0, color="k", lw=0.8)
         lim = [-1.15, 1.15]
@@ -322,10 +322,10 @@ def fig6_mediation_scatter() -> None:
     if ext.exists():
         rows = _load_jsonl(ext)
         ax_a.plot(jit([r["C_H"] for r in rows]), jit([r["C_Ha"] for r in rows]),
-                  "x", ms=3.5, color="#333333", label="external cells (pre-reg 42)")
+                  "x", ms=3.5, color="#333333", label="pre-reg 42 (MBPP+/HE+/8B)")
     ax_a.set_ylabel("NDE $=C(H_a)$")
-    ax_a.set_title("(a) V1 harness (n=122)")
-    ax_a.text(0.03, 0.96, "slack pivotal: 36/37 on $y{=}0$\npressure: 39/46",
+    ax_a.set_title("(a) V1 harness (n=122 + pre-reg 42)")
+    ax_a.text(0.03, 0.96, "slack pivotal: 36/37 on $y{=}0$\npressure: 39/46; external: 48/49",
               transform=ax_a.transAxes, fontsize=6.5, va="top")
     ax_a.legend(frameon=False, fontsize=6, loc="lower right", handletextpad=0.2)
 
@@ -362,17 +362,19 @@ def fig7_mediation_census() -> None:
     ext = RUNS / "preg42" / "rows.jsonl"
     if ext.exists():
         rows = _load_jsonl(ext)
-        for pref in sorted({r["cfg"].split("_")[0] for r in rows}):
-            pops.append((f"external {pref}",
-                         frac([r for r in rows if r["cfg"].startswith(pref)]),
-                         "#333333"))
+        names = {"mbpp": "MBPP+ 4B (pre-reg 42)", "he": "HumanEval+ 4B (pre-reg 42)",
+                 "q8": "V1 8B designed pool (pre-reg 42)"}
+        for pref in ["mbpp", "he", "q8"]:
+            sub = [r for r in rows if r["cfg"].startswith(pref)]
+            if sub:
+                pops.append((names[pref], frac(sub), "#333333"))
 
     ks = [k for _, (k, _n), _ in pops]
     ns = [n for _, (_k, n), _ in pops]
     assert (ks[0], ns[0]) == (1, 37) and (ks[1], ns[1]) == (7, 46), (ks, ns)
     fracs = [k / n if n else 0.0 for k, n in zip(ks, ns)]
 
-    fig, ax = plt.subplots(figsize=(5.5, 1.75))
+    fig, ax = plt.subplots(figsize=(5.5, 1.4))
     y = np.arange(len(pops))[::-1]
     ax.barh(y, fracs, color=[c for _, _, c in pops], alpha=0.8, height=0.65)
     for yi, f, k, n in zip(y, fracs, ks, ns):
