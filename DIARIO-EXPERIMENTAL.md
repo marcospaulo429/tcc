@@ -3001,3 +3001,30 @@ decisões — e o paper não tem esse número escrito."
 **Teto:** só edição 6.0; com (2)+(3) ≈ 6.7; para 8: pool com H_w≥1
 dominante e ≥30 decisões únicas, OU exercício positivo da regra, OU 4ª
 célula no Mistral — próxima versão, fora do orçamento.
+
+## 2026-09-11 — PRÉ-REGISTRO 45 (antes de rodar): quarta célula R(h′,a) na Qwen3-1.7B (terceiro modelo na pergunta V1)
+
+Motivação: R3-1 (rodada 18) — a 1.7B tem censo (designed 23 pts; MBPP+
+44 pts) e nenhuma quarta célula. População: teste3_{q17_g600, q17_mt6,
+mbpp17_g600, mbpp17_mt6} = 11+12+22+22 = **67 pontos**, todos screened
+(C_HM = C_M), **26 pivotais** (C_H ≠ 0: 4+4+9+9). Procedimento idêntico
+ao pré-reg 42 (experiments/preg42.py, células TERTIARY_17B já
+parametrizadas; TCC_PREG42_OUT=runs/preg45; job slurm/preg45.sbatch a
+partir de preg42.sbatch com MODEL=Qwen/Qwen3-1.7B; H100 via Slurm; vLLM
+0.8.5.post1; APC off; série; greedy seed 1234; max_tokens 1200).
+**Gate:** 2 replays nulos por config (8) → todos ΔR = 0.0 exato, senão
+aborta. Modelo baixado hoje para o cache HF (não estava).
+
+**Endpoint primário:** fração dos 26 pivotais com R(h′,a) = R exato.
+Desfechos: **t1** ≥ 0.90 (replica — proximal em terceiro modelo Qwen);
+**t2** 0.60–0.90 (parcial; reportar por célula e por H_w); **t3** < 0.60
+(a 1.7B se comporta como o 8B: distal — a tese fica "4B-específica no
+V1", limitação central). Secundários (descritivos): não-pivotais
+(esperado ≈ 1), I_fact = 0, estratificação por H_w (adendo 43a
+recomputado incluindo a célula), n de decisões únicas. Custo: 8 nulos +
+67 replays = 75 rollouts (~5 GPU-min H100). Reportamos qualquer desfecho;
+entra no ledger como #45 (o #44 continua na fila, job 32318).
+Atenção: a 1.7B satura em falha na pressão (11/12) — os pivotais são
+poucos; n efetivo será reportado ao lado.
+Job **32342** (`slurm/preg45.sbatch`, h100n2, gpu:1, porta 8323) submetido
+2026-09-11 — PD (Priority); 32318 (pré-reg 44) continua PD (Resources).
