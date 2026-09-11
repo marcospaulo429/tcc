@@ -109,11 +109,14 @@ def stage_run(llm, cells):
 
 def _resumo(rs: list[dict]) -> dict:
     piv = [r for r in rs if r["pivotal"] and r["screened"]]
+    piv_ns = [r for r in rs if r["pivotal"] and not r["screened"]]  # fora do primário; reportado
     npiv = [r for r in rs if not r["pivotal"]]
     ifs = [r["I_fact"] for r in rs]
     return {"n": len(rs), "n_pivotal_screened": len(piv),
             "n_exact_ha_pivotal": sum(r["exact_ha"] for r in piv),
             "frac_exact_ha_pivotal": round(sum(r["exact_ha"] for r in piv) / len(piv), 4) if piv else None,
+            "n_pivotal_nao_screened": len(piv_ns),
+            "n_exact_ha_pivotal_nao_screened": sum(r["exact_ha"] for r in piv_ns),
             "n_nonpivotal": len(npiv),
             "n_exact_ha_nonpivotal": sum(r["exact_ha"] for r in npiv),
             "n_CH_diff_CHa": sum(r["C_H"] != r["C_Ha"] for r in rs),

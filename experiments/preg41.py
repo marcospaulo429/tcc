@@ -59,12 +59,23 @@ def tabela_2x2(rows: list[dict], key_fn) -> dict:
             np1 += 1
     den = piv0 + piv1
     m = piv0 / den if den else None
+    # n efetivo dos PIVOTAIS: a mesma decisão medida em g450/g600/g900 conta uma vez
+    piv_rows = [r for r in rows if r["C_H"] != 0]
+    por_par: dict = {}
+    for r in piv_rows:
+        por_par.setdefault(key_fn(r), []).append(bool(r["exact_ha"]))
+    pares_piv = len(por_par)
+    pares_piv_nde0 = sum(all(v) for v in por_par.values())
     return {"piv_nde0": piv0, "piv_nde_nao0": piv1,
             "npiv_nde0": np0, "npiv_nde_nao0": np1,
             "m": _r(m) if m is not None else None,
             "abs_TE_piv_nde0": _quartis(abs_te),
             "pares_unicos": len({key_fn(r) for r in rows}),
-            "tasks_unicas": len({r["task_id"] for r in rows})}
+            "tasks_unicas": len({r["task_id"] for r in rows}),
+            "piv_pares_unicos": pares_piv,
+            "piv_tasks_unicas": len({r["task_id"] for r in piv_rows}),
+            "piv_pares_nde0": pares_piv_nde0,
+            "m_por_par": _r(pares_piv_nde0 / pares_piv) if pares_piv else None}
 
 
 def desfecho_m(m: float | None) -> str | None:
@@ -393,9 +404,14 @@ def main():
         return [(bool(r["exact_ha"]), hmap[id(r)]) for r in rows
                 if hmap[id(r)] is not None]
 
+    # sensibilidade (revisor): só pivotais — não-pivotais têm NDE=0 trivialmente
+    piv_folga = [r for r in folga if r["C_H"] != 0]
+    piv_pressao = [r for r in pressao if r["C_H"] != 0]
     horizonte = {
         "v1_folga": horizonte_stats(_pares(folga, h_v1)),
         "v1_pressao": horizonte_stats(_pares(pressao, h_v1)),
+        "v1_folga_so_pivotais": horizonte_stats(_pares(piv_folga, h_v1)),
+        "v1_pressao_so_pivotais": horizonte_stats(_pares(piv_pressao, h_v1)),
         "v2_total": horizonte_stats(_pares(v2, h_v2)),
         "v2_por_tipo": {t: horizonte_stats(
             _pares([r for r in v2 if r["tipo"] == t], h_v2)) for t in tipos},

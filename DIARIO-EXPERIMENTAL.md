@@ -2459,3 +2459,63 @@ vantajosa se o passo for reescalado; o paper deve dizer isso.
 **(f) n efetivo:** V1 folga 29 pares/20 tasks; pressão 27 pares. Células
 externas (para o pré-reg 42): mbpp 31+35 pts (3+5 pivotais), he 38+39
 (20+21), q8 28+35+34 (22+26+26). Entra ao lado de cada contagem no paper.
+
+## 2026-09-11 — Noite de loop até a mesa: Fases 2–5 (preg42 pendente, re-tese fechada, 9pp, auditoria)
+
+**Máquina:** cluster Slurm `dgx-H100-02` (h100n2), 8/8 GPUs alocadas por
+outros usuários a noite inteira. `runs/` presente (cópia da 4090). Jobs
+`preg42` já estavam na fila desde 2026-09-10 23:40 (32249 = 4B default;
+32250 = 8B): estado PD (Resources/Priority), start estimado pelo Slurm
+**2026-09-28** — sem GPU esta noite. **Pré-reg 42 fica PENDENTE**; nada
+foi olhado (runs/preg42/ não existe). Ledger #42 permanece "running"; o
+paper declara o ramo de falha na seção Threats. Toolchain instalada sem
+sudo: tectonic em ~/.local/bin (cache em /raid), PyMuPDF via uvx
+(previews em runs/fig_preview/). `impl` instalou matplotlib no .venv via
+`uv pip` (pyproject intocado) para regenerar figuras.
+
+**Fase 3+4 (commit 6fe1dfa):** re-tese fechada e compressão: scoreboard →
+App. Shield (com linha da 4ª célula 56/57 + 36/37), síntese → App.
+Replication, gate V2 + Scope + last-mover + 8B false negative → novo App.
+"V2 Census: Gate Accounting and Scope"; §7 condensado; glossário de
+configs/outcomes = Tabela 1; Fig. 2 = scatter TE×NDE (122 V1 + 48 V2),
+Fig. 3 = census em leitura de mediação (fração NDE≠0 por população/tipo,
+linha 0.20); F3 em duas linhas 5.5"; F5 = Act 4 (c1d_*) com controle
+episode-matched (ato4_em); tasks reconciliadas (30 designed, split 20/10;
+22 curated; 52 únicas); 56/57 ↔ 36/37 explicado uma vez; Threats ganhou
+parágrafo "pool design + pré-reg 42 com ramo de falha declarado";
+FIGURAS.md reescrito em inglês. Compilação (tectonic): **Conclusão termina
+na p9**; só o Reproducibility Statement (não contado pela ICLR) cai na p10;
+32 pp no total; 0 refs quebradas; grep de anonimato limpo.
+
+**Fase 5a — auditoria `revisor` (preg41/42 + coerência).** Achados aceitos
+e corrigidos:
+1. **ERRATA (bloqueante) no DESFECHO 41(a)/(f) acima:** "29 pares únicos /
+   20 tasks" refere-se aos **57** pontos de folga; os **37 pivotais**
+   colapsam em **16 pares únicos (task, cp_index) / 14 tasks, 15/16 com
+   NDE = 0 (0.938, ainda m1)**. E o per-cfg correto é **g450 12/12, g600
+   12/13, g900 12/12** (17 e 7 eram n total g450 e npiv g900 — erro de
+   transcrição meu; report.json sempre esteve certo). preg41.py agora
+   reporta `piv_pares_unicos`, `piv_tasks_unicas`, `piv_pares_nde0`,
+   `m_por_par`; paper (intro, §4.4, Threats, claims, ledger #41) corrigido.
+2. **"12×" era dupla contagem:** grad_norm em train_c1.py é a norma do
+   gradiente SOMADO do episódio (já incorpora densidade). Razão honesta:
+   0.295/0.062 ≈ **4.8×** por episódio. Paper: "~5×".
+3. **Cor. arm2 qualificada:** −I = C_H em todo ponto screened; = PE só onde
+   C_Ha = 0 (36/37). l_log_parser é screened com C_Ha = 0.077 (−I = −0.154,
+   PE = −0.231).
+4. **Horizonte V1 incluía não-pivotais** (NDE = 0 trivial). Sensibilidade
+   só-pivotal adicionada ao report: V1 pressão p = **0.0008** (7 vs 39;
+   mais forte), V1 folga p = 0.026 (n = 1). V2 context p = 0.011 já era
+   só-pivotal (V2 não tem não-pivotais). Tabela 2 e ledger anotados.
+5. **preg42 `_resumo`** agora reporta pivotais não-screened
+   (`n_pivotal_nao_screened`, `n_exact_ha_pivotal_nao_screened`) — no q8
+   (79/97 screened) esses pontos ficavam fora do primário sem serem
+   mostrados. Endpoint primário INALTERADO (pré-registrado: pivotal ∧
+   screened); a coluna é secundária descritiva.
+Verificados sem problema: pivotal = C_H ≠ 0 vem do census (independente de
+C_Ha); 36/44 comparável (mesma row, mesma direção); max_tokens = 1200 em
+teste3 externo, preg40 V1 e preg42 (comparáveis); cf_results externos têm
+C_H/C_M/C_HM; sem resíduos de linguagem ("never separated", "not
+identified", "explains 2608", "generalizes across families"); refs de
+tabela/figura simbólicas e corretas após a reorganização. Item menor
+aberto: regra v1.0(v) não diz qual CDE usar quando C_Ha ≠ C_HM − C_M.
