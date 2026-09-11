@@ -14,6 +14,7 @@ Uso:
 """
 import argparse
 import json
+import os
 import statistics
 from pathlib import Path
 
@@ -22,7 +23,8 @@ from experiments.common import append_row, done_keys, load_rows, load_trajectori
 from experiments.teste3 import FLIP, _by_index, sanitize
 from trajectories.replay import replay_from
 
-OUT = Path("runs/preg42")
+# TCC_PREG42_OUT permite um gate nulo fresco em outro diretório (pré-reg 44)
+OUT = Path(os.environ.get("TCC_PREG42_OUT", "runs/preg42"))
 PRIMARY = ("mbpp_g600", "mbpp_mt6", "he_g600", "he_mt6")
 SECONDARY_8B = ("q8_g600", "q8_mt4", "q8_mt6")
 TERTIARY_17B = ("mbpp17_g600", "mbpp17_mt6", "q17_g600", "q17_mt6")

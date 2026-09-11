@@ -2756,3 +2756,58 @@ título ("Mostly Proximally Mediated"), abstract (21/23 ao lado do 36/37;
 p sai), §4.4 (estrato last-mover e informativo; 8B 2/25), Tab. 2 (coluna
 H_w ≥ 1), App. estimand "Multiplicity" (família de horizonte + Holm +
 permutação), ledger #43, claims table.
+
+## 2026-09-11 — PRÉ-REGISTRO 44 (antes de rodar): braço C_H com passo reescalado no setup do Act 4 (R2, rodada 15)
+
+Motivação: §6 afirma que o braço C_H perde para outcome-only por um gap
+de eficiência de otimização (densidade 0.39 × grad_norm ~5× menor,
+DESFECHO 41e) "que um passo reescalado poderia fechar" — hipótese não
+testada (R2-1, rodada 15). Testamos a única mudança que a hipótese
+prescreve.
+
+**Desenho:** idêntico ao Act 4 (pré-reg 27; rl/train_c1.py): braço `ch`,
+pool runs/c1d_margem/pool.json (6 treino / 6 held-out), λ = 5, centering
+c1b, clip_norm 1.0, orçamento 1600 chamadas LLM (dose-matched), seeds 1/2/3,
+avaliação held-out idêntica. **Única mudança: lr 0.1 → 0.5** (×5 = razão
+das medianas de grad_norm 0.295/0.062 ≈ 4.8, arredondada e declarada
+antes). Implementação: flag `--lr-scale` em train_c1.py aplicada após o
+`--c1b` (que fixa lr 0.1). Nada mais muda; nenhum segundo lr será tentado
+sem novo pré-registro.
+
+**Máquina:** H100 via Slurm (slurm/preg44.sbatch), vLLM 0.8.5.post1, APC
+off, série, greedy seed 1234. Os comparadores do Act 4 foram medidos na
+4090; para descartar o hardware como confundidor, o job roda ANTES do
+braço novo: (g1) gate nulo fresco — 6 replays (g450/g600/g900 × 2, fila
+100% original) → todos ΔR = 0.0 exato, senão aborta; (g2) **replicação do
+braço `ch` lr 0.1 seed 1 na H100** — deve reproduzir held-out R_eff =
+0.4046 (e episodes = 139) EXATAMENTE; se não reproduzir, o resultado do
+braço novo é reportado com a etiqueta "hardware não controlado" e a
+divergência anatomizada.
+
+**Comparadores (fixos, do Act 4 e do pré-reg 31):** outcome-only
+dose-matched 0.4402 / 0.4402 / 0.4430; outcome episode-matched 0.410 /
+0.450 / 0.398; C_H lr 0.1 0.4046 / 0.4046 / 0.3984; C_HM − C_M = keep
+0.3917; atratores held-out thr600 0.4546, keep 0.3917, summ −0.0310.
+
+**Endpoint primário:** held-out R_eff do braço `ch` lr 0.5 por seed, contra
+os mesmos seeds. Desfechos declarados:
+- **r1:** ≥ outcome-only dose-matched em ≥ 2/3 seeds → a prescrição
+  "bille C_H com passo reescalado" recebe evidência positiva: o sinal
+  exato paga sua taxa quando o passo compensa a esparsidade (primeiro
+  resultado positivo de treino; um ato, um pool).
+- **r2:** > C_H lr 0.1 em ≥ 2/3 seeds, mas r1 falha → mecanismo (passo)
+  confirmado como PARCIAL; a taxa de replay continua decisiva; o texto
+  diz "parcialmente fechável".
+- **r3:** ≤ C_H lr 0.1 em ≥ 2/3 seeds → a explicação por passo cai; a
+  frase "a re-scaled step could close" é retirada e o gap fica sem
+  mecanismo identificado (Claim 3 perde "mechanism identified").
+- **r4 (instabilidade):** colapso a atrator fixo (held-out a ≤ 0.005 de
+  keep 0.3917 ou de summ −0.031, θ correspondente) em ≥ 2/3 seeds → lr
+  grande demais; reportado como tal, sem re-tuning.
+Ordem de precedência se ambíguo: r4 > r1 > r2 > r3.
+
+**Secundários:** nº de episódios (esperado ≈ 139, dose fixa), trajetória
+de θ, held-out por task, grad_norm mediano, comparação com o
+episode-matched. **Custo:** 6 nulos + 4 × ~1600 chamadas ≈ 6.400 chamadas,
+1 GPU H100, estimativa 1–2 GPU-h. Reportamos qualquer desfecho; entra no
+ledger como #44.

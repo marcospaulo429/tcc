@@ -362,12 +362,15 @@ def main() -> None:
     ap.add_argument("--clip-norm", type=float, default=0.0)
     ap.add_argument("--c1b", action="store_true",
                     help="pré-registro 12: centering fixo + lr 0.1 + clip 1.0")
+    ap.add_argument("--lr-scale", type=float, default=1.0,
+                    help="pré-registro 44: multiplica o lr APÓS --c1b (ex. 5.0)")
     args = ap.parse_args()
     center = None
     if args.c1b:
         from rl.policy import CENTER_C1B
         center = CENTER_C1B
         args.lr, args.clip_norm = 0.1, 1.0
+    args.lr *= args.lr_scale
 
     from agent.llm import LLMClient  # lazy: testes nunca importam o cliente de rede
     llm = CountingLLM(LLMClient())
