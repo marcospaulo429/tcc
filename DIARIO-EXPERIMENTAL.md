@@ -2293,3 +2293,19 @@ controles a′/a′_s.
 o que o census gate mede que não é conhecido a priori do TIPO de decisão?
 E se C_H é o estimando correto para harness-only (App. B), em que sentido
 o arm 2 era 'biased'?"
+
+**Rodada 13-pré (mesmo dia) — tese "harness como mediador" submetida como
+claim.** Veredito: direção certa, ≈4.7 se só reescrita. Correções acatadas:
+(1) I é identificado — I = I_fact − PE (porção eliminada); NUNCA "não
+identificado"; (2) NDE = 0 em folga é quase consequência da Cor. 1 + desenho
+do pool V2/L (informação consumida na próxima ação) → re-escopar: "NDE = 0
+é propriedade do tipo de decisão × horizonte de consumo; o gate mede a
+fração com NDE ≠ 0" (observation V2 4/12 e api_router I_fact = 0.375 viram
+evidência a favor); (3) retirar "explica 2608.19760" (ALFWorld, sem
+harness); (4) pré-reg 31 (outcome ≥ C_H a episódios iguais, 3/3 seeds)
+contradiz a prescrição harness-only — precisa de explicação (sinal exato
+esparso vs. ruidoso denso) ou Claim 3 cai. Testes de custo zero apontados:
+tabela 2×2 folga×pivotal com |C_H|; R(h′,a′_s) vs R_H nos 44 pontos do
+pré-reg 26 (consistência do modelo de mediação). Título sugerido: "Harness
+Credit Is Mostly Mediated: Four-Arm Replay Separates Total from Direct
+Effect in a Two-Layer Coding Agent". Plano completo em PROXIMOS-PASSOS.md.
