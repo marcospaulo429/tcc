@@ -2222,3 +2222,74 @@ replay), 176 trajetórias de replay gravadas em runs/preg40/replays/,
 janela registrada 20:09→20:16 (mesma sessão do pré-reg, APC off, greedy
 seed 1234, Qwen3-4B porta 8321). Artefatos: runs/preg40/{gate,v1,v2}_rows.jsonl
 + report.json.
+
+## 2026-09-10 — Mesa ICLR rodadas 11 e 12 (agente `iclr` reescrito: Fable 5.1, ISOLADO em paper/)
+
+Mudança de protocolo: a mesa agora só lê `paper/` (condição do reviewer
+real). Rodadas 1–10 liam o diário e eram otimistas por vazamento (rodada
+10: 7/10 accept). Notas caem para o patamar realista.
+
+**Rodada 11 (paper pré-40, commit ce183cf):** R1 4 / R2 3 / R3 5 → AC
+≈4.0 Reject. R1 detectou SOZINHO, pela Fig. 1 ("live") + Remark de
+mediação, a célula fatorial ausente R(h′,a) — validação independente da
+auditoria Boclin/pré-reg 40.
+
+**Rodada 12 (paper pós-40, commit 2f1bef6):** R1 4 (Soundness 2) / R2 3
+(Soundness 2) / R3 4 (Presentation 1) → AC ≈3.7 Reject. Consenso: o
+quarto braço RESOLVE a weakness técnica (célula medida, Fig. 1 certa,
+Remark 3 com I = I_fact − (C_H − C_Ha) correto), mas o paper NÃO absorveu
+as consequências — está internamente contraditório:
+- Título/abstract/conclusão vendem screening-off como finding; §4.3 e
+  Contribuição 2 dizem "artifact of the incomplete grid". Conclusão nem
+  menciona a quarta célula. Abstract cresceu para ~400 palavras com as
+  duas teses.
+- Prop. 1(iii), Cor. 2 e regra v1.0(v) ("never bill C_H") contradizem a
+  nota de escopo do App. B ("C_H is the estimand when only the harness
+  trains") e §4.3 ("C_Ha is the correct factorial estimand") — TRÊS
+  prescrições incompatíveis do que bilhar.
+- Leitura de R1/R2 (a mais dura, e provavelmente certa): pela Cor. 1
+  ("context ops não modificam o ambiente"), CDE do harness a ação fixa é
+  zero sempre que a ação já resolve a task → C_Ha = 0 em 56/57 é quase
+  teorema de desenho; "double-counting" = efeito indireto renomeado;
+  Act 4 comparou efeito total (C_H, correto p/ harness-only) com CDE zero
+  por desenho e chamou de "bias load-bearing". Leitura correta do Act 4:
+  outcome-only (MC do efeito total, sem replay tax) > C_H (mesmo
+  estimando + tax) > CDE (zero) — achado sobre custo de estimação, não
+  sobre crédito.
+- Itens de custo zero NÃO corrigidos desde a 11: F3 ilegível (10.8" em
+  linewidth), F5 = Act 2 (Act 4 sem figura), FIGURAS.md obsoleto, sem
+  glossário de configs/outcomes, zero figuras de dados no main text,
+  30/40/52 tasks sem reconciliação, "never separated" obsoleto em App. B,
+  main.aux não recompilado (9pp não verificável), nome "Boclin" em
+  submissão anônima (L511, L1980).
+- Bib: as 5 chaves da rodada 11 corrigidas ✓.
+
+**Top-3 do AC (Δnota/custo):**
+1. RE-TESE em torno do achado fatorial (escrita, 2–3 dias; 4 → 5–6): novo
+   título; abstract ≤200 palavras com UM número primário; contribuições/
+   conclusão coerentes: para decisões de contexto o harness não tem caminho
+   direto para R (CDE = 0 em 56/57), todo crédito de harness é mediado,
+   C_H (efeito total) é o estimando correto para harness-only training,
+   C_HM − C_M e C_Ha são CDEs relevantes só para treino conjunto; census
+   gate preça a massa com CDE ≠ 0. Reescrever Prop. 1(iii), Cor. 2, regra
+   (v); remover "never separated".
+2. Compressão + custo zero (1–2 dias): scatter C_H vs C_Ha (122 V1 + 48
+   V2, por regime/tipo) e figura census/gate no main text; F3 em 5.5";
+   F5 → Act 4; quadro-glossário; linha da 4ª célula na Tabela 1;
+   reconciliar 30/40/52; remover nome; recompilar e garantir ≤9pp;
+   FIGURAS.md reescrito.
+3. Re-derivar gate e Act 4 no estimando fatorial + control variate
+   (~1 dia análise + ~1 dia GPU): (a) Tabela 3 / massa não-screened
+   recalculada com I_fact/C_Ha nos 48 V2 já medidos (0 rollouts);
+   (b) 5º braço control-variate (outcome + crédito corrigido como
+   baseline) × 3 seeds no setup do Act 4; (c) quarta célula nas células
+   externas (MBPP+/HumanEval+) e 8B/Mistral (~150 replays).
+
+**Não mexer:** §4.1 + App. J (piso zero, reconciliação, incidentes), Fig. 1
+atual (4 braços), Remark 3, ledger/claims table (só linhas afetadas),
+controles a′/a′_s.
+
+**Pergunta mais difícil pro rebuttal:** "Dado R(h′,a) = R em 56/57 e Cor. 1,
+o que o census gate mede que não é conhecido a priori do TIPO de decisão?
+E se C_H é o estimando correto para harness-only (App. B), em que sentido
+o arm 2 era 'biased'?"

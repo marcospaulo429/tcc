@@ -1,10 +1,11 @@
-# PROXIMOS-PASSOS.md — pós-desfecho 40 (quarto braço integrado)
+# PROXIMOS-PASSOS.md — pós-mesa rodada 12 (paper pós-40 revisado ISOLADO)
 
 > Atualizado em 2026-09-10. Paper no template ICLR 2026; ledger com 40
 > itens. **Texto principal ultrapassou as 9 páginas** com a integração do
-> desfecho 40 (autorizado: prioridade era colocar os resultados; o corte
-> volta à fila). Última versão de 9pp exatas: fe70253. Painel simulado
-> rodada 10 (pré-40): 7/10 accept.
+> desfecho 40. Última versão de 9pp exatas: fe70253.
+> **Mesa isolada (só lê paper/, Fable 5.1): rodada 11 (pré-40) ≈4.0; rodada 12
+> (pós-40) ≈3.7 Reject.** A rodada 10 (7/10) lia o diário — descartar como
+> referência. Detalhes no DIARIO (2026-09-10).
 
 ## Estado
 
@@ -36,25 +37,49 @@
   seleção; linha Mistral em tab:synthesis e T0; ledger 34→38; célula única
   em §8.1.
 
-## Fila de execução (ordem de valor)
+## Fila de execução (ordem de valor — top-3 do AC da rodada 12)
 
-0. ⬜ **Recortar o texto principal de volta a 9 páginas** após o desfecho 40
-   (~1 página de excesso). Candidatos: comprimir o parágrafo novo de
-   §sec:interaction (mover secundários (i)–(iii) para o Apêndice formal,
-   junto ao rem:factorial), encurtar a frase nova do abstract. Verificar
-   fronteira p9/p10 com pdftotext após cada lote.
-1. ⬜ **Fase D — validação do ramo positivo do gate** (40–60 GPU-h; NÃO
-   autorizada). Única weakness estrutural restante (W4: a licença nunca foi
-   exercida com sucesso; caminho de 7→8). Exige pool que passe o gate
-   analítico do pré-reg 34 (≥10 tasks com margem ≥0.10 — 4 tentativas
-   falharam); desenho no Appendix L (design brief). Pré-registrar antes.
-2. ⬜ **Nomes de autores** no paper (pendente do usuário).
-3. ⬜ Varredura de literatura #4 (research agent, zero GPU) antes da
-   submissão — última em 2026-08-25.
-4. ⬜ `make reproduce` final + congelamento do artefato de release
-   (o paper promete infraestrutura + ledger de 40 itens).
-5. ⬜ (Opcional) Rodada de polimento de prosa — presentation 3/4 por
-   densidade; sem tocar em claims/gates.
+0. ⬜ **RE-TESE do paper em torno do achado fatorial** (escrita, 2–3 dias;
+   4 → 5–6). O paper hoje conta duas histórias: título/abstract/conclusão
+   vendem screening-off; §4.3 diz "artifact of the incomplete grid".
+   Entregas: novo título; abstract ≤200 palavras com UM número primário;
+   contribuições e conclusão coerentes (harness de contexto sem caminho
+   direto p/ R: CDE = 0 em 56/57; crédito de harness é mediado; C_H =
+   estimando correto p/ harness-only training; C_HM − C_M e C_Ha = CDEs,
+   relevantes só p/ joint training; census gate preça a massa com CDE ≠ 0).
+   Unificar as 3 prescrições incompatíveis: Prop. 1(iii), Cor. 2, regra
+   v1.0(v). Remover "never separated" (App. B). Reenquadrar Act 4 como
+   custo de estimação (outcome-only = MC do efeito total sem replay tax).
+1. ⬜ **Compressão a 9pp + itens de custo zero** (1–2 dias): 2 figuras de
+   dados no main text (scatter C_H vs C_Ha — 122 V1 + 48 V2 por regime/tipo;
+   census/gate); F3 regenerada em 5.5"; F5 → Act 4; quadro-glossário de
+   configs (g450/mt6/q8/...) e outcomes (s1/c0/X1/...); linha da 4ª célula
+   na Tabela 1; reconciliar 30/40/52 tasks; **remover "Boclin"** (L511,
+   L1980 — anonimato); recompilar (main.aux obsoleto) e verificar p9/p10;
+   FIGURAS.md reescrito em inglês descrevendo as figuras reais.
+2. ⬜ **Re-derivar gate e Act 4 no estimando fatorial + control variate**
+   (~1 dia análise + ~1 dia GPU, via Slurm):
+   (a) Tabela 3 / massa não-screened recalculada com I_fact/C_Ha nos 48 V2
+       já medidos (0 rollouts; pré-registrar como análise descritiva);
+   (b) 5º braço control-variate (outcome + crédito corrigido como baseline)
+       × 3 seeds no setup do Act 4 (~1600 calls/seed) — pré-registrar;
+   (c) quarta célula nas células externas (MBPP+/HumanEval+) e 8B/Mistral
+       (~150 replays) — fecha "única tripla de suporte" do R3.
+3. ⬜ Rodar a mesa (rodada 13) após 0+1; após 2, rodada 14.
+4. ⬜ **Fase D — validação do ramo positivo do gate** (40–60 GPU-h; NÃO
+   autorizada). Exige pool que passe o gate analítico do pré-reg 34.
+5. ⬜ **Nomes de autores** no paper (pendente do usuário).
+6. ⬜ Varredura de literatura #4 (research agent, zero GPU) antes da
+   submissão — última em 2026-08-25. Incluir engajamento explícito com o
+   experimento de treino de 2608.19760 (R2: posicionar dose-matching como
+   replicação em outro eixo, não contribuição).
+7. ⬜ `make reproduce` final + congelamento do artefato de release.
+
+## Não mexer (AC rodada 12)
+
+§4.1 + App. J (piso zero, reconciliação por run, incidentes ASLR/APC/
+concorrência); Fig. 1 atual (4 braços); Remark 3 (I = I_fact − (C_H − C_Ha));
+ledger e claims table (só linhas afetadas pela re-tese); controles a′/a′_s.
 
 ## Lembretes de rigor
 
