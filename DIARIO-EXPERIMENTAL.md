@@ -2851,3 +2851,51 @@ medianas de H por uma coluna "Reading" (proximal/mixed/distal); (7) λ*
 do 8B (0.1) declarado no setup. Commit 6266cb6 (conclusão na p9).
 Lição operacional: gravar as notas da mesa no DIARIO ANTES de qualquer
 edição — a partir da rodada 17 isso é a primeira ação após o veredito.
+
+## 2026-09-11 — Mesa ICLR rodada 17 (isolada, paper/ em 6266cb6)
+
+R1 6 (Soundness 3) / R2 5 (Contribution 2) / R3 6 (Presentation 2) → AC
+**5.67, Borderline** (= r15; soundness subiu, mas o 43 tornou visível que
+a manchete tem n informativo de 16 decisões — "custo da honestidade, não
+regressão"). Atendidas desde a r15 (não reciclar): artefato do pool (42),
+última escrita (43), horizonte rebaixado, re-escopo do título, termination
+estrutural, mecanismo "untested".
+
+**Objeções vivas:** R1-1 manchete (36/37, 48/49) vs conteúdo medido 21/23
+= 14/16 decisões, CI por decisão [0.62, 0.98] cruza h2 → abrir abstract e
+Contrib. 2 pelo estrato informativo; R1-2 limiares do 43 pós-hoc porém
+rotulados "confirmed, h1" → "pre-specified analysis, post-hoc thresholds,
+estimate + CI"; R1-3 contraste 8B "distal" pode ser confundido com
+horizonte (8B mais raso → mais escritas a jusante; H_w binarizado; App. F
+promete medianas e só dá p) → coluna mediana H_w na Tab. 2; R1-4
+"outcome-only PG é MC de C_H" sem derivação → lema de uma linha; R1-5 duas
+definições de pivotal (38 vs 37); R1-6 dizer se algum C_H foi recomputado
+na H100. R2-1 prescrição (regra v) sobre mecanismo não testado — rodar 44
+ou REMOVER a cláusula do passo; R2-2 regra só veta, nunca exercida
+positivamente → dizer no abstract/Contrib. 3; R2-3 realismo do harness
+(uma decisão binária) na Contrib. 2; R2-4 Act 4 sem tamanho do held-out
+nem valores por seed no principal. R3-1 abstract com 11 números → 3;
+R3-2 §4.3 + glossário de códigos carregam o paper antigo (~1,3 pp) →
+parágrafo + App. C; R3-3 Fig. do treino (App. G) deveria estar no
+principal no lugar do census; R3-4 Fig. 2 densa; R3-Q3 Mistral sem
+quarta célula — por quê.
+
+**Top-3 do AC:** (1) [0 GPU] re-manchete pelo estrato informativo,
+abstract com 3 números, §4.3 comprimido, Fig. treino ao principal
+(Δ≈+0.33); (2) [GPU] pré-reg 44 — qualquer desfecho; se não entrar,
+remover a cláusula "re-scaling the step" da regra (v) (Δ≈+0.33); (3)
+[0 GPU] mediana H_w na Tab. 2 controlando o 8B, relabel do 43, lema
+outcome-only ∝ C_H (Δ≈+0.15–0.33).
+**Não mexer:** §4.1/Tab. nulls, Fig. 1, Prop. dc + Remark factorial,
+ledger/Tab. 3, termination estrutural, "Design of the pool", ramo de
+falha do 42.
+**Pergunta mais difícil:** "Com 63/84 da manchete entalhados pela última
+escrita e o estrato informativo em 14/16 decisões com CI [0.62, 0.98],
+o que distingue 'mediação proximal é a regra neste stack' de 'pools
+projetados e saturados raramente deixam escritas depois do ponto
+pivotal'?"
+**Teto por edição: ≈ 6.0–6.33.** Para 7: 44 (qualquer desfecho) + H_w
+controlando o 8B + re-manchete. Para 8: exercício POSITIVO da regra
+(célula com ambos os gates abertos e crédito conjunto vencendo outcome a
+dose igual) OU harness realista com ≥ 50 decisões informativas — ambos
+fora do orçamento atual (Fase D, não autorizada).
