@@ -2830,3 +2830,24 @@ construção; (3) "pre-reg 41c" → "41(c), re-analysed under 43"; (4)
 "140/140 V1 points" → "V1-stack points (designed, external, 8B)"; (5)
 abstract reduzido (~230 palavras). Menor, não corrigido: rows V2 do preg40
 não gravam o caminho do replay (rastreabilidade por grep do task_id).
+
+## 2026-09-11 — Mesa ICLR rodada 16 (isolada, paper/ em e627167) — NOTAS PERDIDAS
+
+A rodada 16 rodou sobre e627167 (pós-auditoria do 43), mas a sessão do
+orquestrador caiu antes de as notas serem gravadas aqui ou na memória de
+sessão. Não há registro numérico de R1/R2/R3/AC desta rodada — declaramos
+a lacuna em vez de reconstruir notas. O que sobreviveu foi o lote de
+correções em andamento (diff não commitado em paper/main.tex), do qual se
+inferem as objeções atendidas: (1) título re-escopado para "Where Harness
+Credit Is Proximally Mediated — and Where It Is Not" (a mesa leu "mostly"
+como generalização além da pilha primária); (2) abstract nomeia a pilha
+(harness scriptado + Qwen3-4B) e onde a mediação é distal (8B 2/25, V2
+context 13/23, termination); (3) termination rebaixada de "positive
+control" para "structural control" — os 10 duais são analíticos (R_Ha ≡
+R_H), não falsificáveis; (4) mecanismo do Act 4 (esparsidade × passo)
+rotulado "candidate, identified but not yet tested" até o desfecho 44;
+(5) contribuição 4 ("the record") fundida na 3; (6) Tab. 2 troca as
+medianas de H por uma coluna "Reading" (proximal/mixed/distal); (7) λ*
+do 8B (0.1) declarado no setup. Commit 6266cb6 (conclusão na p9).
+Lição operacional: gravar as notas da mesa no DIARIO ANTES de qualquer
+edição — a partir da rodada 17 isso é a primeira ação após o veredito.
