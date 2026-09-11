@@ -2399,3 +2399,63 @@ Secundários: mesma fração nos não-pivotais (esperado ≈1 trivialmente), por
 célula, 8B, distribuição de I_fact, nº com TE ≠ NDE, n de pares únicos.
 Custo: ~143 + 97 replays + ~22 nulos ≈ 260 rollouts sequenciais.
 Reportamos qualquer desfecho.
+
+### DESFECHO 41 (2026-09-10): m1 + k1 — mediação pela próxima ação domina na folga; horizonte prediz onde não domina
+
+Script experiments/preg41.py (11 testes), report runs/preg41/report.json.
+Contagens brutas conferidas à mão contra runs/preg40/v1_rows.jsonl.
+
+**(a) Tabela 2×2 folga V1 (57 pontos):** pivotais (TE ≠ 0) 37 → NDE = 0 em
+**36/37 (m = 0.973, m1)**; não-pivotais 20/20 NDE = 0. |TE| nos 36:
+mediana 0.875, IQR [0.84, 0.90], máx 1.0. n efetivo: 29 pares únicos
+(task, cp_index), 20 tasks. Por cfg: g450 17/17, g600 12/13 (única
+quebra: l_log_parser, TE = −0.154, NDE = +0.077), g900 7/7. **Número
+primário do abstract: 36/37.** Pressão (65): pivotais 39/46 (0.848),
+não-pivotais 19/19. V2 (48, todos pivotais): 19/48 (0.396); por tipo:
+context 13/23, observation 4/12, test_schedule 2/3, **termination 0/10**.
+Leitura: termination TEM caminho direto por construção (encerra o
+episódio) e dá NDE ≠ 0 em 10/10 — controle positivo embutido da tipologia;
+context ops não têm (Cor. 1) e dão NDE = 0 em 36/37 na folga.
+
+**Nuance de interpretação (registrar no paper):** C_Ha fixa SÓ a ação
+imediata a_j; as decisões posteriores respondem ao vivo. Logo NDE = 0 lê-se
+"o efeito do harness é integralmente carregado pela próxima ação do
+modelo"; NDE ≠ 0 em decisões de contexto NÃO é caminho direto (Cor. 1) —
+é efeito carregado por ações posteriores. O que a quarta célula mede é
+**quanto do efeito passa pela próxima ação**, e a resposta depende do
+horizonte.
+
+**(b) Consistência da mediação (pré-reg 26, 44 pontos):** R(h′, a′_s) =
+R_H exato em **36/44 (k = 0.818, k1)**; folga 0.807, pressão 0.846. As 8
+discordâncias têm todas Δ > 0 (R(h′,a′_s) > R_H; grade_curve ×4,
+csv_normalizer ×3, c_temp_label ×1): a′_s amostrado a temp > 0 acha ação
+melhor que o greedy f(h′) — divergência de amostragem, não caminho direto.
+
+**(c) Horizonte (H = nº de tool_calls após j):** NDE ≠ 0 tem horizonte
+maior em todas as populações: V2 total mediana 8 vs 1 (U = 357, p =
+0.042); V1 pressão 3 vs 1 (p = 0.004); V1 folga 8 vs 1 (p = 0.049, n = 1);
+**V2 context_policy 6.5 vs 1 (p = 0.011)**. observation_policy: sem
+diferença (12 vs 15, p = 0.43) — o efeito de formatação da observação
+passa por várias ações posteriores independentemente do horizonte.
+termination: n/a. Confirma a re-escopagem do R2: NDE = 0 é propriedade de
+tipo × horizonte de consumo.
+
+**(d) V2 no estimando fatorial (48):** I_fact = 0 em 0.479 (vs screened
+C_HM = C_M em 0.50); TE ≠ NDE em 0.396; por tipo: context I_fact = 0 em
+0.435, observation 0.25, termination 0.90, test_schedule 0.33. O veredito
+s3 do census não muda; a coluna entra como informação adicional.
+
+**(e) Diagnóstico do pré-reg 31 (c1d, 3 seeds):** braço C_H: 1.89
+créditos/episódio sobre 4.87 pontos → **densidade 0.39** (outcome: 1.0);
+|crédito| mediana 0.039 (máx 1.10); 3.2 chamadas LLM por crédito (chm_cm:
+9.6); grad_norm mediana **0.062 vs 0.295** no outcome (≈5×). Explicação
+mecânica, sem "bias": a episódios iguais, o braço exato atualiza 39% das
+decisões com passo ~5× menor ao mesmo lr → ~12× menos massa de atualização
+por episódio; outcome-only atualiza todas as decisões com sinal ruidoso
+mas denso e grande. É eficiência de otimização/estimação, coerente com
+Claim 3 (mesmo estimando, custo maior) — mas a prescrição "bille C_H" só é
+vantajosa se o passo for reescalado; o paper deve dizer isso.
+
+**(f) n efetivo:** V1 folga 29 pares/20 tasks; pressão 27 pares. Células
+externas (para o pré-reg 42): mbpp 31+35 pts (3+5 pivotais), he 38+39
+(20+21), q8 28+35+34 (22+26+26). Entra ao lado de cada contagem no paper.
