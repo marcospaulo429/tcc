@@ -2811,3 +2811,22 @@ de θ, held-out por task, grad_norm mediano, comparação com o
 episode-matched. **Custo:** 6 nulos + 4 × ~1600 chamadas ≈ 6.400 chamadas,
 1 GPU H100, estimativa 1–2 GPU-h. Reportamos qualquer desfecho; entra no
 ledger como #44.
+
+**Auditoria `revisor` do pré-reg 43 + coerência (2026-09-11, pós-84c54f0).**
+Verificado limpo: índice j (estrito `> idx`, a escrita pareada nunca é
+contada); premissa "H_w = 0 não é teorema" confirmada nos replays (os 3
+violadores V2 têm 0 escritas no original e o ramo h′ acrescentou 2/1/1
+escritas ao vivo; amostra de 6 pontos V1 H_w = 0: 6/6 sem escrita
+adicional); família de Holm = pré-reg; Tab. 2 recomputada e consistente;
+140/140 = 24+28+39+49 ✓. Corrigido: (1) **n efetivo do 21/23 = 14/16 pares
+únicos / 13/15 tasks** (dedup por (task, cp_index) entre g450/g600/g900 e
+g600/mt6; h1 sobrevive: 0.875 por par) — adicionado no abstract, §4.4,
+claims e ledger #43; (2) a permutação usa estatística em nível de task
+(diferença de médias de mediana(H)), mais grossa que o MW por pontos que
+o pré-reg nomeou — desvio agora declarado no App. Multiplicity, junto com
+o **piso estrutural** do p de permutação (1 task rotulada em 14 → p_min =
+0.071 na folga; 1/29 = 0.034 no externo): esses p são conservadores por
+construção; (3) "pre-reg 41c" → "41(c), re-analysed under 43"; (4)
+"140/140 V1 points" → "V1-stack points (designed, external, 8B)"; (5)
+abstract reduzido (~230 palavras). Menor, não corrigido: rows V2 do preg40
+não gravam o caminho do replay (rastreabilidade por grep do task_id).
