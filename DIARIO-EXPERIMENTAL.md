@@ -2525,6 +2525,22 @@ aberto: regra v1.0(v) não diz qual CDE usar quando C_Ha ≠ C_HM − C_M.
 commit f33684a. O texto "preg42 pendente" era verdadeiro na hora do commit;
 o desfecho vem abaixo.
 
+**Fase 5b — Mesa ICLR rodada 14 (isolada, paper/ em f33684a, SEM o 42):**
+R1 5 / R2 5 / R3 3 → AC ≈ **4.33** (Reject/borderline; subiu de 3.7).
+Top-3 do AC: (1) concluir o pré-reg 42 (então bloqueado por GPU); (2)
+reenquadrar como "proximal vs distal mediation" — pela Cor. behav, para
+context ops a mediação por ALGUMA ação do modelo é dada por construção,
+logo "mostly mediated" soa tautológico; o conteúdo empírico é QUAL ação
+carrega o efeito (próxima vs posteriores) e o horizonte — e mover V2/regra
+para apêndice, trazer F1/F5 ao corpo (0 GPU); (3) braço C_H com passo
+reescalado × 3 seeds no setup do Act 4 (GPU; testa a prescrição
+harness-only). Pergunta mais difícil: "Dada a Cor. behav, o que sobra de
+empírico em 'mediated' além de proximal vs distal?" Não mexer: piso/App.
+J, Fig. 1, Remark 3, ledger. Ações: (1) feita (DESFECHO 42 abaixo); (2)
+feita em 82c92e5 (abstract/intro/§4.4(ii)/conclusão nomeiam proximal vs
+distal; regra (v) nomeia os dois CDEs); (3) pendente de GPU e de
+pré-registro (43).
+
 ### DESFECHO 42 (2026-09-11): s1 — a mediação pela próxima ação replica fora da tripla V1/4B (48/49 externo; 8B 51/57 screened, 0/17 não-screened)
 
 **Execução (Slurm, nó dgx-H100-02, partição h100n2, vLLM 0.8.5.post1,
@@ -2595,3 +2611,86 @@ no paper: abstract (uma frase), §4.4 parágrafo externo, Tab. 2 (linhas
 externas + 8B), Fig. 2/3 (células do 42), App. Replication (8B quarta
 célula), ledger, claims table, Threats (o ramo s3 não se materializou;
 limitação passa a ser "regime saturado" e "uma família").
+
+## 2026-09-11 — Mesa ICLR rodada 15 (isolada, paper/ em 82c92e5, COM o 42 e o reenquadramento proximal/distal)
+
+R1 6 (Soundness 3) / R2 5 / R3 6 → AC **5.67, Borderline** (r14 4.33 →
+5.67). Consenso: instrumento e identidade I = I_fact − PE são a
+contribuição defensável; o 42 fecha "artefato do pool"; o vocabulário
+proximal/distal está coerente. A objeção que decide (R1-1): se a ação em j
+é a ÚLTIMA que toca o ambiente, C_Ha = 0 é CONSEQUÊNCIA da Cor. behav, não
+medição — Tab. 2 mostra mediana H = 1 nos pontos com NDE = 0, logo a
+maioria dos 36/37 e 48/49 pode ser "a decisão de sumarizar antecede a
+escrita final". R2-1: o experimento que o texto pede (passo reescalado no
+braço C_H) não foi feito. R3: abstract com ~15 números; 40 vs 42 no ledger;
+"3,668 nulls" inconsistente com Tab. nulls (3.824 ou 3.240); FIGURAS.md
+descreve linha de Tab. 2 que não existe; stack H100 não pinado; custo de
+40–42 fora da tally.
+
+**Top-3 do AC:** (1) [0 GPU] estratificar por horizonte: distribuição de H
+nos 37+49 pivotais, fração H ≤ 1, taxa de NDE = 0 em H ≥ 2, Mann–Whitney
+por permutação de task, Holm na família, atualizar "Multiplicity" e
+abstract; (2) [2–4 GPU-h] Act 4 com passo reescalado no braço C_H (lr×~5
+ou normalização de vantagem, 3 seeds, mesma dose); (3) [0 GPU] passagem
+de coerência (título "Proximally"; abstract ≤ 200 palavras/≤ 6 números;
+40→42; 3.668; FIGURAS.md ↔ Tab. 2; stack H100; tally 40–42; Contribution
+3 "one act after three diagnosed failures"; Tab. 2 "n=1"; claims cross-ref).
+**Não mexer:** §4.1/Tab. nulls, Fig. 1, Remark 3/Prop. dc, números de
+screening e split, frase "measurement claim unchanged".
+**Pergunta mais difícil:** "Em quantos dos 36 pontos mediadores a ação
+seguinte é a última que toca o ambiente? Se for a maioria, o que
+'mediação proximal' acrescenta a 'sumarizar antecede a escrita final'?"
+
+## 2026-09-11 — PRÉ-REGISTRO 43 (antes de rodar): estratificação por horizonte — mediação proximal medida vs. implicada pela Cor. behav
+
+Zero rollouts; releitura de runs/preg40/{v1,v2}_rows.jsonl,
+runs/preg42/rows.jsonl e das trajetórias originais (runs/teste0_*/baseline,
+census V2). Script: experiments/preg43.py → runs/preg43/report.json.
+
+**Motivação (R1, rodada 15).** Se após a ação a_j não há mais nenhuma
+ação que modifique o ambiente, então R(h′, a) = R decorre da Cor. behav
+(context ops não tocam o ambiente; a_j forçada iguala o estado final) —
+NDE = 0 é implicado pelo desenho, não medido. A quarta célula só é
+informativa onde existe pelo menos uma ação posterior que poderia
+divergir ao vivo.
+
+**Variáveis pré-declaradas (da trajetória ORIGINAL, após o índice j da
+tool_call pareada):** H = nº de decisões tool_call após j (como no 41);
+**H_w = nº de tool_calls `write_file` após j** (únicas ações que alteram o
+estado que R lê; `run_tests`/`read_file`/`finish` não alteram o sandbox).
+Estrato "implicado" := H_w = 0. Estrato "informativo" := H_w ≥ 1.
+Sensibilidade: repetir com H_env = nº de tool_calls ≠ finish após j.
+
+**Populações:** V1 folga pivotal (37), V1 pressão pivotal (46), externo 4B
+pivotal ∧ screened (49), 8B pivotal (74: 57 screened + 17 não), V2 context
+(23), V2 observation (12). V2 termination excluída (caminho direto por
+construção). Para V2 o j é o campo `j` das rows; H_w conta `write_file`
+nas tool_calls originais após j.
+
+**Endpoint primário:** taxa de NDE = 0 entre pivotais com H_w ≥ 1, no
+pool V1 folga ∪ externo 4B (as duas populações do headline), e por
+população. Desfechos: **h1 ≥ 0.75** — a mediação proximal é medida, não
+implicada, na maioria dos pontos informativos: o headline fica, com "k/n
+at H_w ≥ 1" ao lado do 36/37 e 48/49; **h2 0.50–0.75** — parcial: o
+abstract passa a carregar o número estratificado e o título ganha
+"Proximally" com escopo; **h3 < 0.50** — a mediação proximal é
+majoritariamente last-mover: o paper reenquadra ("a decisão de sumarizar
+só importa imediatamente antes da escrita final"), o headline desce a
+medição + Cor. behav e a contribuição empírica passa a ser o horizonte/
+tipo. Reportamos qualquer desfecho.
+
+**Checagem de implicação:** no estrato H_w = 0, NDE = 0 deve valer em
+100% dos pontos de contexto (é teorema sob determinismo). Qualquer
+violação é reportada como colisão de reward / falha de premissa, não
+como mediação.
+
+**Secundários:** (i) fração de pontos com NDE = 0 que estão em H_w = 0
+(quanto do headline é implicado); distribuição de H e H_w por população;
+(ii) Mann–Whitney unilateral H(NDE ≠ 0) > H(NDE = 0) com p por
+**permutação em nível de task** (rótulo NDE permutado entre tasks, pontos
+da mesma task movem juntos, 20.000 permutações, semente 43), família de 6
+testes (V1 folga, V1 pressão, V2 total, V2 context, V2 observation,
+externo 4B) com Holm; (iii) o mesmo para H_w. O p = 0.011 do abstract
+sai ou vira descritivo conforme (ii).
+
+**Custo:** 0 GPU. Entra no ledger como #43 seja qual for o desfecho.
