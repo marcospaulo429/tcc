@@ -2954,3 +2954,50 @@ todos os números da Tab. 2 agora rastreiam ao report.json. Achado 10
 (precedência registro→computação do 43a não auditável por hash): o
 registro e o desfecho do 43a foram commitados juntos (commit "exp: adendo
 43a"); a ordem no arquivo é a única evidência — declarado aqui.
+
+## 2026-09-11 — Mesa ICLR rodada 18 (isolada, paper/ pós-2ff0126 + auditoria)
+
+R1 6 / R2 5 (Contribution 2) / R3 6 (Presentation 2) → AC **5.67,
+Borderline** (piso mais firme: nenhuma objeção de soundness aberta; só n
+e mecanismo). Atendidas da r17 (não reciclar): manchete pelo estrato
+informativo, 8B pareado em H_w, rótulo do 43, Lema pg, regra (v),
+veto-only, Act 4 split/seeds, custo do censo, glossário pivotal, Mistral/
+H100, Fig. do treino no principal, §4.3 curto.
+
+**Objeções novas/vivas:** R1-1 "distal no 8B" é majoritariamente as
+quebras de shield do pré-reg 15 reetiquetadas: 17 non-screened = 7
+decisões únicas, 6 screened com NDE≠0 = 3 tasks; o "2/20 em H_w=1" é
+~2/≤10 decisões únicas → decompor 8B em screened/non-screened POR DECISÃO
+ÚNICA na Tab. 2/43a/abstract ("2/8 among screened, 0/17 at shield
+breaks"). R1-2 liderar com 14/16 e IC no abstract. R1-3 Lema pg diz
+A(h) = π(h′)C_H < C_H em módulo, logo a norma 5× maior do outcome é
+RUÍDO (baseline global + outras decisões), não sinal — "passo
+reescalado" não é a única hipótese; exploração por ruído é outra →
+reportar π̄(h′) nas decisões treinadas e decompor a norma; declarar as
+duas hipóteses no 44. R1-4 deriva reward-/harness-pivotal (L93, L717);
+"at every point … last write" não escopado ao V1. R2-1 (mata Contrib. 3)
+44 não rodado — §6 é replicação de audit2026. R2-2 Act 4: tabela 6 tasks
+× 4 braços × 3 seeds (a separação pode ser UMA task). R2-4 custo por
+ponto UTILIZÁVEL. R2-5 §4.3 sem exemplo concreto (um ponto com seus 4 R).
+R3-1 1.7B tem censo (23 designed + 44 MBPP+) e nenhuma 4ª célula, não
+declarado (~90 rollouts, <1 h H100). R3-2 abstract deve dizer "13
+designed, 10 external (saturated)". R3-4 PIOROU: frase-manchete do
+abstract com 60 palavras/3 parentéticos; Intro repete abstract; Contrib.
+2 virou lista. R3-5 "shield" órfão (definido só no App. C). R3-6 Fig. 2
+overplotting → histograma marginal de C_Ha. R3-7 ledger ilegível impresso.
+
+**Top-3 do AC:** (1) [0 GPU] decomposição do 8B por decisão única,
+tabela por task do Act 4, unificar pivotal, definir/trocar "shield",
+escopar last-write ao V1, declarar 1.7B sem 4ª célula (Δ≈+0.3 → 6/6/6);
+(2) [<1 h H100] 4ª célula na 1.7B (designed + MBPP+) (Δ≈+0.3–0.5 R3);
+(3) [GPU] pré-reg 44 com as duas hipóteses (Δ≈+1 R2).
+**Não mexer:** §4.1, estrutura da Tab. 2, App. B, rótulo "estimate + CI",
+veto-only, estratificação H_w e "leads one to expect", T0/ledger/audit,
+"This is a measurement paper".
+**Pergunta mais difícil:** "Retirados os 17 non-screened (quebras do
+pré-reg 15, C_Ha≠0 mecanicamente), o que resta de 'distal no 8B' em
+decisões únicas? Resposta honesta hoje: 2/8 pontos screened, ~3–5
+decisões — e o paper não tem esse número escrito."
+**Teto:** só edição 6.0; com (2)+(3) ≈ 6.7; para 8: pool com H_w≥1
+dominante e ≥30 decisões únicas, OU exercício positivo da regra, OU 4ª
+célula no Mistral — próxima versão, fora do orçamento.
