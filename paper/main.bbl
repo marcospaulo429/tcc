@@ -1,9 +1,17 @@
-\begin{thebibliography}{17}
+\begin{thebibliography}{21}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Adebayo et~al.(2018)Adebayo, Gilmer, Muelly, Goodfellow, Hardt, and
+  Kim]{adebayo2018sanity}
+Julius Adebayo, Justin Gilmer, Michael Muelly, Ian Goodfellow, Moritz Hardt,
+  and Been Kim.
+\newblock Sanity checks for saliency maps.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2018.
 
 \bibitem[Chen et~al.(2026{\natexlab{a}})Chen, Sun, Wang, Wang, Zhang, Shen, Li,
   and Zhang]{c3v2}
@@ -51,16 +59,18 @@ Horace He and {Thinking Machines Lab}.
 \newblock Defeating nondeterminism in {LLM} inference.
 \newblock Thinking Machines Lab: Connectionism blog, 2025.
 
+\bibitem[Henderson et~al.(2018)Henderson, Islam, Bachman, Pineau, Precup, and
+  Meger]{henderson2018deep}
+Peter Henderson, Riashat Islam, Philip Bachman, Joelle Pineau, Doina Precup,
+  and David Meger.
+\newblock Deep reinforcement learning that matters.
+\newblock In \emph{AAAI Conference on Artificial Intelligence}, 2018.
+
 \bibitem[Khatchadourian(2026)]{dfah2026}
 Raffi Khatchadourian.
 \newblock Replayable financial agents: A determinism-faithfulness assurance
   harness for tool-using {LLM} agents.
 \newblock arXiv:2601.15322, 2026.
-
-\bibitem[Liao et~al.(2026)Liao, Chen, and Tang]{tcpo2026}
-Sicong Liao, Zhi Chen, and Yaohua Tang.
-\newblock {TCPO}: Turn-level credit policy optimization.
-\newblock arXiv:2608.01667, 2026.
 
 \bibitem[Lightman et~al.(2024)Lightman, Kosaraju, Burda, Edwards, Baker, Lee,
   Leike, Schulman, Sutskever, and Cobbe]{lightman2023}
@@ -77,6 +87,14 @@ Jiawei Liu, Chunqiu~Steven Xia, Yuyao Wang, and Lingming Zhang.
 \newblock In \emph{Advances in Neural Information Processing Systems
   (NeurIPS)}, 2023.
 
+\bibitem[Lucic et~al.(2018)Lucic, Kurach, Michalski, Gelly, and
+  Bousquet]{lucic2018gans}
+Mario Lucic, Karol Kurach, Marcin Michalski, Sylvain Gelly, and Olivier
+  Bousquet.
+\newblock Are {GANs} created equal? {A} large-scale study.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2018.
+
 \bibitem[Luo et~al.(2026)Luo, Huang, Luo, Liu, Li, Hu, Feng, and Liu]{hase2026}
 Haochen Luo, Yi~Huang, Sichun Luo, Fengyuan Liu, Lei Li, Zefa Hu, Junlan Feng,
   and Qi~Liu.
@@ -89,10 +107,23 @@ Xufang Luo et~al.
 \newblock Agent lightning: Train {ANY} {AI} agents with reinforcement learning.
 \newblock arXiv:2508.03680, 2025.
 
+\bibitem[Pearl(2001)]{pearl2001direct}
+Judea Pearl.
+\newblock Direct and indirect effects.
+\newblock \emph{Proceedings of the Seventeenth Conference on Uncertainty in
+  Artificial Intelligence (UAI)}, 2001.
+
 \bibitem[Reichenbach(1956)]{reichenbach1956}
 Hans Reichenbach.
 \newblock \emph{The Direction of Time}.
 \newblock University of California Press, 1956.
+
+\bibitem[Schaeffer et~al.(2023)Schaeffer, Miranda, and
+  Koyejo]{schaeffer2023mirage}
+Rylan Schaeffer, Brando Miranda, and Sanmi Koyejo.
+\newblock Are emergent abilities of large language models a mirage?
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2023.
 
 \bibitem[Shah(2026)]{car2026}
 Jaineet Shah.

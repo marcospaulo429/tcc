@@ -12,8 +12,8 @@
 \theoremstyle{remark}
 \newtheorem{remark}{Remark}
 
-\title{Harness Credit Is Mostly Proximally Mediated:\\
-Four-Arm Counterfactual Replay Separates Total from Direct Effects in a Two-Layer LLM Agent}
+\title{Where Harness Credit Is Proximally Mediated --- and Where It Is Not:\\
+Four-Arm Counterfactual Replay in a Two-Layer LLM Coding Agent}
 % Sem \iclrfinalcopy: o template imprime "Anonymous authors" automaticamente.
 \author{Anonymous}
 
@@ -29,20 +29,21 @@ zero) on a coding agent, completing the $2\times 2$ factorial grid at
 each decision pair --- including the cell prior work omits: the harness
 flip with the model's original next action held fixed. A context decision
 never touches the environment, so \emph{some} model action must carry its
-effect; the question is \emph{which}. On the stacks we measured, the very
-next one does: at 36/37 reward-pivotal slack points the harness
-decision's total effect is large while its effect with the next action
-fixed is exactly zero, replicating on MBPP+ and HumanEval+ (48/49).
-Three quarters of those points have no later write, where this is the
-expected reading; where a later write could have intervened, 21/23 (14/16
-unique decisions) still mediate proximally. Mediation turns distal on a
-larger model and is absent for termination decisions, which have a direct
-path by construction. Hence the three-arm ``interaction'' $C_{HM} - C_H -
-C_M$ is a total-minus-direct contrast, $C_H$ is the estimand for
-harness-only training (where exact but sparse replay credit did not beat
-outcome-only at matched dose), and joint training needs direct effects,
-which are zero where the mass is. We release the apparatus and a 43-item
-pre-registration ledger.
+effect; the measurable question is \emph{which}. On a scripted
+context-managing harness with Qwen3-4B the very next one does: at 36/37
+reward-pivotal slack points (16 unique decisions) the harness decision's
+total effect is large while its effect with the next action fixed is
+exactly zero, replicating on MBPP+ and HumanEval+ (48/49, saturated
+regime); where a later write could have intervened, 21/23 still mediate
+proximally. The same cell locates where mediation is \emph{distal}: on
+Qwen3-8B (2/25 such points), on a five-decision-type mini-SWE harness
+(context 13/23), and for termination, which has a direct path by
+construction. Hence the three-arm ``interaction'' of single-layer replay
+work is a total-minus-direct contrast; the total effect is the estimand
+for harness-only training (where exact but sparse replay credit did not
+beat outcome-only at matched dose); and joint training needs direct
+effects, which a cheap census prices before any replay is billed. We
+release the apparatus and a 43-item pre-registration ledger.
 \end{abstract}
 
 \section{Introduction}
@@ -94,27 +95,26 @@ A re-sampled next action under the flipped context reproduces $R_H$ at
 at 48/49 pivotal points (pre-reg 42, failure branch declared in advance).
 How much of this the design entails is itself measured (pre-reg 43): at
 63 of those 84 points the paired action is the episode's last write, so
-$C_{Ha} = 0$ is the expected reading; at the 23 points where a later
-write exists, 21 still mediate proximally. Mediation turns \emph{distal}
-on the 8B (2/25 at such points) and is absent for termination decisions,
-which end the episode and hence have a direct path by construction
-(10/10, a positive control). The three-arm quantity $I = C_{HM} - C_H -
-C_M$ of our earlier registrations (and of single-layer replay work) is
-therefore a \emph{total-minus-direct contrast}, $I = I_{\text{fact}} -
-(C_H - C_{Ha})$ (Remark~\ref{rem:factorial}), with the factorial
-interaction $I_{\text{fact}}$ zero at 56/57 slack points.
+$C_{Ha} = 0$ is the expected reading; at the 23 points with a later
+write, 21 still mediate proximally. Mediation turns \emph{distal} on the
+8B (2/25 at such points) and is absent for termination, which ends the
+episode and so has a direct path by construction (10/10; analytic duals,
+a structural rather than falsifiable control). The three-arm quantity
+$I = C_{HM} - C_H - C_M$ of our earlier registrations (and of
+single-layer replay work) is therefore a \emph{total-minus-direct
+contrast}, $I = I_{\text{fact}} - (C_H - C_{Ha})$
+(Remark~\ref{rem:factorial}), with $I_{\text{fact}} = 0$ at 56/57 slack
+points.
 
-\textbf{What this implies for training.} If the harness is the only
-trainable layer, $C_H$ --- total effect, model at its live policy --- is
-the correct estimand, and outcome-only policy gradient is its Monte Carlo
-estimate without the replay tax; under dose-matched budgets the exact
-signal lost to outcome-only in 3/3 seeds (\S\ref{sec:training}) for a
-measured reason: it updates 39\% of decisions with gradients $\sim
-5\times$ smaller. Joint training, where the model's own update absorbs
-the mediated part, needs direct effects instead --- exactly zero where
-the harness mass is. A census of $C_{Ha} \neq 0$ therefore prices,
-before training, how much joint-specific signal a stack offers
-(Corollary~\ref{cor:gate}); on both of ours it priced it near zero.
+\textbf{What this implies for training.} If only the harness trains,
+$C_H$ --- total effect, model at its live policy --- is the correct
+estimand and outcome-only policy gradient is its Monte Carlo estimate
+without the replay tax; at matched dose the exact signal lost to
+outcome-only in 3/3 seeds (\S\ref{sec:training}), with a measured but
+untested mechanism (39\% of decisions updated, gradients $\sim 5\times$
+smaller). Joint training needs direct effects --- zero where the harness
+mass is --- so a census of $C_{Ha} \neq 0$ prices, before training, how
+much joint-specific signal a stack offers (Corollary~\ref{cor:gate}).
 
 \paragraph{Contributions.}
 \begin{enumerate}
@@ -122,24 +122,24 @@ before training, how much joint-specific signal a stack offers
 noise floor measured at exactly zero under explicit serving premises
 (vLLM's automatic prefix caching silently breaks it), delivering the
 complete $2\times 2$ grid per decision pair on the same trajectory.
-\item \textbf{Finding.} Harness credit is mostly \emph{proximally}
-mediated --- carried by the very next model action (36/37 pivotal slack
-points, 16 unique decisions over 14 tasks; re-sampled action consistent
-at 36/44; 48/49 on two external benchmarks; 21/23 where a later write
-could have intervened) --- turning distal on a larger model (8B, 2/25)
-and absent for termination (0/10, positive control). The three-arm
-interaction is a total-minus-direct contrast; we give the identity
-relating it to the factorial interaction.
+\item \textbf{Finding.} On the primary stack, harness credit is
+\emph{proximally} mediated --- carried by the very next model action
+(36/37 pivotal slack points, 16 unique decisions over 14 tasks;
+re-sampled action consistent at 36/44; 48/49 on two external benchmarks;
+21/23 where a later write could have intervened) --- and the same cell
+locates where it is distal: Qwen3-8B (2/25), the mini-SWE harness
+(context 13/23), and termination ($C_{Ha} \neq 0$ in 10/10, a structural
+control). The three-arm interaction is a total-minus-direct contrast; we
+give the identity relating it to the factorial interaction.
 \item \textbf{Prescription, with its cost measured.} $C_H$ for
 harness-only training, direct effects for joint training, a census gate
 that prices the latter before training; one dose-matched training act
 (after three diagnosed failures) plus an episode-matched control show
-the exact signal losing to outcome-only, with the mechanism (sparsity
-$\times$ step size) identified.
-\item \textbf{The record.} A 43-item pre-registration ledger with
-failures reported as results, a three-arm misreading corrected by its own
-fourth arm (pre-reg 40), and an auditable claims table
-(Tables~\ref{tab:claims}, \ref{tab:ledger}).
+the exact signal losing to outcome-only, with a candidate mechanism
+(sparsity $\times$ step size) identified but not yet tested. All of it
+sits on a 43-item pre-registration ledger with failures reported as
+results and an auditable claims table (Tables~\ref{tab:claims},
+\ref{tab:ledger}).
 \end{enumerate}
 This is a measurement paper in the genre of sanity checks and
 audits~\citep{adebayo2018sanity,lucic2018gans,schaeffer2023mirage,
@@ -170,9 +170,8 @@ Lightning~\citep{agentlightning} provides rollout infrastructure, all
 without a per-decision causal signal. The correction rule $C_{HM}-C_M$
 sits in the lineage of difference rewards and
 COMA~\citep{wolpert2001,foerster2018}, which marginalize one
-\emph{agent's} action against a baseline; we marginalize one
-\emph{layer's} decision against a measured joint counterfactual. Hindsight
-credit assignment~\citep{harutyunyan2019} and process reward
+\emph{agent's} action against a baseline; hindsight credit
+assignment~\citep{harutyunyan2019} and process reward
 models~\citep{lightman2023} amortize per-step credit inside the model
 layer; the mediation vocabulary is Pearl's~\citep{pearl2001direct}.
 Table~\ref{tab:positioning} (Appendix~\ref{app:figs}) summarizes the
@@ -190,14 +189,16 @@ chooses tool calls: \texttt{write\_file}, \texttt{run\_tests},
 scripted policy that at every turn makes a \texttt{context\_policy}
 decision (\texttt{keep\_context} vs.\ \texttt{summarize\_context}, the
 latter compressing history to a fixed-length prefix) and a
-\texttt{termination} decision. Every decision of either layer is recorded
+\texttt{termination} decision; when the harness is trained
+(\S\ref{sec:training}) the trainable object is a logistic policy over
+five context features for this one binary decision. Every decision of either layer is recorded
 with a typed schema (id, layer, state before, available actions, chosen
 action, observation, token costs, parent/child links). Reward is
 deterministic: the fraction of hidden pytest tests passed, $R \in [0,1]$;
 cost-adjusted reward is $R_{\text{eff}} = R - \lambda \cdot \text{prompt
 tokens}/10^5$, with $\lambda$ fixed before each run it governs (Acts
-1--3: 25; Act 4 and V2: analytic $\lambda^{*}$ of 5 and 0.2; raw token
-totals are stored).
+1--3: 25; Act 4, V2 and the 8B cell: analytic $\lambda^{*}$ of 5, 0.2
+and 0.1; raw token totals are stored).
 
 \subsection{Replay and interventions}
 \begin{figure}[t]
@@ -323,12 +324,11 @@ key--value cache state left by \emph{previous} requests, so greedy
 decoding diverges across identical prompts even when strictly
 sequential: in our APC-contaminated run 7/270 nulls were inexact and the
 floor rose to $0.417$ (Figure~\ref{fig:floor}b), enough to swamp most
-true credits. Sequential execution is \emph{not} sufficient, and any
-replay-based attribution on default vLLM settings inherits this silent
-failure. Known serving-nondeterminism work targets batching-induced
-kernel effects~\citep{he2025nondeterminism}; APC is distinct ---
-cross-request state --- and we quantify it as a replay hazard, not
-claim its discovery.
+true credits; any replay-based attribution on default vLLM settings
+inherits this silent failure. Known serving-nondeterminism work targets
+batching-induced kernel effects~\citep{he2025nondeterminism}; APC is
+distinct (cross-request state), and we quantify it as a replay hazard,
+not claim its discovery.
 
 
 \subsection{$C_H$ and $C_M$}
@@ -373,8 +373,10 @@ s1 / s2 / s3 & prediction holds / partial / fails (screening, replication, train
 
 \textbf{With budget slack} (g450/g600/g900) the model action screens off
 the harness decision \emph{exactly}: $C_{HM} = C_M$ in \textbf{57/57}
-points (reward-pivotal subset $53/56$, CI95 $[0.87,1.00]$; discovery
-14/14 and confirmation 39/42; $a'$ re-sampling 99/101). \textbf{Under
+points, all 38 reward-pivotal ones included (over slack plus the first
+pressure configuration, the registered pivotal subset is $53/56$, CI95
+$[0.87,1.00]$; discovery 14/14 and confirmation 39/42; $a'$ re-sampling
+99/101). \textbf{Under
 pressure} (max 4/6/8 turns) screening breaks in \textbf{8/65} points
 ($p = 0.005$ point-level; $p = 0.125$ task-clustered over 3 breaking
 tasks), at the \emph{same} points across configurations. The break rate
@@ -395,18 +397,17 @@ from the un-summarized state, carries the destroyed information across
 the cut; 23/24 annotated) and downstream re-summarization (22/52) ---
 explain 72/75 screened points (Appendix~\ref{app:shield}). At every
 screened point $C_{HM}-C_M = C_H + I$ gives $C_H = -I$
-(Proposition~\ref{prop:dc}): the two candidate harness signals differ by
-the whole of $C_H$. Control tasks return $C_H = 0$ in 11/12 points
-(Appendix~\ref{app:formal}).
+(Proposition~\ref{prop:dc}). Control tasks return $C_H = 0$ in 11/12
+points (Appendix~\ref{app:formal}).
 
 \subsection{The fourth cell: total vs.\ direct harness effect (pre-regs 40--43)}
 \label{sec:mediation}
 The $C_H$ arm is $R(h', f(h'))$ --- the model answers the flipped
 context live --- so it is a \emph{total} effect, and $I = C_{HM} - C_H -
-C_M$ is not a factorial interaction. An external audit predicted,
-testably, that at slack screened points the original action $a$ ---
-generated \emph{seeing} the intact context --- re-injects the destroyed
-information itself, so $R(h',a) = R$. Pre-reg 40 registered three
+C_M$ is not a factorial interaction. An external audit predicted that at
+slack screened points the original action $a$ --- generated \emph{seeing}
+the intact context --- re-injects the destroyed information itself, so
+$R(h',a) = R$. Pre-reg 40 registered three
 outcomes (s1 $\geq 0.90$ / s2 / s3 $< 0.50$) and ran one greedy replay
 per point (flip at $i$, original action forced at $j$) on all 122 V1 and
 48 V2 census points (10 termination duals analytic) after a null gate
@@ -431,19 +432,19 @@ information consumed two turns later.
 \centering\scriptsize
 \begin{tabular}{@{}llrrrl@{}}
 \toprule
-Stack & Population & Pivotal & $C_{Ha}=0$ & \ldots at $H_w\geq1$ & med.\ $H$: $C_{Ha}\neq0$ vs.\ $=0$ \\
+Stack & Population & Pivotal & $C_{Ha}=0$ & \ldots at $H_w\geq1$ & Reading \\
 \midrule
-V1 4B & slack (g450/600/900) & 37 & \textbf{36} (0.973) & \textbf{12/13} & 8 vs.\ 1 \\
-V1 4B & pressure (mt4/6/8) & 46 & 39 (0.848) & 11/18 & 3 vs.\ 1 \\
-V1 4B & MBPP+ (g600/mt6), pre-reg 42 & 8 & 7 (0.875) & 5/6 & --- \\
-V1 4B & HumanEval+ (g600/mt6), pre-reg 42 & 41 & \textbf{41} (1.000) & 4/4 & --- \\
-V1 8B & designed pool, screened (g600/mt4/mt6) & 57 & 51 (0.895) & 2/8 & --- \\
+V1 4B & slack (g450/600/900) & 37 & \textbf{36} (0.973) & \textbf{12/13} & proximal \\
+V1 4B & pressure (mt4/6/8) & 46 & 39 (0.848) & 11/18 & mixed \\
+V1 4B & MBPP+ (g600/mt6), pre-reg 42 & 8 & 7 (0.875) & 5/6 & proximal (saturated) \\
+V1 4B & HumanEval+ (g600/mt6), pre-reg 42 & 41 & \textbf{41} (1.000) & 4/4 & proximal (saturated) \\
+V1 8B & designed pool, screened (g600/mt4/mt6) & 57 & 51 (0.895) & 2/8 & distal where a later write exists \\
 V1 8B & designed pool, \emph{non}-screened & 17 & \textbf{0} & 0/17 & shield breaks = direct effect \\
 \midrule
-V2 4B & context\_policy & 23 & 13 & 6/14 & 6.5 vs.\ 1 \\
-V2 4B & observation\_policy & 12 & 4 & 4/11 & 12 vs.\ 15 \\
-V2 4B & test\_schedule & 3 & 2 & --- & --- \\
-V2 4B & termination & 10 & \textbf{0} & 0/8 & direct by construction \\
+V2 4B & context\_policy & 23 & 13 & 6/14 & mixed \\
+V2 4B & observation\_policy & 12 & 4 & 4/11 & distal \\
+V2 4B & test\_schedule & 3 & 2 & --- & $n$ too small \\
+V2 4B & termination & 10 & \textbf{0} & 0/8 & direct by construction (analytic) \\
 \bottomrule
 \end{tabular}
 \caption{\textbf{Mediation table (pre-regs 41--43).} Pivotal = $C_H \neq
@@ -452,10 +453,9 @@ held fixed. $H_w$ = \texttt{write\_file} calls after $j$ in the recorded
 episode; at $H_w = 0$ the paired action is the last write and $C_{Ha} =
 0$ is the expected reading (it held at 140/140 such V1-stack points and
 was violated at 3 V2 points, where the live suffix under $h'$ added a
-write). $H$ = tool calls after $j$; medians are descriptive --- no
-horizon contrast survives Holm correction together with task-level
-permutation (Appendix~\ref{app:estimand}). Termination ends the episode:
-a direct path by construction, the typology's built-in positive
+write). Horizon medians are descriptive and reported in
+Appendix~\ref{app:estimand}. Termination duals are analytic ($R_{Ha}
+\equiv R_H$): a structural consistency check, not a falsifiable
 control.}
 \label{tab:med}
 \end{table}
@@ -486,17 +486,21 @@ $C_{Ha} = 0$ is what Corollary~\ref{cor:behav} leads one to expect ---
 the default, not a theorem, since the live suffix under $h'$ may add a
 write. Registered before computation: 63 of the 84 mediating headline
 points (36 slack + 48 external) sit at $H_w = 0$, where the expectation
-held at 140/140 V1-stack points (designed, external and 8B; 3 V2 context
-points violate it: seeing the
+held at 140/140 V1-stack points (designed, external and 8B; 3 V2 points
+--- 2 context, 1 observation --- violate it: seeing the
 summarized context, the model wrote more and scored higher). At the 23
 headline points with a later write the cell is informative, and
 \textbf{21/23} mediate proximally (slack 12/13, external 9/10; 14/16
-unique decisions, 13/15 tasks; outcome h1). The same stratum separates models: 8B 2/25, V1 pressure 11/18, V2
+unique decisions, 13/15 tasks; outcome h1 --- the point estimate; the
+Clopper--Pearson CI95 is $[0.72, 0.99]$ over points and $[0.62, 0.98]$
+over unique decisions, so at the cluster level it spans the h2 boundary).
+The same stratum separates models: 8B 2/25, V1 pressure 11/18, V2
 context 6/14 (Table~\ref{tab:med}). Because $C_{Ha}$ fixes only the
 immediate action, $C_{Ha} \neq 0$ at a context decision is \emph{distal}
 mediation, not a direct path: $C_{Ha}$ is the distal share, $C_H -
 C_{Ha}$ the proximal one. Points with $C_{Ha} \neq 0$ have longer
-remaining horizons in every population, but only V1 pressure survives
+remaining horizons in every population but observation formatting, but
+only V1 pressure survives
 Holm ($p_{\text{adj}} = 0.005$) and none survives task-level permutation
 (Appendix~\ref{app:estimand}): descriptive. \textbf{(iii) Type.} Termination decisions
 --- the only type with a direct path by construction --- give $C_{Ha}
@@ -535,10 +539,9 @@ Linear and gradient-boosted critics trained on 248 ground-truth points
 never beat the context-size heuristic mandated as baseline
 by~\citep{audit2026} (pooled Spearman 0.718 vs.\ 0.770; no stratum
 reverses the order; Appendix~\ref{app:critic}): \textbf{harness credit
-is mostly a function of context size and position}, as the
-information-destruction mechanism predicts. A $C_M$ critic trained on the
-designed tasks transfers to 94 MBPP+ points at chance (Spearman
-$0.03$/$-0.08$; pre-reg 16).
+is mostly a function of context size and position}. A $C_M$ critic
+trained on the designed tasks transfers to 94 MBPP+ points at chance
+(Spearman $0.03$/$-0.08$; pre-reg 16).
 
 \section{Training with Cross-Layer Credit}
 \label{sec:training}
@@ -587,7 +590,9 @@ below the census's pivotal points --- and an episode-summed gradient norm
 $\approx 5\times$ smaller ($0.062$ vs.\ $0.295$): at equal learning rate
 the exact arm moves the policy $\sim 5\times$ less per episode than the
 dense, noisy outcome signal --- an optimization-efficiency gap a
-re-scaled step could close (untested here), not an estimand error.
+re-scaled step could close (untested here), not an estimand error. This
+is the dose reading of~\citet{audit2026}: arms matched in episodes but
+not in effective updates measure dose as much as credit.
 
 \section{The Other Branch of the Rule: A Second Agent Class}
 \label{sec:v2}
@@ -625,7 +630,7 @@ degenerate termination duals (continue$\to$terminate makes $R_{HM}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.9\linewidth]{figures/f7_mediation_census.pdf}
+\includegraphics[width=0.72\linewidth]{figures/f7_mediation_census.pdf}
 \caption{The census in its mediation reading: fraction of reward-pivotal
 harness points with $C_{Ha} \neq 0$, by population and type (pre-reg 40
 and 42 rows). V1 slack and the external benchmarks offer almost no
@@ -645,24 +650,23 @@ $\geq 0.10$). On an 8B cell (pre-reg 39) the per-attractor power gate
 opened for the first time (min margin $0.166$) and the census closed it:
 the 8B is near-deterministic at the paired points ($462/463$ resamples
 identical), so no sampled-alternative estimand identifies $C_{HM}-C_M$,
-and the rule vetoed the training unpaid. The veto names the
-\textbf{identifiability precondition}: \emph{sampled-alternative credit
-is identifiable only where the model has entropy at the paired point},
-measurable in advance by a replay-free probe. Scope caveats ($n=48$, 65
-points excluded on entropy, mid-run amendments 29a/29b) are in
-Appendix~\ref{app:v2scope}.
+and the rule vetoed the training unpaid --- the \textbf{identifiability
+precondition}: \emph{sampled-alternative credit is identifiable only
+where the model has entropy at the paired point}, measurable in advance
+by a replay-free probe. Scope caveats ($n=48$, 65 points excluded on
+entropy, amendments 29a/29b) are in Appendix~\ref{app:v2scope}.
 
 \section{Threats to Validity and Discussion}
 \label{sec:threats}
 \paragraph{Design of the pool, and the external test.} The 36/37 comes
 from a pool \emph{designed} so that a summarize decision destroys
 information the very next action needs, and at three quarters of the
-headline points that action is also the episode's last write, where
-$C_{Ha} = 0$ is the expected reading; the measured content is the 21/23
-at points with a later write, and the contrast with the 8B (2/25). The
-designed-pool sample is small (16 unique pairs, 14 tasks). Pre-reg 42's
-48/49 rules out our pool as the cause but not the regime (43/49
-saturated); one harness family, two models.
+headline points that action is also the last write, where $C_{Ha} = 0$
+is the expected reading; the measured content is the 21/23 at points
+with a later write and the 8B contrast (2/25). The designed-pool sample
+is small (16 unique pairs, 14 tasks); pre-reg 42's 48/49 rules out our
+pool as the cause but not the regime (43/49 saturated); one harness
+family, two models.
 
 \paragraph{External validity and replication.} Our tasks are designed,
 not sampled: the measurement needs control of destroyable-information
@@ -683,7 +687,7 @@ test $p=0.125$; point level $p=0.005$); only pre-registered outcomes
 rates are post-treatment. On the estimand (Appendix~\ref{app:estimand}):
 $C_M$ and $I$ share the sampled alternative; the single-draw $a'$ is
 bracketed on both stacks (pre-regs 21, 26, 30, 36); selection into
-measurement discards 53--73\% of points, with composition pointing
+measurement discards 53--73\% of points, composition pointing
 \emph{against} the headline contrast.
 
 \paragraph{The rule, v1.0.} Prospective for any new cell:
@@ -693,7 +697,8 @@ points: near-deterministic points are unidentifiable (pre-reg 39);
 (iii)~run the census over \emph{all} pivotal points, last-mover duals
 excluded; (iv)~train on per-decision credit only if the census gate
 ($\geq 0.20$) and a per-attractor power gate both open --- \emph{vetoes},
-not guarantees (Table~\ref{tab:audit}); (v)~bill the estimand that
+not guarantees: across five audited cells both have never opened together
+(Table~\ref{tab:audit}); (v)~bill the estimand that
 matches the trainable set: $C_H$ (or the outcome-only gradient it is the
 expectation of) when only the harness trains, re-scaling the step for the
 exact signal's sparsity; $C_{Ha}$ or $C_{HM}-C_M$ only for joint
@@ -710,9 +715,9 @@ that action is held fixed. The fourth cell turns what three-arm replay
 (ours included until pre-reg 40) called ``interaction'' into the
 proximal mediated effect $\mathrm{PE} = C_H - C_{Ha}$, $I =
 I_{\text{fact}} - \mathrm{PE}$; mediation turns distal on the larger
-model, where its shield breaks (8B, 17/17), and is absent for decisions
-with a direct path by construction. The estimand follows the trainable
-set: $C_H$ (or its replay-free expectation, outcome-only) when only the
+model, where its shield breaks (8B, 17/17), and is absent where a direct
+path exists by construction. The estimand follows the trainable set:
+$C_H$ (or its replay-free expectation, outcome-only) when only the
 harness trains; direct effects, priced by a census first, for joint
 training (Appendix~\ref{app:brief}).
 
@@ -751,7 +756,7 @@ The census gate has both branches & V1 stack: closed, confirmed by 4 training ac
 V2 licensed training collapses onto a fixed attractor & 8/9 learning runs converge token-exactly to summarize-always (held-out 0.831 vs.\ 0.889 dominant target), one outcome seed to keep-always ($-0.092$), before credit ordering is testable; first run aborted at calibration ($\lambda$ does not transport across stacks) & identified (pre-regs 32--33, outcome s3) \\
 Action envelope is a harness decision with estimand-level effects & JSON envelope: 0 writes in 437 calls; plain-text: sampler near-deterministic at temp 0.8 (87/114 fail), escalation registered & demonstrated (pre-reg 28a, 29b) \\
 vLLM APC breaks greedy determinism & floor $0.417$, 7/270 inexact & demonstrated \\
-Slack screening-off, 4B original pool & 0/57 raw; pivotal 53/56 = 0.946, CI95 $[0.87,1.00]$ task-clustered & internally consistent (pre-reg 10; endpoint re-specified post-hoc, Table~\ref{tab:scoreboard}) \\
+Screening-off, 4B original pool & slack 0/57 raw (38/38 pivotal screened); slack + mt6 pivotal 53/56 = 0.946, CI95 $[0.87,1.00]$ task-clustered & internally consistent (pre-reg 10; endpoint re-specified post-hoc, Table~\ref{tab:scoreboard}) \\
 Screening survives $a'$ re-sampling & 99/101 informative slack draws (CI95 $[0.94,1.00]$); mt6 breaks persist 9/9 & confirmed (pre-reg 21) \\
 Screening completeness depends on the estimand & $a'_s$ (summarized state): 24/31 slack, CI95 $[0.69,0.88]$; de-screened points match the re-injection signature & measured; claim scoped (pre-reg 26) \\
 V2 census verdict survives its estimand controls & re-draws: verdicts unanimous 36/46 under $\leq$8 draws/point; s3 + open gate hold in 7/7 schedules and under majority vote; under $a'_s$ screening drops to 8/21 and all non-screened points turn exactly additive ($I=0$, $C_H\neq 0$) & held; claim scoped (pre-regs 30 + 36) \\
@@ -775,7 +780,7 @@ The gates decide before training pays & per-attractor power gate opens (min marg
 Slack screening is an artifact of the incomplete factorial grid; $I$ is a total-vs-direct contrast & fourth cell $R(h',a)$: 56/57 slack screened points exact ($I_{\text{fact}}=0$); $C_H \neq C_{Ha}$ at 83/122 V1 points; pressure and V2 observation points break the cell & confirmed, outcome s1 (pre-reg 40); auditor's prediction held \\
 Harness credit is mediated by the next model action (slack) & pivotal $C_H\neq0$ with $C_{Ha}=0$: 36/37 (16 unique decisions, 14 tasks, 15/16); $|C_H|$ med.\ 0.875; re-sampled $a'_s$ reproduces $R_H$ 36/44 & confirmed, m1 + k1 (pre-reg 41) \\
 Proximal mediation is measured, not entailed by the last write & at $H_w \geq 1$ (a later write exists) $C_{Ha}=0$ in 21/23 headline points (slack 12/13, external 9/10; 14/16 unique decisions, 13/15 tasks); 63/84 headline points sit at $H_w=0$ where it is the expected reading (held 140/140 V1-stack; 3 V2 violations); 8B 2/25 & confirmed, h1 (pre-reg 43); share entailed reported \\
-Decision type and model locate distal mediation; horizon is descriptive & termination 10/10 $C_{Ha}\neq0$ (direct path by construction); 8B non-screened 17/17; $C_{Ha}\neq0$ points have longer $H$ in all six populations, but only V1 pressure survives Holm and none survives task-level permutation & positive control held; horizon \textbf{downgraded} to descriptive (pre-reg 41c, re-analysed under 43) \\
+Decision type and model locate distal mediation; horizon is descriptive & termination 10/10 $C_{Ha}\neq0$ (direct path by construction; analytic duals); 8B non-screened 17/17; $C_{Ha}\neq0$ points have longer $H$ in five of six populations (not observation), but only V1 pressure survives Holm and none survives task-level permutation & structural check held; horizon \textbf{downgraded} to descriptive (pre-reg 41c, re-analysed under 43) \\
 Mediation is not an artifact of the designed pool & fourth cell on MBPP+/HumanEval+ (143 points, gate exact on new hardware): 48/49 pivotal points mediate (29 unique pairs); design-artifact branch ($<0.60$) declared in advance, not reached; 8B (97 points): screened pivotal mediate 51/57, non-screened pivotal 0/17 ($I_{\text{fact}}=0$ at 15/17: additive) & confirmed, s1 (pre-reg 42); saturated regime; 8B secondary at the s1/s2 boundary \\
 \bottomrule
 \end{tabular}
@@ -1123,8 +1128,8 @@ Endpoint (one line) & Count & Note \\
 \midrule
 Raw equality $C_{HM}=C_M$, slack, all measured points & 57/57 & headline
 mechanism; g450/g600/g900 \\
-Reward-pivotal sign test (pre-reg 10) & 53/56 & CI95 $[0.87,1.00]$
-task-clustered; endpoint re-specified post hoc \\
+Reward-pivotal sign test (pre-reg 10), slack + mt6 & 53/56 & CI95 $[0.87,1.00]$
+task-clustered; endpoint re-specified post hoc; slack-only pivotal 38/38 \\
 Fourth cell $R(h',a) = R$, slack screened (pre-reg 40) & 56/57 &
 $I_{\text{fact}} = 0$; pivotal subset with $C_{Ha} = 0$: 36/37 (pre-reg
 41, Table~\ref{tab:med}) \\
@@ -1344,8 +1349,10 @@ on the new hardware) splits the cell along the shield: at the 57 pivotal
 \emph{screened} points $C_{Ha} = 0$ in 51 (0.895; 21 unique pairs, 18 of
 them in every configuration), whereas at the 17 pivotal
 \emph{non-screened} points --- the five cp0 break tasks above in all
-three configurations plus \texttt{l\_door\_controller} --- $C_{Ha} \neq
-0$ in \textbf{17/17}, with $I_{\text{fact}} = 0$ exactly at 15 of them
+three configurations plus \texttt{l\_door\_controller} (cp0, cp3); the
+18th raw break, \texttt{l\_shipping\_batch} mt4, is non-pivotal ---
+$C_{Ha} \neq 0$ in \textbf{17/17}, with $I_{\text{fact}} = 0$ exactly at
+15 of them
 ($C_{HM} = C_{Ha}$, $C_M = 0$: the harness effect is additive and
 unmediated, neither the original action nor the sampled $a'$ re-injects
 the constants). The six screened breaks come from three tasks
@@ -1458,7 +1465,7 @@ reward-saturated (Qwen3-4B is too strong for MBPP+), leaving 6 non-saturated
 points and no breaks --- inconclusive at that power, the same saturation
 boundary seen at 1.7B and 8B. A pre-registered second attempt (pre-reg 20: the
 1.7B on the same MBPP+ pool, declared outcomes) landed on the same
-boundary from the same side: floor exact (1{,}080/1{,}080), screening
+boundary from the same side: floor exact (1{,}080 dedicated nulls), screening
 replicates raw at 44/44 points across both regimes (24/24 reward-pivotal)
 --- a second (model,
 environment) cell with unconditional screening in the external benchmark --- but 20/22 points per
@@ -2047,7 +2054,7 @@ the partial ones. Failed predictions are reported in the main text where they oc
 40 & Fourth factorial cell $R(h',a)$ (prompted by an external audit): the $C_H$ arm is a total effect $R(h', f(h'))$, not the cell $R(h',a)$; auditor predicts $R(h',a) = R$ and $I_{\text{fact}} = C_{HM} - C_{Ha} - C_M = 0$ at slack screened points (screening as artifact of the incomplete grid). One greedy replay per point (flip at $i$, canonical original action forced at $j$) on all 122 V1 and 48 V2 points with measured $C_M, C_{HM}$ (10 termination duals analytic); null re-validation gate first; primary = fraction of slack screened points with $R(h',a) = R$ exact, outcomes s1 $\geq 0.90$ / s2 / s3 $< 0.50$ & gate 16/16 exact; \textbf{s1}: 56/57 = 0.982 (g450 17/17, g900 19/19, g600 20/21); $C_H \neq C_{Ha}$ at 83/122 V1 and 19/48 V2 points; pressure breaks recur (\texttt{l\_log\_parser}, \texttt{l\_vending\_machine}; \texttt{api\_router} cp0 $I_{\text{fact}} = 0.375$); V2 by type: context 13/23, observation 4/12, test-schedule 2/3 exact, termination 9/10 $I_{\text{fact}}=0$; 186 rollouts, 0 replay errors; Figure~\ref{fig:method} relabeled (H arm was drawn as forced $a_{t+1}$) & held; $I$ reinterpreted as total-vs-direct contrast \\
 41 & Mediation re-analysis of \#40's rows, no new rollouts: (a) $2\times2$ table pivotal ($C_H\neq0$) $\times$ ($C_{Ha}=0$) on V1 slack, outcomes m1 $\geq0.90$ / m2 / m3 $<0.60$; (b) consistency $R(h',a'_s) = R_H$ on \#26's 44 rows, k1 $\geq0.80$; (c) horizon $H$ (tool calls after $j$) predicts $C_{Ha}\neq0$, one-sided Mann--Whitney; (d) V2 under $I_{\text{fact}}$; (e) Act-4 $C_H$-arm log anatomy (credit density, $|C_H|$, gradient norm) & \textbf{m1}: 36/37 (0.973; 16 unique decisions over 14 tasks, 15/16; per config 12/12, 12/13, 12/12); pressure 39/46; V2 19/48 (context 13/23, observation 4/12, test-schedule 2/3, termination \textbf{0/10}); \textbf{k1}: 36/44 (0.818), all 8 discordances $\Delta>0$; horizon: V2 8 vs.\ 1 ($p=0.042$), V2 context 6.5 vs.\ 1 ($p=0.011$), V1 pressure 3 vs.\ 1 ($p=0.004$; pivotal-only $0.0008$), observation n.s.; (e) density 0.39, $|C_H|$ med.\ 0.039, episode grad-norm 0.062 vs.\ 0.295 ($\approx 5\times$) & held \\
 42 & Fourth cell on the external and 8B cells (MBPP+, HumanEval+ slack/pressure; q8): null gate (2 exact replays/config) then one greedy $R(h',a)$ replay per point with measured $C_M, C_{HM}$, pivotal first; primary = fraction of pivotal screened external points with $R(h',a) = R$ exact, s1 $\geq0.90$ / s2 / s3 $<0.60$ (design-artifact branch) & gate 20/20 exact on new hardware (H100; floor transports); \textbf{s1}: 48/49 = 0.980 (MBPP+ 7/8, HumanEval+ 41/41; 29 unique pairs, 28/29 mediate in every config); non-pivotal 91/94; $I_{\text{fact}} = 0$ at 139/143; break \texttt{mbpp\_7} mt6 ($C_H = C_{Ha} = 0.4$); 8B secondary (97 points): screened pivotal 51/57 = 0.895 (21 pairs, 18/21 in every config), non-screened pivotal \textbf{0/17} ($I_{\text{fact}} = 0$ exact at 15/17: additive, unmediated), non-pivotal 23/23; 260 rollouts, 0 errors & held \\
-43 & Horizon stratification of the fourth cell, no new rollouts: $H_w$ = \texttt{write\_file} calls after $j$ in the recorded episode; ``expected'' stratum $H_w = 0$ (paired action is the last write; $C_{Ha}=0$ predicted to hold at 100\%), ``informative'' stratum $H_w \geq 1$; primary = fraction with $C_{Ha}=0$ at $H_w \geq 1$ on the headline pool (V1 slack $\cup$ external 4B), h1 $\geq 0.75$ / h2 / h3 $<0.50$ (re-frame as last-mover); secondaries: share of the headline in $H_w = 0$; horizon family with Holm and task-level permutation & \textbf{h1}: 21/23 = 0.913 (slack 12/13, external 9/10; 14/16 unique decisions, 13/15 tasks); 63/84 mediating headline points sit at $H_w = 0$; expectation held 140/140 on V1/external/8B but \textbf{violated at 3 V2 context points} ($C_{Ha} < 0$: the live $h'$ suffix added a write) --- so $H_w = 0$ is a default, not a theorem; 8B 2/25, V1 pressure 11/18, V2 context 6/14, observation 4/11; horizon: only V1 pressure survives Holm ($0.005$), none survives task permutation --- $p = 0.011$ withdrawn from the abstract as registered & held; premise corrected \\
+43 & Horizon stratification of the fourth cell, no new rollouts: $H_w$ = \texttt{write\_file} calls after $j$ in the recorded episode; ``expected'' stratum $H_w = 0$ (paired action is the last write; $C_{Ha}=0$ predicted to hold at 100\%), ``informative'' stratum $H_w \geq 1$; primary = fraction with $C_{Ha}=0$ at $H_w \geq 1$ on the headline pool (V1 slack $\cup$ external 4B), h1 $\geq 0.75$ / h2 / h3 $<0.50$ (re-frame as last-mover; thresholds set after the 40--42 aggregates were known, declared as such); secondaries: share of the headline in $H_w = 0$; horizon family with Holm and task-level permutation & \textbf{h1}: 21/23 = 0.913 (slack 12/13, external 9/10; 14/16 unique decisions, 13/15 tasks); 63/84 mediating headline points sit at $H_w = 0$; expectation held 140/140 on V1/external/8B but \textbf{violated at 3 V2 context points} ($C_{Ha} < 0$: the live $h'$ suffix added a write) --- so $H_w = 0$ is a default, not a theorem; 8B 2/25, V1 pressure 11/18, V2 context 6/14, observation 4/11; horizon: only V1 pressure survives Holm ($0.005$), none survives task permutation --- $p = 0.011$ withdrawn from the abstract as registered & held; premise corrected \\
 \bottomrule
 \end{tabular}}
 \caption{Pre-registration ledger. Failures are results, not omissions:
