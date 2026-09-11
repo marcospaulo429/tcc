@@ -434,14 +434,13 @@ a structural consistency check, not a falsifiable control.}
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.88\linewidth]{figures/f6_mediation_scatter.pdf}
-\caption{Total vs.\ direct harness effect at every measured point
-(pre-reg 40 and 42 rows). (a) V1, 122 designed-pool points by regime plus
-the 240 pre-reg 42 points (crosses: MBPP+, HumanEval+, 8B): slack
-pivotal points sit on $C_{Ha} = 0$ (36/37; external 48/49), pressure
-points start to leave it (39/46), and the 8B's screening breaks sit near
-the diagonal. (b) V2, 48 points by type: termination lies on the
-diagonal $C_{Ha} = C_H$ (no mediation, 0/10); context points split by
-horizon. Jitter $\sigma = 0.015$.}
+\caption{Total vs.\ direct harness effect (pre-reg 40 and 42 rows).
+(a) Harness-pivotal V1 points: designed pool by regime, external 4B
+(crosses) and 8B (triangles); mediated points sit on $C_{Ha} = 0$, the
+8B's screening breaks near the diagonal $C_{Ha} = C_H$. (b) Fraction of
+pivotal points with $C_{Ha} = 0$ per population (solid), $k/n$ annotated.
+(c) V2, 48 points by type: termination lies on the diagonal (no
+mediation, 0/10). Jitter $\sigma = 0.015$.}
 \label{fig:scatter}
 \end{figure}
 
@@ -869,7 +868,13 @@ analysis~\citep{pearl2001direct} with $h$ as treatment, $a$ as mediator,
 and $R$ as outcome. In that vocabulary: $C_H$ is the \emph{total effect}
 of the harness flip (mediator free to respond); $C_M$ is the mediator
 intervention under the factual treatment; $C_{HM}$ is the joint
-intervention; and $I$ is the mediation diagnostic. Screening-off
+intervention; and $I$ is the mediation diagnostic. In a deterministic
+unit the fourth cell $C_{Ha}$ (Remark~\ref{rem:factorial}) is the
+controlled direct effect at the factual mediator value --- which here
+coincides with the natural direct effect --- and $\mathrm{PE} = C_H -
+C_{Ha}$ is the natural indirect effect through $a$; we say ``proximal''
+because $a$ is only the first of the mediators the harness acts through.
+Screening-off
 ($C_{HM}=C_M$, hence $I=-C_H$) is \emph{total mediation} --- the entire
 harness effect flows through the model's next action; additivity
 (Remark~\ref{rem:additivity}) is its absence. Note the arm the objection

@@ -289,10 +289,22 @@ def _load_jsonl(p: Path) -> list[dict]:
 def fig6_mediation_scatter() -> None:
     v1 = _load_jsonl(RUNS / "preg40" / "v1_rows.jsonl")
     v2 = _load_jsonl(RUNS / "preg40" / "v2_rows.jsonl")
+    ext = _load_jsonl(RUNS / "preg42" / "rows.jsonl")
     slack = {"g450", "g600", "g900"}
 
-    piv_slack = [r for r in v1 if r["cfg"] in slack and r["C_H"] != 0]
-    piv_press = [r for r in v1 if r["cfg"] not in slack and r["C_H"] != 0]
+    def piv(rows: list[dict]) -> list[dict]:
+        return [r for r in rows if r["C_H"] != 0]
+
+    def counts(rows: list[dict]) -> tuple[int, int]:
+        p = piv(rows)
+        return sum(1 for r in p if r["C_Ha"] == 0), len(p)
+
+    piv_slack = piv([r for r in v1 if r["cfg"] in slack])
+    piv_press = piv([r for r in v1 if r["cfg"] not in slack])
+    piv_ext4b = piv([r for r in ext if r["cfg"].startswith(("mbpp", "he"))])
+    q8 = [r for r in ext if r["cfg"].startswith("q8")]
+    piv_q8_scr = piv([r for r in q8 if r["screened"]])
+    piv_q8_non = piv([r for r in q8 if not r["screened"]])
     assert len(piv_slack) == 37
     assert sum(1 for r in piv_slack if r["C_Ha"] == 0) == 36
     term = [r for r in v2 if r["tipo"] == "termination"]
@@ -303,40 +315,72 @@ def fig6_mediation_scatter() -> None:
     def jit(vals: list[float]) -> np.ndarray:
         return np.asarray(vals) + rng.normal(0, 0.015, len(vals))
 
-    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(5.5, 2.0), sharey=True)
-    for ax in (ax_a, ax_b):
+    fig, (ax_a, ax_b, ax_c) = plt.subplots(
+        1, 3, figsize=(5.5, 2.4), gridspec_kw={"width_ratios": [1, 1.25, 1]}
+    )
+    for ax in (ax_a, ax_c):
         ax.axhline(0, color="k", lw=0.8)
         lim = [-1.15, 1.15]
         ax.plot(lim, lim, ls="--", color=COL_GREY, lw=0.8)
         ax.set_xlim(lim)
         ax.set_ylim(lim)
-        ax.set_xlabel("TE $=C(H)$")
+        ax.set_xlabel("TE $=C(H)$", fontsize=7)
+        ax.tick_params(labelsize=7)
 
-    for rows, col, lab in [
-        ([r for r in v1 if r["cfg"] in slack], COL_SLACK, "slack (g450/600/900)"),
-        ([r for r in v1 if r["cfg"] not in slack], COL_PRESS, "pressure (mt4/6/8)"),
+    # (a) só pontos pivotais (C_H != 0)
+    for rows, mk, col, lab in [
+        (piv_slack, "o", COL_SLACK, "V1 slack"),
+        (piv_press, "s", COL_PRESS, "V1 pressure"),
+        (piv_ext4b, "x", "#333333", "external 4B"),
+        (piv_q8_scr + piv_q8_non, "^", "#6a51a3", "8B"),
     ]:
+        mew = 0.8 if mk == "x" else 0
         ax_a.plot(jit([r["C_H"] for r in rows]), jit([r["C_Ha"] for r in rows]),
-                  "o", ms=3, alpha=0.6, color=col, label=lab, mew=0)
-    ext = RUNS / "preg42" / "rows.jsonl"
-    if ext.exists():
-        rows = _load_jsonl(ext)
-        ax_a.plot(jit([r["C_H"] for r in rows]), jit([r["C_Ha"] for r in rows]),
-                  "x", ms=3.5, color="#333333", label="pre-reg 42 (MBPP+/HE+/8B)")
-    ax_a.set_ylabel("NDE $=C(H_a)$")
-    ax_a.set_title("(a) V1 harness (n=122 + pre-reg 42)")
-    ax_a.text(0.03, 0.96, "slack pivotal: 36/37 on $y{=}0$\npressure: 39/46; external: 48/49",
-              transform=ax_a.transAxes, fontsize=6.5, va="top")
-    ax_a.legend(frameon=False, fontsize=6, loc="lower right", handletextpad=0.2)
+                  mk, ms=3, alpha=0.6, color=col, label=lab, mew=mew)
+    ax_a.set_ylabel("NDE $=C(H_a)$", fontsize=7)
+    ax_a.set_title("(a) V1 pivotal points", fontsize=8)
+    ax_a.legend(frameon=False, fontsize=6, loc="lower right", handletextpad=0.2,
+                borderaxespad=0.2)
 
+    # (b) fração mediada (C_Ha = 0) vs não mediada, por população
+    pops = [
+        ("V1 slack", counts([r for r in v1 if r["cfg"] in slack]), COL_SLACK),
+        ("V1 pressure", counts([r for r in v1 if r["cfg"] not in slack]), COL_PRESS),
+        ("external 4B", counts([r for r in ext if r["cfg"].startswith(("mbpp", "he"))]), "#333333"),
+        ("8B screened", counts([r for r in q8 if r["screened"]]), "#6a51a3"),
+        ("8B non-screened", counts([r for r in q8 if not r["screened"]]), "#6a51a3"),
+        ("V2 context", counts([r for r in v2 if r["tipo"] == "context_policy"]),
+         V2_TYPE_COLS["context_policy"]),
+        ("V2 observation", counts([r for r in v2 if r["tipo"] == "observation_policy"]),
+         V2_TYPE_COLS["observation_policy"]),
+        ("V2 termination", counts([r for r in v2 if r["tipo"] == "termination"]),
+         V2_TYPE_COLS["termination"]),
+    ]
+    expected = [(36, 37), (39, 46), (48, 49), (51, 57), (0, 17), (13, 23), (4, 12), (0, 10)]
+    assert [kn for _, kn, _ in pops] == expected, [kn for _, kn, _ in pops]
+    y = np.arange(len(pops))[::-1]
+    for yi, (name, (k, n), col) in zip(y, pops):
+        f0 = k / n if n else 0.0
+        ax_b.barh(yi, f0, color=col, alpha=0.75, height=0.65)
+        ax_b.barh(yi, 1 - f0, left=f0, color=col, alpha=0.25, height=0.65)
+        ax_b.text(1.03, yi, f"{k}/{n}", va="center", fontsize=6.5)
+    ax_b.set_yticks(y)
+    ax_b.set_yticklabels([name for name, _, _ in pops], fontsize=7)
+    ax_b.set_xlim(0, 1.0)
+    ax_b.set_xlabel("fraction of pivotal points", fontsize=7)
+    ax_b.tick_params(labelsize=7)
+    ax_b.set_title("(b) mediated ($C(H_a){=}0$, solid)", fontsize=8)
+
+    # (c) V2 factorial (todos os 48 pontos, por tipo)
     for tipo, col in V2_TYPE_COLS.items():
         rows = [r for r in v2 if r["tipo"] == tipo]
-        ax_b.plot(jit([r["C_H"] for r in rows]), jit([r["C_Ha"] for r in rows]),
+        ax_c.plot(jit([r["C_H"] for r in rows]), jit([r["C_Ha"] for r in rows]),
                   "o", ms=3, alpha=0.65, color=col, label=tipo.replace("_", " "), mew=0)
-    ax_b.set_title("(b) V2 factorial (n=48)")
-    ax_b.text(0.03, 0.96, "termination: 0/10 on $y{=}0$",
-              transform=ax_b.transAxes, fontsize=6.5, va="top")
-    ax_b.legend(frameon=False, fontsize=6, loc="lower right", handletextpad=0.2)
+    ax_c.set_ylabel("NDE $=C(H_a)$", fontsize=7)
+    ax_c.set_title("(c) V2 factorial (n=48)", fontsize=8)
+    ax_c.text(0.03, 0.96, "termination: 0/10 on $y{=}0$",
+              transform=ax_c.transAxes, fontsize=6.5, va="top")
+    ax_c.legend(frameon=False, fontsize=6, loc="lower right", handletextpad=0.2)
     fig.tight_layout()
     fig.savefig(OUT / "f6_mediation_scatter.pdf", bbox_inches="tight")
     plt.close(fig)
