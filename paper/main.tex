@@ -29,22 +29,25 @@ that may belong to the other. We measure the split with deterministic
 counterfactual replay (noise floor exactly zero) on a coding agent,
 completing the full $2\times 2$ factorial grid at each decision pair ---
 harness flip, model flip, both, and the cell prior work omits: the harness
-flip with the model's original next action held fixed. \textbf{Harness
-credit is mostly mediated.} At 36/37 reward-pivotal slack points the
-harness decision's total effect is large (median $|C_H| = 0.875$) while
-its effect with the next action fixed is exactly zero; a re-sampled next
-action reproduces the total effect at 36/44 points; and the cell
-replicates outside the designed pool, at 48/49 pivotal points on MBPP+
-and HumanEval+ (pre-registered failure branch not reached). Mediation
-weakens where the destroyed information is consumed later (remaining
+flip with the model's original next action held fixed. For context
+decisions, which never touch the environment, \emph{some} model action
+must carry the effect; the empirical question is \emph{which}, and how
+far downstream. \textbf{Harness credit is mostly proximally mediated:}
+at 36/37 reward-pivotal slack points the harness decision's total effect
+is large (median $|C_H| = 0.875$) while its effect with the next action
+fixed is exactly zero; a re-sampled next action reproduces the total
+effect at 36/44; and the cell replicates outside the designed pool, at
+48/49 pivotal points on MBPP+ and HumanEval+ (pre-registered failure
+branch not reached). Mediation turns \emph{distal} --- carried by later
+actions --- where the destroyed information is consumed later (remaining
 horizon predicts it, $p = 0.011$) and is absent for termination
-decisions, which have a direct path by construction (0/10). Consequences: the three-arm
-``interaction'' $C_{HM} - C_H - C_M$ is a total-minus-direct contrast, not
-a factorial interaction; $C_H$ is the right estimand for harness-only
-training, where replay credit --- exact but sparser and smaller --- did
-not beat outcome-only at matched dose; joint training needs direct
-effects, which are zero where the mass is. We release the apparatus and a
-42-item pre-registration ledger.
+decisions, which have a direct path by construction (0/10).
+Consequences: the three-arm ``interaction'' $C_{HM} - C_H - C_M$ is a
+total-minus-direct contrast, not a factorial interaction; $C_H$ is the
+right estimand for harness-only training, where replay credit --- exact
+but sparser and smaller --- did not beat outcome-only at matched dose;
+joint training needs direct effects, which are zero where the mass is.
+We release the apparatus and a 42-item pre-registration ledger.
 \end{abstract}
 
 \section{Introduction}
@@ -80,26 +83,31 @@ the part transmitted through the very next model action
 a prediction, so ``the model's action depends on the harness'' is the
 design's premise, not an objection to it.
 
-\textbf{The finding: harness credit is mostly mediated, and the horizon
-says where it is not.} On our primary triple (Qwen3-4B, a
-context-managing harness, designed coding tasks with budget slack), the
-harness decision has a large total effect at 37 reward-pivotal points
-(median $|C_H| = 0.875$), and at \textbf{36/37} of them $C_{Ha} = 0$
-exactly: the whole effect passes through the next model action (pre-regs
-40--41, \S\ref{sec:mediation}). A re-sampled next action under the
-flipped context reproduces $R_H$ at 36/44 points, so the mediation is a
-property of the harness--model coupling, not of one greedy draw; on two
-external benchmarks the fourth cell replicates at 48/49 pivotal points
-(pre-reg 42, failure branch declared in advance). Where it fails, the remaining horizon predicts it: on a second agent class with
-four harness decision types, points with $C_{Ha} \neq 0$ have a median of
-8 further tool calls versus 1 (context decisions: 6.5 vs.\ 1, $p =
-0.011$), and termination decisions --- which end the episode and hence
-have a direct path by construction --- give $C_{Ha} \neq 0$ in 10/10, a
-positive control. The three-arm quantity $I = C_{HM} - C_H - C_M$ of our
-earlier registrations (and of single-layer replay work) is therefore a
-\emph{total-minus-direct contrast}, $I = I_{\text{fact}} - (C_H -
-C_{Ha})$ (Remark~\ref{rem:factorial}), with the factorial interaction
-$I_{\text{fact}}$ zero at 56/57 slack points.
+\textbf{The finding: harness credit is mostly \emph{proximally}
+mediated, and the horizon says where it is not.} For a context decision
+the question is not \emph{whether} the model carries the effect ---
+context operations never touch the environment, so some model action
+must (Corollary~\ref{cor:behav}) --- but \emph{which}: the very next
+action, or ones further down the trajectory. On our primary triple
+(Qwen3-4B, a context-managing harness, designed coding tasks with budget
+slack), the harness decision has a large total effect at 37
+reward-pivotal points (median $|C_H| = 0.875$), and at \textbf{36/37} of
+them $C_{Ha} = 0$ exactly: the whole effect passes through the next model
+action (pre-regs 40--41, \S\ref{sec:mediation}). A re-sampled next
+action under the flipped context reproduces $R_H$ at 36/44 points, so
+the mediation is a property of the harness--model coupling, not of one
+greedy draw; on two external benchmarks the fourth cell replicates at
+48/49 pivotal points (pre-reg 42, failure branch declared in advance).
+Where mediation turns \emph{distal}, the remaining horizon predicts it:
+on a second agent class with four harness decision types, points with
+$C_{Ha} \neq 0$ have a median of 8 further tool calls versus 1 (context
+decisions: 6.5 vs.\ 1, $p = 0.011$), and termination decisions --- which
+end the episode and hence have a direct path by construction --- give
+$C_{Ha} \neq 0$ in 10/10, a positive control. The three-arm quantity $I
+= C_{HM} - C_H - C_M$ of our earlier registrations (and of single-layer
+replay work) is therefore a \emph{total-minus-direct contrast}, $I =
+I_{\text{fact}} - (C_H - C_{Ha})$ (Remark~\ref{rem:factorial}), with the
+factorial interaction $I_{\text{fact}}$ zero at 56/57 slack points.
 
 \textbf{What this implies for training.} If the harness is the only
 trainable layer, $C_H$ --- total effect, model at its live policy --- is
@@ -120,13 +128,14 @@ the training record agrees.
 noise floor measured at exactly zero under explicit serving premises
 (vLLM's automatic prefix caching silently breaks it), delivering the
 complete $2\times 2$ grid per decision pair on the same trajectory.
-\item \textbf{Finding.} Harness credit is mostly mediated by the next
-model action (36/37 pivotal slack points, 16 unique decisions over 14
-tasks, 15/16; re-sampled action consistent at 36/44; 48/49 on two
-external benchmarks), failing where the information is
-consumed later (horizon $p = 0.011$) and absent for termination (0/10,
-positive control). The three-arm interaction is a total-minus-direct
-contrast; we give the identity relating it to the factorial interaction.
+\item \textbf{Finding.} Harness credit is mostly \emph{proximally}
+mediated --- carried by the very next model action (36/37 pivotal slack
+points, 16 unique decisions over 14 tasks, 15/16; re-sampled action
+consistent at 36/44; 48/49 on two external benchmarks) --- turning
+distal where the information is consumed later (horizon $p = 0.011$)
+and absent for termination (0/10, positive control). The three-arm
+interaction is a total-minus-direct contrast; we give the identity
+relating it to the factorial interaction.
 \item \textbf{Prescription, with its cost measured.} $C_H$ for
 harness-only training, direct effects for joint training, a census gate
 that prices the latter before training; four dose-matched training acts
@@ -476,13 +485,16 @@ temperature $>0$) give $R(h',a'_s) = R_H$ at 36/44 (slack 0.807, pressure
 0.846): a different next action under $h'$ reproduces the live arm's
 reward. All 8 discordances have $R(h',a'_s) > R_H$ --- the sampler found
 a better action than the greedy one, not a direct path.
-\textbf{(ii) Horizon.} Under pressure 39/46 and on the second agent class
-19/48 have $C_{Ha} = 0$; in every population the points with $C_{Ha}
-\neq 0$ have more tool calls remaining after $j$ (Table~\ref{tab:med}).
-Because $C_{Ha}$ fixes only the immediate action, $C_{Ha} \neq 0$ at a
-context decision is not a direct path (context operations do not touch
-the environment, Corollary~\ref{cor:behav}) but effect carried by
-\emph{later} model actions. \textbf{(iii) Type.} Termination decisions
+\textbf{(ii) Horizon: proximal vs.\ distal.} Under pressure 39/46 and
+on the second agent class 19/48 have $C_{Ha} = 0$; in every population
+the points with $C_{Ha} \neq 0$ have more tool calls remaining after $j$
+(Table~\ref{tab:med}). Because $C_{Ha}$ fixes only the immediate action,
+$C_{Ha} \neq 0$ at a context decision is not a direct path (context
+operations do not touch the environment, Corollary~\ref{cor:behav}) but
+\emph{distal} mediation --- effect carried by later model actions. The
+fourth cell therefore does not test \emph{whether} context credit is
+mediated (it must be) but \emph{how far downstream}: $C_{Ha}$ is the
+distal share, $C_H - C_{Ha}$ the proximal one. \textbf{(iii) Type.} Termination decisions
 --- the only type with a direct path by construction --- give $C_{Ha}
 \neq 0$ in 10/10; observation formatting is horizon-independent (4/12;
 the format is re-read at every turn). Consequently $I$ throughout this
@@ -652,10 +664,8 @@ information the very next action needs; by the horizon result a pool
 consuming it later would mediate less. The mediation fraction is a
 property of (decision type, consumption horizon, pool), not a constant,
 and the designed-pool sample is small (16 unique pairs, 14 tasks).
-Pre-reg 42's 48/49 rules
-out our pool as the cause but not the regime (43/49 of those points are
-saturated); the fourth cell has been measured under one harness family
-and on two models.
+Pre-reg 42's 48/49 rules out our pool as the cause but not the regime
+(43/49 saturated); one harness family, two models.
 
 \paragraph{External validity and replication.} Our tasks are designed,
 not sampled: the measurement needs control of destroyable-information
@@ -692,19 +702,22 @@ not guarantees (Table~\ref{tab:audit}); (v)~bill the estimand that
 matches the trainable set: $C_H$ (or the outcome-only gradient it is the
 expectation of) when only the harness trains, re-scaling the step for the
 exact signal's sparsity; $C_{Ha}$ or $C_{HM}-C_M$ only for joint
-training, and only where the fourth-cell census shows $C_{Ha} \neq 0$.
+training --- controlled direct effects at mediator values $a$ and $a'$,
+equal where $I_{\text{fact}} = 0$ --- and only where the fourth-cell
+census shows $C_{Ha} \neq 0$.
 
 \section{Conclusion}
 A harness decision that changes the reward by nearly a full task changes
-it through the model: at 36/37 reward-pivotal slack points --- and 48/49
-on two external benchmarks --- the harness flip has zero effect once the
-model's original next action is held fixed, and a re-sampled next action
-reproduces the live effect at 36/44. The fourth cell turns what three-arm
-replay (ours included until pre-reg 40) called ``interaction'' into the
-proximal mediated effect $\mathrm{PE} = C_H - C_{Ha}$, $I = I_{\text{fact}}
-- \mathrm{PE}$; mediation fails where the information is consumed later,
-where the model's shield breaks (8B, 17/17), and for decisions with a
-direct path by construction. The estimand follows the trainable set:
+it through the model's \emph{very next} action: at 36/37 reward-pivotal
+slack points --- and 48/49 on two external benchmarks --- the harness
+flip has zero effect once that action is held fixed, and a re-sampled
+next action reproduces the live effect at 36/44. The fourth cell turns
+what three-arm replay (ours included until pre-reg 40) called
+``interaction'' into the proximal mediated effect $\mathrm{PE} = C_H -
+C_{Ha}$, $I = I_{\text{fact}} - \mathrm{PE}$; mediation turns distal
+where the information is consumed later, where the model's shield breaks
+(8B, 17/17), and is absent for decisions with a direct path by
+construction. The estimand follows the trainable set:
 $C_H$ (or its replay-free expectation, outcome-only) when only the
 harness trains; direct effects for joint training, priced by a census
 before any replay is billed (Appendix~\ref{app:brief}).
