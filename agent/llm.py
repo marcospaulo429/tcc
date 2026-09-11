@@ -22,8 +22,10 @@ def _merge_roles(messages: list[dict]) -> list[dict]:
 
 
 class LLMClient:
-    def __init__(self, base_url="http://127.0.0.1:8321/v1", model=None,
+    def __init__(self, base_url=None, model=None,
                  temperature=0.0, seed=1234, max_tokens=2048):
+        # TCC_BASE_URL: jobs Slurm concorrentes no mesmo nó usam portas distintas
+        base_url = base_url or os.environ.get("TCC_BASE_URL", "http://127.0.0.1:8321/v1")
         self.client = OpenAI(base_url=base_url, api_key="EMPTY", timeout=180.0)
         self.model = model or os.environ.get("TCC_MODEL", "Qwen/Qwen3-4B")
         self.temperature = temperature

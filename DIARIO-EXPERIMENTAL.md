@@ -2309,3 +2309,93 @@ tabela 2×2 folga×pivotal com |C_H|; R(h′,a′_s) vs R_H nos 44 pontos do
 pré-reg 26 (consistência do modelo de mediação). Título sugerido: "Harness
 Credit Is Mostly Mediated: Four-Arm Replay Separates Total from Direct
 Effect in a Two-Layer Coding Agent". Plano completo em PROXIMOS-PASSOS.md.
+
+## 2026-09-10 — PRÉ-REGISTRO 41 (antes de rodar): análises de custo zero para a tese "crédito de harness mediado"
+
+Zero rollouts. Só leitura de runs/ já gravados (cópia da 4090 extraída hoje
+de tcc_runs_full.tgz, 43.708 arquivos; sha do preg40/report.json conferido
+contra o desfecho 40). Script: experiments/preg41.py → runs/preg41/report.json.
+Nomenclatura: NDE := C_Ha (efeito direto controlado do harness, ação fixa);
+TE := C_H (efeito total, braço vivo); I = I_fact − PE com PE = C_H − C_Ha.
+
+**(a) Tabela 2×2 folga × pivotal (V1, g450/g600/g900, 57 pontos do preg40).**
+Cruzamento pivotal (TE ≠ 0) × direto-nulo (NDE = 0). Endpoint primário:
+m = fração dos pivotais de folga com NDE = 0 (mediação pura: TE ≠ 0 ∧
+NDE = 0). Desfechos: m1 ≥ 0.90 (mediação pura dominante — vira o número
+primário do abstract); m2 0.60–0.90 (mista; reportar por config/task); m3
+< 0.60 (mediação não domina; a tese re-escopada cai para "NDE = 0 só nos
+não-pivotais", que é trivial). Reportar |TE| (mediana, IQR, máx) nos
+pivotais com NDE = 0 e n de pares únicos (task, cp_index). Secundário: mesma
+tabela em pressão (mt4/6/8, 65 pontos) e em V2 por tipo (48 pontos).
+
+**(b) Consistência do modelo de mediação (44 pontos do pré-reg 26, a′_s).**
+a′_s ≈ f(h′) amostrado do estado sumarizado. Se o harness age só via ação,
+R(h′, a′_s) ≈ R(h′, f(h′)) = R_H. Teste: k = fração com r_cf_hm == r_orig −
+C_H exato. Desfechos: k1 ≥ 0.75 (consistente — a′_s é proxy válido de f(h′)
+e o efeito total é reproduzido pela via mediada); k2 0.50–0.75 (parcial —
+a′_s amostrado a temp > 0 diverge de f(h′) greedy; reportar por regime); k3
+< 0.50 (inconsistente — sinaliza caminho direto ou a′_s inválido). Reportar
+por regime (folga/pressão) e as discordâncias anatomizadas (ΔR, direção).
+
+**(c) Horizonte de consumo da informação (V2, 48 pontos; V1 pressão, 8
+quebras).** Hipótese (R2): NDE ≠ 0 ocorre quando a informação destruída em
+i é consumida DEPOIS de j. Proxy operacional pré-declarado: H = nº de
+decisões tool_call após j até o fim do episódio original (horizonte
+restante). Teste exploratório: Mann-Whitney unilateral H(NDE ≠ 0) >
+H(NDE = 0), α = 0.05, sem gate — reportado como descritivo. Anatomia dos 8
+pontos observation_policy com NDE ≠ 0 e do api_router (I_fact = 0.375).
+
+**(d) Tabela 3 / massa não-screened no estimando fatorial (V2, 48).** Por
+tipo: fração I_fact = 0, fração NDE = 0, fração TE ≠ NDE. Descritivo; entra
+no paper como coluna adicional, sem mudar o veredito s3 do census (que é
+sobre C_HM vs C_M).
+
+**(e) Diagnóstico do pré-reg 31 (Ato 4, c1d_*, 3 seeds).** Por que o braço
+C_H (estimando exato) não vence outcome-only a episódios iguais? Medidas
+pré-declaradas: densidade do sinal s = fração de decisões por episódio com
+crédito ≠ 0 no braço C_H vs outcome (outcome: todas as decisões do episódio
+recebem R); variância entre episódios do sinal por decisão; nº de
+atualizações não-nulas acumuladas por seed. Hipótese: s ≪ 1 (sinal exato
+mas esparso) — outcome-only paga a "tax" de ruído mas atualiza todas as
+decisões. Descritivo; se s > 0.5 a hipótese cai e Claim 3 é reescopado.
+
+**(f) n efetivo.** Pares únicos (task, cp_index) e tasks únicas por célula,
+reportados ao lado de cada contagem do paper.
+
+## 2026-09-10 — PRÉ-REGISTRO 42 (antes de rodar): quarta célula R(h′,a) fora da tripla V1/4B
+
+Motivação: R3 (rodada 13-pré) — 56/57 vem de um pool sintético (V2/L)
+desenhado para consumo imediato da informação; NDE = 0 pode ser artefato de
+desenho. Teste: replicar a quarta célula nas células externas já censadas.
+
+**População (primária, Qwen3-4B, todas 100% screened no census):**
+teste3_{mbpp_g600, mbpp_mt6, he_g600, he_mt6} — 31+35+38+39 = 143 pontos,
+dos quais 49 pivotais (TE ≠ 0). **Secundária (Qwen3-8B):** teste3_{q8_g600,
+q8_mt4, q8_mt6} — 28+35+34 = 97 pontos (79 screened, 74 pivotais); exige
+download do Qwen3-8B (não estava no cache desta máquina; iniciado hoje).
+**Terciária (Qwen3-1.7B, só se sobrar janela):** mbpp17_*, q17_*.
+Ordem de execução: pivotais primeiro, depois não-pivotais; chain reentrante.
+
+**Procedimento:** idêntico ao pré-reg 40 V1 (fila [cp: flip, tc: a
+original] a partir de cp_index; LLMClient max_tokens=1200 como no census;
+greedy seed 1234; APC off; série; 1 GPU). Máquina NOVA: H100 via Slurm
+(partição h100n2), vLLM 0.8.5.post1. Script: experiments/preg42.py; job
+slurm/preg42.sbatch; rows em runs/preg42/.
+
+**Gate (Fase 0, condição de identificação na H100):** revalidação nula —
+2 pontos por config com fila 100% original (V1 g450/g600/g900 + as 4
+células externas + q8 quando servido) → TODOS exatos (ΔR = 0.0), senão
+aborta e investiga (App. J). Registrar job id, GPU, versão vLLM.
+
+**Desfechos declarados (primário = fração dos PIVOTAIS screened das 4
+células externas 4B com R(h′,a) = R exato):**
+- s1 ≥ 0.90: mediação replica fora do pool sintético — tese deixa de ser
+  "uma tripla".
+- s2 0.60–0.90: parcial — reportar por célula/ambiente; tese re-escopada
+  por ambiente.
+- s3 < 0.60: NDE = 0 é artefato de desenho do pool V2/L — o paper reporta
+  como LIMITAÇÃO CENTRAL e a tese volta a "medição + caso documentado".
+Secundários: mesma fração nos não-pivotais (esperado ≈1 trivialmente), por
+célula, 8B, distribuição de I_fact, nº com TE ≠ NDE, n de pares únicos.
+Custo: ~143 + 97 replays + ~22 nulos ≈ 260 rollouts sequenciais.
+Reportamos qualquer desfecho.
