@@ -3075,3 +3075,41 @@ medido, quantos ramos Ha executaram de fato uma escrita depois de a sob o
 contexto sumarizado?" — está nos traces.
 **Teto:** só edição 6.0–6.33; 44 positivo → R2 7, R3 7; 44 negativo → R2
 6; 1.7B proximal → R3 7; ambos positivos + top-1 → 7.0.
+
+## 2026-09-11 — ADENDO 43b (descritivo, registrado antes de computar): escritas no RAMO Ha, não no episódio gravado
+
+Motivação: R1-1 (rodada 19). H_w conta write_file após j no episódio
+ORIGINAL; o estrato só é informativo se o ramo Ha (contexto sumarizado +
+ação original forçada + sufixo ao vivo) de fato executou ≥ 1 write_file
+depois de a — se o modelo sob h′ termina logo após a, C_Ha = 0 volta a
+ser esperado. Análise: zero rollouts; leitura das trajetórias de replay
+já gravadas (campo replay_traj em runs/preg40/v1_rows.jsonl e
+runs/preg42/rows.jsonl; V2 não grava o caminho — fica de fora, declarado).
+Para cada ponto pivotal com H_w ≥ 1 do pool headline (V1 folga 13, ext4b
+10) e do 8B (25): H_w^{Ha} = nº de write_file no ramo Ha após a ação
+forçada em j; T^{Ha} = nº de tool_calls após j no ramo Ha. Reportar:
+fração dos 21 mediadores com H_w^{Ha} ≥ 1 (estrato "informativo no ramo
+Ha"), taxa de NDE = 0 nesse estrato, e o mesmo para o 8B. Leitura
+pré-declarada: se a maioria dos 21 tiver H_w^{Ha} ≥ 1, o estrato
+informativo sobrevive no ramo contrafactual; se a maioria tiver
+H_w^{Ha} = 0 (o ramo Ha encerra após a), o headline por decisão é
+reduzido aos que sobrevivem e o paper diz isso no §4.4 e no abstract.
+Sem limiar; descritivo. Também reportar o mesmo para os 63 pontos
+H_w = 0 (esperado: H_w^{Ha} = 0 na maioria; toda exceção é o "sufixo ao
+vivo acrescentou escrita" já visto nas 3 violações V2).
+
+### DESFECHO 43b (2026-09-11, descritivo): o estrato informativo sobrevive no ramo Ha
+
+experiments/preg43b.py → runs/preg43/adendo_43b.json. Nos 23 pontos
+headline com H_w ≥ 1: **23/23 têm ≥ 1 write_file AO VIVO no ramo Ha após a
+ação forçada** (mediana de 5 tool_calls após a); os 21 mediadores
+reproduzem o sufixo original ação por ação (coalescência comportamental
+sob o contexto sumarizado — a escrita posterior aconteceu, com o mesmo
+resultado). Nos 63 pontos H_w = 0: 0/63 têm escrita no ramo Ha (o ramo
+encerra como o original). 8B (25 pontos H_w ≥ 1): 25/25 com escrita ao
+vivo; os 23 não-mediadores divergem em sufixos longos (5–6 writes
+adicionais tentando reparar sob o contexto sumarizado, R cai de 1.0 para
+0.10–0.15). Sanidade manual em 7 pontos (sufixos impressos). Leitura
+pré-declarada: o estrato "informativo" definido no episódio gravado
+coincide com o definido no ramo contrafactual em 86/86 pontos V1-stack —
+a objeção R1-1 não morde. Entra no §4.4(ii), Tab. 1 e App. F.
