@@ -259,6 +259,23 @@ def main():
                "v2_total": v2_total, "v2_context": pop["v2_context"],
                "v2_observation": pop["v2_observation"], "ext4b": pop["ext4b"]}
 
+    # adendo 43a (descritivo): NDE=0 por valor exato de H_w; mediana em H_w>=1
+    def _por_hw(pontos: list[dict]) -> dict:
+        bins = {"0": lambda h: h == 0, "1": lambda h: h == 1,
+                "2": lambda h: h == 2, ">=3": lambda h: h >= 3}
+        out = {}
+        for b, f in bins.items():
+            sel = [p for p in pontos if f(p["H_w"])]
+            out[b] = {"k": sum(p["nde0"] for p in sel), "n": len(sel),
+                      "taxa": _taxa(sum(p["nde0"] for p in sel), len(sel))}
+        ge1 = sorted(p["H_w"] for p in pontos if p["H_w"] >= 1)
+        out["mediana_Hw_em_ge1"] = statistics.median(ge1) if ge1 else None
+        out["n_ge1"] = len(ge1)
+        return out
+
+    por_hw = {nome: _por_hw(pontos) for nome, pontos in pop.items()}
+    por_hw["pool_headline"] = _por_hw(pool)
+
     report = {
         "meta": {
             "pre_registro": 43,
@@ -276,6 +293,7 @@ def main():
         "v2_termination_descritivo": estratos(term_desc),
         "testes_horizonte": {"H": _mw_familia(familia, "H"),
                              "H_w": _mw_familia(familia, "H_w")},
+        "adendo_43a_por_Hw": por_hw,
     }
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "report.json").write_text(

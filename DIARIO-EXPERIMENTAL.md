@@ -2899,3 +2899,38 @@ controlando o 8B + re-manchete. Para 8: exercício POSITIVO da regra
 (célula com ambos os gates abertos e crédito conjunto vencendo outcome a
 dose igual) OU harness realista com ≥ 50 decisões informativas — ambos
 fora do orçamento atual (Fase D, não autorizada).
+
+## 2026-09-11 — ADENDO 43a (descritivo, registrado antes de computar): taxa de NDE = 0 por valor exato de H_w
+
+Motivação: R1-3 (rodada 17) — o contraste 8B (2/25) vs 4B (21/23) no
+estrato H_w ≥ 1 pode ser confundido com horizonte se os pontos do 8B
+tiverem mais escritas a jusante. Análise: zero rollouts; releitura dos
+mesmos pontos do pré-reg 43 (runs/preg43 recomputado). Para cada
+população (V1 folga, V1 pressão, ext4b, q8, V2 context, V2 observation):
+tabela k/n de NDE = 0 por valor exato de H_w ∈ {0, 1, 2, ≥3}, mediana de
+H_w no estrato H_w ≥ 1, e o contraste 8B vs 4B **pareado em H_w = 1**
+(mesmo horizonte de escrita). Descritivo — sem limiar declarado, sem
+teste; entra na Tab. 2 como coluna "median H_w (H_w ≥ 1)" e no App. F.
+Leitura pré-declarada: se a mediana de H_w do 8B em H_w ≥ 1 for ≤ a do
+4B e a taxa em H_w = 1 já separar os modelos, o contraste NÃO é
+confundido com horizonte; se o 8B tiver H_w maior, o paper diz que
+"distal" no 8B é confundido com horizonte e retira o contraste da
+manchete.
+
+### DESFECHO 43a (2026-09-11, descritivo): o contraste 8B não é confundido com horizonte
+
+experiments/preg43.py (chave `adendo_43a_por_Hw` em runs/preg43/report.json;
+6 testes passam). NDE = 0 (k/n) por valor exato de H_w:
+- V1 folga: H_w=0 24/24; =1 **9/9**; =2 3/3; ≥3 0/1. Mediana H_w em ≥1: 1.
+- ext4b: 0 39/39; =1 2/2; =2 5/6; ≥3 2/2. Mediana em ≥1: 2.
+- q8 (8B): 0 49/49; =1 **2/20**; =2 0/5. Mediana em ≥1: 1.
+- V1 pressão: 0 28/28; =1 11/14; =2 0/3; ≥3 0/1.
+- V2 context: 0 7/9; =1 6/14. V2 observation: 0 0/1; =1 3/8; =2 1/2; ≥3 0/1.
+- Pool headline (folga ∪ ext4b): 0 63/63; =1 11/11; =2 8/9; ≥3 2/3.
+Leitura pré-declarada: a mediana de H_w do 8B no estrato informativo (1)
+é ≤ a do 4B (1 na folga, 2 no externo) e a fração H_w = 0 é comparável
+(66% vs 65%/80%); pareado em H_w = 1 exatamente, 8B 2/20 vs 4B 9/9 (folga)
+e 2/2 (externo). O contraste 8B vs 4B NÃO é confundido com horizonte de
+escrita — entra na Tab. 2 (coluna mediana H_w) e no App. F. Também
+visível: na V1 pressão a mediação proximal cai com H_w (11/14 → 0/3 →
+0/1), a única população onde o horizonte ordena monotonicamente.
