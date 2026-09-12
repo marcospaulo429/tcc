@@ -106,9 +106,9 @@ C_{Ha})$ (Remark~\ref{rem:factorial}), with $I_{\text{fact}} = 0$ at
 $C_H$ --- total effect, model at its live policy --- is the correct
 estimand and outcome-only policy gradient is its Monte Carlo estimate
 without the replay tax; at matched dose the exact signal lost to
-outcome-only in 3/3 seeds (\S\ref{sec:training}), with a candidate
-mechanism (39\% of decisions updated, gradients $\sim 5\times$ smaller)
-whose first test was inconclusive by hardware. Joint training needs direct effects --- zero where the harness
+outcome-only in 3/3 seeds (\S\ref{sec:training}) on one GPU, with a
+candidate mechanism (39\% of decisions updated, gradients $\sim 5\times$
+smaller) that a first test did not support. Joint training needs direct effects --- zero where the harness
 mass is --- so a census of $C_{Ha} \neq 0$ prices, before training, how
 much joint-specific signal a stack offers (Corollary~\ref{cor:gate}).
 
@@ -136,9 +136,9 @@ that prices the latter before training --- a gate that has vetoed on
 every cell audited and has not yet been exercised positively. One
 dose-matched training act (after three diagnosed failures) plus an
 episode-matched control show the exact signal losing to outcome-only,
-with a candidate mechanism (sparsity $\times$ step size) whose one
-registered test returned inconclusive (hardware uncontrolled). All of it
-sits on a 45-item pre-registration ledger with
+with a candidate mechanism (sparsity $\times$ step size) that its one
+registered test left unsupported where testable (hardware uncontrolled
+elsewhere). All of it sits on a 45-item pre-registration ledger with
 failures reported as results and an auditable claims table
 (Tables~\ref{tab:claims}, \ref{tab:ledger}).
 \end{enumerate}
@@ -352,12 +352,11 @@ Table~\ref{tab:glossary} (Appendix~\ref{app:figs}) fixes the names used througho
 budget slack} (g450/g600/g900) screening is \emph{exact}: $C_{HM} = C_M$
 at 57/57 points, all 38 reward-pivotal ones included (registered pivotal
 subset over slack plus mt6: 53/56, CI95 $[0.87,1.00]$; $a'$ re-sampling
-99/101; every screening count with its endpoint is in
-Table~\ref{tab:scoreboard}, Appendix~\ref{app:shield}). \textbf{Under
-pressure} (mt4/6/8) it breaks at 8/65 points, at the same points across
-configurations, non-monotonically in pressure (registered monotonicity
-test failed) and tracking reward saturation --- a \emph{competence
-window} analysed in Appendix~\ref{app:shield}. Across models and pools
+99/101; every count with its endpoint in Table~\ref{tab:scoreboard},
+Appendix~\ref{app:shield}). \textbf{Under pressure} (mt4/6/8) it breaks
+at 8/65 points, at the same points across configurations,
+non-monotonically in pressure and tracking reward saturation --- a
+\emph{competence window} analysed in Appendix~\ref{app:shield}. Across models and pools
 (Table~\ref{tab:synthesis}, Appendix~\ref{app:replication}) the 8B
 breaks at a flat rate in both regimes and the external benchmarks screen
 everywhere. Two verified mechanisms --- $a'$, sampled from the
@@ -397,24 +396,25 @@ information consumed two turns later.
 
 \begin{table}[t]
 \centering\scriptsize
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}llrrrcl@{}}
 \toprule
 Stack & Population & Pivotal & $C_{Ha}=0$ & at $H_w\geq1$ & med.\ $H_w$ ($H_w{\geq}1$) & Reading \\
 \midrule
 V1 4B & slack (g450/600/900) & 37 & \textbf{36} (0.973) & \textbf{12/13} & 1 & proximal \\
-V1 4B & pressure (mt4/6/8) & 46 & 39 (0.848) & 11/18 & 1 & falls with $H_w$: 11/14, 0/3, 0/1 \\
-V1 4B & MBPP+ (g600/mt6), pre-reg 42 & 8 & 7 (0.875) & 5/6 & 2 & proximal (saturated) \\
-V1 4B & HumanEval+ (g600/mt6), pre-reg 42 & 41 & \textbf{41} (1.000) & 4/4 & 2 & proximal (saturated) \\
-V1 1.7B & designed + MBPP+ (g600/mt6), pre-reg 45 & 26 & \textbf{26} (1.000) & --- (0) & --- & expected stratum only: all $H_w = 0$ \\
+V1 4B & pressure (mt4/6/8) & 46 & 39 (0.848) & 11/18 & 1 & falls with $H_w$ (11/14, 0/3, 0/1) \\
+V1 4B & MBPP+ (g600/mt6), pre-reg 42 & 8 & 7 (0.875) & 5/6 & 2 & proximal; saturated \\
+V1 4B & HumanEval+ (g600/mt6), pre-reg 42 & 41 & \textbf{41} (1.000) & 4/4 & 2 & proximal; saturated \\
+V1 1.7B & designed + MBPP+ (g600/mt6), pre-reg 45 & 26 & \textbf{26} (1.000) & --- (0) & --- & expected stratum only \\
 V1 8B & designed pool, screened (g600/mt4/mt6) & 57 & 51 (0.895) & 2/8 & 1 & distal where a later write exists \\
 V1 8B & designed pool, \emph{non}-screened & 17 & \textbf{0} & 0/17 & 1 & screening breaks = direct effect \\
 \midrule
 V2 4B & context\_policy & 23 & 13 & 6/14 & 1 & mixed \\
 V2 4B & observation\_policy & 12 & 4 & 4/11 & 1 & distal \\
 V2 4B & test\_schedule & 3 & 2 & --- & --- & $n$ too small \\
-V2 4B & termination & 10 & \textbf{0} & 0/8 & --- & direct by construction (analytic) \\
+V2 4B & termination & 10 & \textbf{0} & 0/8 & --- & direct by construction \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \caption{\textbf{Mediation table (pre-regs 41--43).} Pivotal = $C_H \neq
 0$; $C_{Ha} = 0$ = no effect once the model's original next action is
 held fixed. $H_w$ = \texttt{write\_file} calls after $j$ in the recorded
@@ -441,10 +441,9 @@ $\sigma = 0.015$.}
 \end{figure}
 
 Three secondaries locate where mediation fails (Figure~\ref{fig:scatter}).
-\textbf{(i) Coupling, not draw.} The 44 points where pre-reg 26 had
-re-sampled the next action \emph{under the flipped context} ($a'_s$)
-give $R(h',a'_s) = R_H$ at 36/44; all 8 discordances have $R(h',a'_s) >
-R_H$ (a better action found, not a direct path).
+\textbf{(i) Coupling, not draw.} At the 44 points where pre-reg 26
+re-sampled the next action \emph{under the flipped context} ($a'_s$),
+$R(h',a'_s) = R_H$ at 36/44; all 8 discordances have $R(h',a'_s) > R_H$.
 \textbf{(ii) Measured vs.\ expected: the last-write stratum (pre-reg
 43).} If the paired action is the episode's last write ($H_w = 0$),
 $C_{Ha} = 0$ is what Corollary~\ref{cor:behav} leads one to expect ---
@@ -492,7 +491,10 @@ pool places the destroyed information exactly where the next action
 needs it, 36/37 could be a design artifact; we registered that failure
 branch (fraction $< 0.60$) before touching the data and replayed the
 fourth cell at every census point of MBPP+ and HumanEval+ (143 points;
-null gate 20/20 exact on new hardware). At the 49 harness-pivotal points
+null gate 20/20 exact on new hardware --- a gate on forced-prefix
+replays, which does not certify live generation across GPUs
+(Appendix~\ref{app:estimand}); what certifies the informative stratum
+is the trace check of addendum 43b). At the 49 harness-pivotal points
 (29 unique pairs) $C_{Ha} = 0$ in \textbf{48/49} (MBPP+ 7/8, HumanEval+
 41/41); non-pivotal 91/94; $I_{\text{fact}} = 0$ at 139/143. These cells
 are saturated ($R = 1$ at 43/49): they test mediation where the census
@@ -547,45 +549,47 @@ separate}, in 3/3 seeds (Figure~\ref{fig:training}; held-out
 $R_{\text{eff}}$ per seed): outcome-only $0.440 / 0.440 / 0.443$,
 single-layer $C_H$ $0.405 / 0.405 / 0.398$, $C_{HM}-C_M$ $0.392 \times
 3$ --- exactly keep-always, the untrained control; evaluation is
-deterministic, so these are point values over 6 tasks, not means with
-error bars. Our registered secondary predicted the opposite ordering;
-its failure is the finding. For a harness-only trainer $C_H$ is the
-\emph{correct} estimand (total effect, model at its live policy), and
-outcome-only policy gradient is its Monte Carlo estimate with no replay
-tax (Lemma~\ref{lem:pg}); $C_{HM}-C_M$ is a direct-effect quantity,
-exactly zero at 36/37 slack points, so arm~3 receives no gradient where
-the harness acts. A registered \emph{episode-matched} control (pre-reg
-31) closed the sample-size confound (credit arms: 139/70 episodes vs.\
-284/280/279): outcome-only stopped at the credit arms' episode counts still
-reaches $0.410 / 0.450 / 0.398$, $\geq$ the $C_H$ arm in 3/3 seeds. The
-training logs supply a candidate mechanism (pre-reg 41e): the $C_H$ arm
-assigns nonzero credit to $39\%$ of decisions (outcome-only: all), with
-$|C_H|$ median $0.039$ --- $20\times$ below the census's pivotal points
---- and an episode-summed gradient norm $\approx 5\times$ smaller
-($0.062$ vs.\ $0.295$): at equal learning rate the exact arm moves the
-policy $\sim 5\times$ less per episode than the dense, noisy outcome
-signal. Lemma~\ref{lem:pg} says the outcome-only \emph{signal}
-component is $\pi(h')C_H$, no larger than $C_H$, so the $5\times$
-larger norm is variance (global baseline, other decisions' returns):
-two hypotheses fit --- the exact arm under-steps, or the noisy arm
-explores. A registered test of the first (pre-reg 44: the $C_H$ arm at
-$5\times$ the learning rate, 3 seeds, same dose, on an H100) returned
-\textbf{inconclusive by hardware}: its control --- re-running the
-lr-$0.1$ $C_H$ arm on the new GPU --- did not reproduce the 4090 run
-($0.429$ vs.\ $0.405$; \texttt{h\_turnstile\_fsm} $0.64$ vs.\ $0.41$)
-although the null gate was exact (6/6), so cross-hardware comparison is
-invalid; within the H100, the $5\times$ step moved $\theta$ (about
-$2\times$ larger) and left the seed-1 held-out policy identical task by
-task ($0.429 = 0.429$), with seeds 2--3 at $0.441 / 0.435$ against no
-same-hardware baseline. The step hypothesis thus lost the one clean
-test it had; the decisive experiment is all four arms on one machine,
-and until it runs the prescription is only ``bill the total effect,
-however estimated.''
-Per task (Table~\ref{tab:act4tasks}, Appendix~\ref{app:acts})
-outcome-only $\geq C_H$ on 6/6 held-out tasks in every seed (strictly
-on 4, on 5 in one seed), so the ordering is not one task's. This is the dose reading
-of~\citet{audit2026}: arms matched in episodes but not in effective
-updates measure dose as much as credit.
+deterministic, so these are point values over 6 tasks (per task:
+Table~\ref{tab:act4tasks}, Appendix~\ref{app:acts}; outcome-only $\geq
+C_H$ on 6/6 in every seed, strictly on 4). Our registered secondary
+predicted the opposite ordering; its failure is the finding. For a
+harness-only trainer $C_H$ is the \emph{correct} estimand (total effect,
+model at its live policy), and outcome-only policy gradient is its Monte
+Carlo estimate with no replay tax (Lemma~\ref{lem:pg}); $C_{HM}-C_M$ is
+a direct-effect quantity, exactly zero at 36/37 slack points, so arm~3
+receives no gradient where the harness acts.
+
+\paragraph{Controls and candidate mechanism.} A registered
+\emph{episode-matched} control (pre-reg 31) closed the sample-size
+confound (credit arms: 139/70 episodes vs.\ 284/280/279): outcome-only
+stopped at the credit arms' episode counts still reaches $0.410 / 0.450
+/ 0.398$, $\geq$ the $C_H$ arm in 3/3 seeds. The training logs supply a
+candidate mechanism (pre-reg 41e): the $C_H$ arm assigns nonzero credit
+to $39\%$ of decisions (outcome-only: all), with $|C_H|$ median $0.039$
+and an episode-summed gradient norm $\approx 5\times$ smaller ($0.062$
+vs.\ $0.295$). Lemma~\ref{lem:pg} says the outcome-only \emph{signal}
+component is $\pi(h')C_H$, no larger than $C_H$, so the larger norm is
+variance (global baseline, other decisions' returns): either the exact
+arm under-steps, or the noisy arm explores --- the dose reading
+of~\citet{audit2026}, here in the harness layer.
+
+\paragraph{Pre-reg 44: the step test, inconclusive by hardware.} The
+registered test of the first hypothesis ($C_H$ arm at $5\times$ the
+learning rate, 3 seeds, same dose, on an H100) failed its own control:
+re-running the lr-$0.1$ $C_H$ arm on the new GPU gave $0.429$ instead of
+the 4090's $0.405$ (\texttt{h\_turnstile\_fsm} $0.64$ vs.\ $0.41$)
+although the null gate was exact (6/6) --- greedy live episodes do not
+transport across GPUs, so cross-hardware comparison is invalid. Within
+the H100 the $5\times$ step moved $\theta$ (about $2\times$ larger) and
+left the seed-1 held-out policy identical task by task ($0.429 =
+0.429$); seeds 2--3 gave $0.441 / 0.435$ against no same-hardware
+baseline. Where it could be tested cleanly, the step hypothesis is
+\emph{unsupported}. The same control bounds this section: the hardware
+shift ($0.024$ at fixed seed) is of the order of Act~4's headline
+separation ($0.035$; seed spread $0.003$), so ``outcome-only beats exact
+$C_H$'' is, until all four arms run on one machine, an ordering
+observed on one GPU; the prescription that survives is only ``bill the
+total effect, however estimated.''
 
 \begin{figure}[t]
 \centering
@@ -661,7 +665,9 @@ informative stratum (16 decisions, 15 tasks; CI95 per decision $[0.62,
 0.98]$), and pre-reg 42's 48/49 rules out our pool as the cause but not
 the regime (43/49 saturated). A pool with $H_w \geq 1$ dominant and
 $\geq 30$ unique decisions is the power experiment this paper lacks;
-one harness family, two models.
+one harness family, two models. The training ordering of
+\S\ref{sec:training} is bounded by a demonstrated hardware sensitivity
+of the same order as its effect, and stands until re-run on one machine.
 
 \paragraph{External validity and replication.} Our tasks are designed,
 not sampled: the measurement needs control of destroyable-information
@@ -687,7 +693,10 @@ composition pointing \emph{against} the headline contrast.
 (i)~measure the null floor (prefix caching off); (ii)~run the entropy
 probe at candidate paired points: near-deterministic points are
 unidentifiable (pre-reg 39); (iii)~run the census over \emph{all}
-pivotal points, last-mover duals excluded; (iv)~train on per-decision
+pivotal points, last-mover duals excluded, and compute $H_w$ from the
+recorded episodes before registering a fourth cell --- register it only
+if the informative stratum can be binned, the gate pre-reg 45 lacked;
+(iv)~train on per-decision
 credit only if the census gate ($\geq 0.20$) and a per-attractor power
 gate both open --- \emph{vetoes}, not guarantees: across five audited
 cells both have never opened together (Table~\ref{tab:audit});
@@ -720,7 +729,9 @@ trains; direct effects, priced by a census first, for joint training.
 All numbers derive from serialized artifacts (trajectories, replay rows,
 training logs) shipped with the code; \texttt{make reproduce} re-derives
 the null-floor, census, split, dose-response, margin, and selection
-statistics and fails on drift (Table~\ref{tab:claims}). Serving premises:
+statistics and fails on drift (Table~\ref{tab:claims}). Exact floors and
+training values reproduce on the same GPU class only (pre-reg 44;
+Appendix~\ref{app:estimand}). Serving premises:
 \S\ref{sec:floor}, Appendix~\ref{app:nulls}; estimands and controls:
 \S\ref{sec:setup}, Appendix~\ref{app:estimand}; ledger:
 Appendix~\ref{app:ledger}.
@@ -744,7 +755,8 @@ Replay noise floor is exactly zero & 9{,}296/9{,}296 nulls exact, 3 models $\tim
 Floor survives an LLM-in-the-loop summarizer & 317/317 nulls exact (greedy summarizer cell) & confirmed (pre-reg 22) \\
 Deterministic taxonomy predicts stochastic estimand & temp $0.8$: 2/2 screened cover 0; 2/3 breaks exclude 0, predicted sign & confirmed (pre-reg 23, outcome s1) \\
 Training negative survives a verified margin & 9/9 trained runs find the true optimum of the mis-specified objective (cheap failure) & confirmed (pre-reg 24, outcome s2) \\
-Under a sane objective, replay credit loses to outcome at matched dose & Act 4: arms separate 3/3 seeds; $C_{HM}-C_M$ (direct-effect signal) inert where $C_{Ha}=0$; episode-matched control: outcome $\geq C_H$ 3/3 seeds at equal episodes; mechanism: credit density 0.39, grad-norm $5\times$ smaller & identified (pre-regs 27, 31, 41e) \\
+Under a sane objective, replay credit loses to outcome at matched dose & Act 4: arms separate 3/3 seeds; $C_{HM}-C_M$ (direct-effect signal) inert where $C_{Ha}=0$; episode-matched control: outcome $\geq C_H$ 3/3 seeds at equal episodes; per task 6/6 & identified on one GPU (pre-regs 27, 31); separation $0.035$ vs.\ cross-GPU shift $0.024$ (pre-reg 44) --- same-machine four-arm re-run pending \\
+Mechanism of the loss: exact credit is sparse and under-steps & density 0.39, grad-norm $5\times$ smaller (41e); lr $\times 5$ on the H100 left the seed-1 policy identical & candidate; \textbf{unsupported} where testable (pre-reg 44) \\
 Zero floor survives an agent-class change & V2 mini-SWE (multi-file, 5 decision types, plain-text protocol): 117/117 nulls exact & confirmed (pre-reg 29) \\
 All five harness decision types are reward-pivotal & V2 screening: 114 pivotal points across all 5 types (incl.\ retry 2/2, test-schedule $\Delta R$ to $-0.64$) & confirmed (pre-reg 29) \\
 The census gate has both branches & V1 stack: closed, confirmed by 4 training acts; V2 stack: outcome s3 (no type screens $\geq$0.90); gate opens under 3/4 accountings (0.50 measured w/ duals to 0.13 pivotal w/o duals, \S\ref{sec:v2}) & measured; accounting-sensitive (pre-reg 29) \\
@@ -1784,11 +1796,14 @@ re-running a full training arm on the H100 did not reproduce the 4090
 run (held-out $0.429$ vs.\ $0.405$) although its own null gate was 6/6
 exact --- \emph{greedy live generation does not transport across GPUs};
 only forced-prefix replays with short live suffixes were gate-checked.
-For the fourth cell this bias is one-sided: hardware divergence can
-manufacture $R_{Ha} \neq R$, never an exact equality, so the mediation
-counts (48/49, 51/57) are conservative, and the 8B's $C_{Ha} \neq 0$
-points come with the exact cross-machine identity $I_{\text{fact}} = 0$
-at 15/17, which noise does not produce. The Qwen3-1.7B cells received the fourth cell after
+For the fourth cell the exposure is bounded but not zero: hardware
+divergence can produce spurious $R_{Ha} \neq R$ (a bias against
+mediation) and, at saturated points, a spurious $R_{Ha} = R$ by reward
+collision; what protects the informative stratum is addendum 43b (the
+21 mediating $Ha$ branches reproduce the recorded suffix action for
+action), and the 8B's $C_{Ha} \neq 0$ points come with the exact
+cross-machine identity $R_{Ha} = R_{HM}$ at 15/17 --- all at fractional
+rewards ($0.10$--$0.20$), none a $0/1$ collision. The Qwen3-1.7B cells received the fourth cell after
 this was noticed (pre-reg 45: 67 points, gate 8/8 exact, 26/26 pivotal
 points mediate) --- but all 26 sit at $H_w = 0$, so the cell confirms the
 expected stratum on a third model and adds nothing to the informative

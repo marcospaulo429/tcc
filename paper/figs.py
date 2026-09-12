@@ -320,7 +320,7 @@ def _hw_bar(ax, yi: float, entry: tuple[int, int, int, int] | None, col: str,
     ax.barh(yi, g, color=HW_GREY, height=0.65)
     ax.barh(yi, s, left=g, color=col, alpha=0.9, height=0.65)
     ax.barh(yi, 1 - g - s, left=g + s, color=col, alpha=0.25, height=0.65)
-    return f"{kg}/{ng}"
+    return f"{kg}/{ng}" if ng else "— (0)"
 
 
 HW_LEGEND = [
@@ -334,6 +334,8 @@ def fig6_mediation_scatter() -> None:
     v1 = _load_jsonl(RUNS / "preg40" / "v1_rows.jsonl")
     v2 = _load_jsonl(RUNS / "preg40" / "v2_rows.jsonl")
     ext = _load_jsonl(RUNS / "preg42" / "rows.jsonl")
+    p45 = RUNS / "preg45" / "rows.jsonl"
+    q17 = _load_jsonl(p45) if p45.exists() else []
     slack = {"g450", "g600", "g900"}
 
     def piv(rows: list[dict]) -> list[dict]:
@@ -395,6 +397,10 @@ def fig6_mediation_scatter() -> None:
          counts([r for r in v1 if r["cfg"] not in slack])),
         ("external 4B", hw["ext4b"], "#333333",
          counts([r for r in ext if r["cfg"].startswith(("mbpp", "he"))])),
+    ]
+    if q17:  # pré-reg 45: 1.7B, estrato informativo vazio
+        pops.append(("1.7B (pre-reg 45)", hw["q17"], "#8c6d31", counts(q17)))
+    pops += [
         ("8B screened", hw["q8_screened"], "#6a51a3",
          counts([r for r in q8 if r["screened"]])),
         ("8B non-screened", hw["q8_nonscreened"], "#6a51a3",
@@ -406,7 +412,8 @@ def fig6_mediation_scatter() -> None:
         ("V2 termination", None, V2_TYPE_COLS["termination"],
          counts([r for r in v2 if r["tipo"] == "termination"])),
     ]
-    expected = [(36, 37), (39, 46), (48, 49), (51, 57), (0, 17), (13, 23), (4, 12), (0, 10)]
+    expected = [(36, 37), (39, 46), (48, 49)] + ([(26, 26)] if q17 else []) + \
+        [(51, 57), (0, 17), (13, 23), (4, 12), (0, 10)]
     assert [kn for _, _, _, kn in pops] == expected, [kn for _, _, _, kn in pops]
     # estratos do adendo devem somar aos pivotais das rows
     for name, entry, _, (k, n) in pops:
@@ -465,6 +472,7 @@ def fig7_mediation_census() -> None:
         ("V2 termination (analytic duals)", None, V2_TYPE_COLS["termination"]),
         ("MBPP+ 4B (pre-reg 42)", hw["ext4b_mbpp"], "#333333"),
         ("HumanEval+ 4B (pre-reg 42)", hw["ext4b_he"], "#333333"),
+        ("V1 1.7B designed + MBPP+ (pre-reg 45)", hw["q17"], "#8c6d31"),
         ("V1 8B designed pool (pre-reg 42)", hw["q8"], "#6a51a3"),
     ]
 
