@@ -3186,3 +3186,48 @@ em falha na pressão e resolve MBPP+ em 1 escrita: o pool não oferece
 escritas posteriores — a mesma limitação de potência que o paper já
 declara ("a pool with H_w ≥ 1 dominant is the power experiment this paper
 lacks").
+
+## 2026-09-11 — Mesa ICLR rodada 20 (isolada, paper/ HEAD com 43b, 44, 45, Figs estratificadas)
+
+R1 6 / R2 5 / R3 6 → AC **5.67, Borderline** (4ª rodada em 5.67; teto com a
+evidência atual ≈ 6.3). Atendidas da r19 (não reciclar): 43b fecha "estrato
+no ramo errado"; abstract sem jargão; caption Tab. 1; §4.4(ii) legível;
+8B no corpo; glossário shield; Figs estratificadas. 44 e 45 "honestos e
+sem spin" em todos os lugares; 44 "parcialmente no lugar certo" (enterrado
+no parágrafo de página inteira do Act 4).
+
+**Objeções vivas/novas:** R1-1 App. F "hardware can never manufacture an
+exact equality" é FALSO em geral (colisão de reward com 43/49 saturados) —
+o que protege o estrato informativo é o 43b (sufixo reproduzido), não a
+unilateralidade; mover uma cláusula para §4.4 "Outside the designed pool"
+(o gate 20/20 não certifica geração ao vivo). R1-2 o pré-reg 45 não tinha
+gate de tamanho do estrato informativo (t1 era quase certo a priori) →
+item (iii-b) na regra: computar H_w dos episódios gravados e registrar a
+4ª célula só se o estrato informativo tiver ≥ k decisões. R1-3/R2-1 [NOVO,
+decisivo p/ §6] o controle do 44 mostra Δ = 0.024 por trocar de GPU com a
+mesma seed; a manchete do Act 4 é Δ = 0.035 (variação entre seeds 0.003) —
+a ordenação "outcome > C_H" é propriedade de (braço, máquina) até os 4
+braços rodarem na mesma máquina (15–25 GPU-h); declarar em §6/§8. R1-4
+Tab. 2: separar "resultado identified" de "mecanismo candidate, one test
+inconclusive". R1-Q3 intra-H100 lr×5 = lr0.1 REFUTA o mecanismo "passo
+pequeno" dentro da H100 → "unsupported", não "candidate". R2-3 harness de
+uma decisão binária é o caso fácil (escopo). R2-4 mecanismo = replicação
+de audit2026 em outra camada. R2-5 Reproducibility: piso/treino só
+reproduzem na mesma classe de GPU. R3-1 [PIOROU] Tab. 1 estoura a margem
+direita (coluna Reading cortada). R3-2 §6 monolítico → 3 parágrafos (Act 4
+/ controle + mecanismo / pré-reg 44). R3-3 Fig. 2(b) sem a linha 1.7B. R3-4
+denominadores múltiplos do 8B → forma canônica "2/12 (0/7, 2/5)". R3-5
+FIGURAS.md desatualizado (43-item; caption). R3-6 Fig. 2(a) pequena.
+
+**Top-3 do AC:** (1) [0 GPU] Tab. 1 na margem + §6 em 3 parágrafos + frase
+de transporte em §4.4 (Δ≈+0.3); (2) [15–25 GPU-h] 4 braços × 3 seeds na
+H100 (Δ≈+0.5); (3) [0 GPU] gate de estrato informativo na regra.
+**Não mexer:** abstract, §4.4(ii), Remark 3/Cor. 3, estratificação das
+figuras, Tab. 2/ledger, 1.7B fora do abstract.
+**Pergunta mais difícil:** "O controle do 44 mostra que o mesmo braço muda
+0.024 ao trocar de GPU; a manchete do §6 é 0.035. Em que sentido
+'outcome-only beats exact C_H in 3/3 seeds' é um resultado e não uma
+propriedade da RTX 4090?"
+**Para 7:** (a) pool com H_w ≥ 1 dominante e ≥ 30 decisões únicas (novo
+pool + censo + 4ª célula — Fase D-lite, não autorizada); (b) 4 braços na
+mesma máquina. Sem (a) o teto é ≈ 6.3 independentemente de escrita.
