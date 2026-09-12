@@ -12,6 +12,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.patches import Patch
 
 ROOT = Path(__file__).resolve().parent.parent
 RES = ROOT / "experiments" / "results"
@@ -286,6 +287,49 @@ def _load_jsonl(p: Path) -> list[dict]:
     return [json.loads(l) for l in p.open()]
 
 
+HW_GREY = "#d9d9d9"
+
+
+def _load_hw_strata() -> dict[str, tuple[int, int, int, int]]:
+    """Por população: (k0, n0, k_ge1, n_ge1) do adendo 43a (k = C_Ha = 0)."""
+    rep = load(RUNS / "preg43" / "report.json")["adendo_43a_por_Hw"]
+    out = {}
+    for pop, bins in rep.items():
+        k0, n0 = bins["0"]["k"], bins["0"]["n"]
+        kg = sum(bins[b]["k"] for b in ("1", "2", ">=3"))
+        ng = sum(bins[b]["n"] for b in ("1", "2", ">=3"))
+        out[pop] = (k0, n0, kg, ng)
+    # checagens pré-declaradas (adendo 43a)
+    assert out["pool_headline"][:2] == (63, 63), out["pool_headline"]
+    assert out["pool_headline"][2:] == (21, 23), out["pool_headline"]
+    assert out["q8"][2:] == (2, 25), out["q8"]
+    assert out["v1_folga"][2:] == (12, 13), out["v1_folga"]
+    assert out["ext4b"][2:] == (9, 10), out["ext4b"]
+    return out
+
+
+def _hw_bar(ax, yi: float, entry: tuple[int, int, int, int] | None, col: str,
+            n_total: int) -> str:
+    """Barra empilhada normalizada; devolve o rótulo k/n do estrato H_w >= 1."""
+    if entry is None:  # sem estratificação (termination: duais analíticos)
+        ax.barh(yi, 1.0, color=col, alpha=0.25, height=0.65)
+        return "—"
+    k0, n0, kg, ng = entry
+    assert n0 + ng == n_total, (entry, n_total)
+    g, s = k0 / n_total, kg / n_total
+    ax.barh(yi, g, color=HW_GREY, height=0.65)
+    ax.barh(yi, s, left=g, color=col, alpha=0.9, height=0.65)
+    ax.barh(yi, 1 - g - s, left=g + s, color=col, alpha=0.25, height=0.65)
+    return f"{kg}/{ng}"
+
+
+HW_LEGEND = [
+    Patch(fc=HW_GREY, label="$H_w{=}0$ (expected: last write)"),
+    Patch(fc="#2b7bba", alpha=0.9, label="$H_w{\\geq}1$, $C(H_a){=}0$"),
+    Patch(fc="#2b7bba", alpha=0.25, label="$C(H_a){\\neq}0$ (unmediated)"),
+]
+
+
 def fig6_mediation_scatter() -> None:
     v1 = _load_jsonl(RUNS / "preg40" / "v1_rows.jsonl")
     v2 = _load_jsonl(RUNS / "preg40" / "v2_rows.jsonl")
@@ -342,34 +386,47 @@ def fig6_mediation_scatter() -> None:
     ax_a.legend(frameon=False, fontsize=6, loc="lower right", handletextpad=0.2,
                 borderaxespad=0.2)
 
-    # (b) fração mediada (C_Ha = 0) vs não mediada, por população
+    # (b) C_Ha = 0 estratificado por H_w (adendo 43a), por população
+    hw = _load_hw_strata()
     pops = [
-        ("V1 slack", counts([r for r in v1 if r["cfg"] in slack]), COL_SLACK),
-        ("V1 pressure", counts([r for r in v1 if r["cfg"] not in slack]), COL_PRESS),
-        ("external 4B", counts([r for r in ext if r["cfg"].startswith(("mbpp", "he"))]), "#333333"),
-        ("8B screened", counts([r for r in q8 if r["screened"]]), "#6a51a3"),
-        ("8B non-screened", counts([r for r in q8 if not r["screened"]]), "#6a51a3"),
-        ("V2 context", counts([r for r in v2 if r["tipo"] == "context_policy"]),
-         V2_TYPE_COLS["context_policy"]),
-        ("V2 observation", counts([r for r in v2 if r["tipo"] == "observation_policy"]),
-         V2_TYPE_COLS["observation_policy"]),
-        ("V2 termination", counts([r for r in v2 if r["tipo"] == "termination"]),
-         V2_TYPE_COLS["termination"]),
+        ("V1 slack", hw["v1_folga"], COL_SLACK,
+         counts([r for r in v1 if r["cfg"] in slack])),
+        ("V1 pressure", hw["v1_pressao"], COL_PRESS,
+         counts([r for r in v1 if r["cfg"] not in slack])),
+        ("external 4B", hw["ext4b"], "#333333",
+         counts([r for r in ext if r["cfg"].startswith(("mbpp", "he"))])),
+        ("8B screened", hw["q8_screened"], "#6a51a3",
+         counts([r for r in q8 if r["screened"]])),
+        ("8B non-screened", hw["q8_nonscreened"], "#6a51a3",
+         counts([r for r in q8 if not r["screened"]])),
+        ("V2 context", hw["v2_context"], V2_TYPE_COLS["context_policy"],
+         counts([r for r in v2 if r["tipo"] == "context_policy"])),
+        ("V2 observation", hw["v2_observation"], V2_TYPE_COLS["observation_policy"],
+         counts([r for r in v2 if r["tipo"] == "observation_policy"])),
+        ("V2 termination", None, V2_TYPE_COLS["termination"],
+         counts([r for r in v2 if r["tipo"] == "termination"])),
     ]
     expected = [(36, 37), (39, 46), (48, 49), (51, 57), (0, 17), (13, 23), (4, 12), (0, 10)]
-    assert [kn for _, kn, _ in pops] == expected, [kn for _, kn, _ in pops]
+    assert [kn for _, _, _, kn in pops] == expected, [kn for _, _, _, kn in pops]
+    # estratos do adendo devem somar aos pivotais das rows
+    for name, entry, _, (k, n) in pops:
+        if entry is not None:
+            assert (entry[0] + entry[2], entry[1] + entry[3]) == (k, n), (name, entry, k, n)
     y = np.arange(len(pops))[::-1]
-    for yi, (name, (k, n), col) in zip(y, pops):
-        f0 = k / n if n else 0.0
-        ax_b.barh(yi, f0, color=col, alpha=0.75, height=0.65)
-        ax_b.barh(yi, 1 - f0, left=f0, color=col, alpha=0.25, height=0.65)
-        ax_b.text(1.03, yi, f"{k}/{n}", va="center", fontsize=6.5)
+    for yi, (name, entry, col, (_k, n)) in zip(y, pops):
+        lab = _hw_bar(ax_b, yi, entry, col, n)
+        ax_b.text(1.03, yi, lab, va="center", fontsize=6.5)
+        if entry is None:
+            ax_b.text(0.5, yi, "analytic duals", va="center", ha="center", fontsize=5.5)
     ax_b.set_yticks(y)
-    ax_b.set_yticklabels([name for name, _, _ in pops], fontsize=7)
+    ax_b.set_yticklabels([name for name, _, _, _ in pops], fontsize=7)
     ax_b.set_xlim(0, 1.0)
     ax_b.set_xlabel("fraction of pivotal points", fontsize=7)
     ax_b.tick_params(labelsize=7)
-    ax_b.set_title("(b) mediated ($C(H_a){=}0$, solid)", fontsize=8)
+    ax_b.set_title("(b) $C(H_a){=}0$ by write-horizon stratum", fontsize=8)
+    ax_b.legend(handles=HW_LEGEND, frameon=False, fontsize=5.5, loc="upper center",
+                bbox_to_anchor=(0.5, -0.28), ncol=1, handlelength=1.2,
+                handletextpad=0.4, borderaxespad=0.0, labelspacing=0.2)
 
     # (c) V2 factorial (todos os 48 pontos, por tipo)
     for tipo, col in V2_TYPE_COLS.items():
@@ -386,50 +443,50 @@ def fig6_mediation_scatter() -> None:
     plt.close(fig)
 
 
-# ------------------- F7: censo de mediação (fração NDE != 0 nos pivotais)
+# ---- F7: censo de mediação estratificado por horizonte de escrita (H_w)
 def fig7_mediation_census() -> None:
-    v1 = _load_jsonl(RUNS / "preg40" / "v1_rows.jsonl")
     v2 = _load_jsonl(RUNS / "preg40" / "v2_rows.jsonl")
-    slack = {"g450", "g600", "g900"}
+    term = [r for r in v2 if r["tipo"] == "termination" and r["C_H"] != 0]
+    assert len(term) == 10 and all(r["C_Ha"] != 0 for r in term)
 
-    def frac(rows: list[dict]) -> tuple[int, int]:
-        piv = [r for r in rows if r["C_H"] != 0]
-        return sum(1 for r in piv if r["C_Ha"] != 0), len(piv)
+    hw = _load_hw_strata()
+    # sanidade contra o censo original (não mediados = n_total - k0 - k_ge1)
+    k0, n0, kg, ng = hw["v1_folga"]
+    assert n0 + ng - k0 - kg == 1
+    k0, n0, kg, ng = hw["v1_pressao"]
+    assert n0 + ng - k0 - kg == 7
 
+    # V2 test_schedule (2/3 mediados) fica fora: sem estratificação por H_w no 43a
     pops = [
-        ("V1 slack (g450/600/900)", frac([r for r in v1 if r["cfg"] in slack]), COL_SLACK),
-        ("V1 pressure (mt4/6/8)", frac([r for r in v1 if r["cfg"] not in slack]), COL_PRESS),
+        ("V1 slack (g450/600/900)", hw["v1_folga"], COL_SLACK),
+        ("V1 pressure (mt4/6/8)", hw["v1_pressao"], COL_PRESS),
+        ("V2 context", hw["v2_context"], V2_TYPE_COLS["context_policy"]),
+        ("V2 observation", hw["v2_observation"], V2_TYPE_COLS["observation_policy"]),
+        ("V2 termination (analytic duals)", None, V2_TYPE_COLS["termination"]),
+        ("MBPP+ 4B (pre-reg 42)", hw["ext4b_mbpp"], "#333333"),
+        ("HumanEval+ 4B (pre-reg 42)", hw["ext4b_he"], "#333333"),
+        ("V1 8B designed pool (pre-reg 42)", hw["q8"], "#6a51a3"),
     ]
-    for tipo in ["context_policy", "observation_policy", "test_schedule", "termination"]:
-        pops.append((f"V2 {tipo.replace('_', ' ')}",
-                     frac([r for r in v2 if r["tipo"] == tipo]), V2_TYPE_COLS[tipo]))
-    ext = RUNS / "preg42" / "rows.jsonl"
-    if ext.exists():
-        rows = _load_jsonl(ext)
-        names = {"mbpp": "MBPP+ 4B (pre-reg 42)", "he": "HumanEval+ 4B (pre-reg 42)",
-                 "q8": "V1 8B designed pool (pre-reg 42)"}
-        for pref in ["mbpp", "he", "q8"]:
-            sub = [r for r in rows if r["cfg"].startswith(pref)]
-            if sub:
-                pops.append((names[pref], frac(sub), "#333333"))
 
-    ks = [k for _, (k, _n), _ in pops]
-    ns = [n for _, (_k, n), _ in pops]
-    assert (ks[0], ns[0]) == (1, 37) and (ks[1], ns[1]) == (7, 46), (ks, ns)
-    fracs = [k / n if n else 0.0 for k, n in zip(ks, ns)]
-
-    fig, ax = plt.subplots(figsize=(5.5, 1.4))
+    fig, ax = plt.subplots(figsize=(5.5, 2.3))
     y = np.arange(len(pops))[::-1]
-    ax.barh(y, fracs, color=[c for _, _, c in pops], alpha=0.8, height=0.65)
-    for yi, f, k, n in zip(y, fracs, ks, ns):
-        ax.text(f + 0.015, yi, f"{k}/{n}", va="center", fontsize=6.5)
-    ax.axvline(0.20, color="k", ls="--", lw=0.8)
-    ax.text(0.215, len(pops) - 0.72, "census gate threshold", fontsize=6.5,
-            va="center", ha="left")
+    for yi, (name, entry, col) in zip(y, pops):
+        n_total = 10 if entry is None else entry[1] + entry[3]
+        lab = _hw_bar(ax, yi, entry, col, n_total)
+        ax.text(1.02, yi, lab, va="center", fontsize=6.5)
+    # gate do censo (não mediados <= 0.20) vira fronteira sólido/translúcido >= 0.80
+    ax.axvline(0.80, color="k", ls="--", lw=0.8)
+    ax.set_ylim(-0.55, len(pops) + 0.35)
+    ax.text(0.80, len(pops) - 0.05, "census gate (unmediated 0.20)", fontsize=6,
+            va="center", ha="center",
+            bbox=dict(fc="white", ec="none", pad=0.5))
     ax.set_yticks(y)
     ax.set_yticklabels([name for name, _, _ in pops], fontsize=7)
-    ax.set_xlabel("fraction of pivotal points with NDE $\\neq 0$ (unmediated)")
-    ax.set_xlim(0, 1.12)
+    ax.set_xlabel("fraction of pivotal points")
+    ax.set_xlim(0, 1.0)
+    ax.legend(handles=HW_LEGEND, frameon=False, fontsize=6, loc="upper center",
+              bbox_to_anchor=(0.5, -0.32), ncol=3, handlelength=1.2,
+              handletextpad=0.4, columnspacing=1.0)
     fig.tight_layout()
     fig.savefig(OUT / "f7_mediation_census.pdf", bbox_inches="tight")
     plt.close(fig)
