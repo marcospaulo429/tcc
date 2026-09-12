@@ -3113,3 +3113,50 @@ adicionais tentando reparar sob o contexto sumarizado, R cai de 1.0 para
 pré-declarada: o estrato "informativo" definido no episódio gravado
 coincide com o definido no ramo contrafactual em 86/86 pontos V1-stack —
 a objeção R1-1 não morde. Entra no §4.4(ii), Tab. 1 e App. F.
+
+### DESFECHO 44 (2026-09-11): hardware NÃO controlado — o endpoint primário não é interpretável entre máquinas; intra-H100 o passo ×5 não muda o held-out (seed 1)
+
+Job **32318** (h100n2, GPU 0, vLLM 0.8.5.post1, APC off, série), 17:50–19:50
+(~2 GPU-h). Saída runs/preg44/{gate,ch_lr01_s1_h100,ch_lr05_s1,s2,s3}.
+**(g1) gate nulo fresco: 6/6 exatos (ΔR = 0.0).** **(g2) replicação do
+braço ch lr 0.1 seed 1 na H100: held-out R_eff 0.4289, 140 episódios —
+DIVERGE do 4090 (0.4046, 139).** Per task H100 vs 4090: h_turnstile_fsm
+0.640 vs 0.409; s_commission_calc 0.809 vs 0.834; x_parcel_locker 0.233
+vs 0.255; x_prepaid_meter 0.062 vs 0.100; h_hotel_folio e x_scale_barcode
+iguais. Pela regra pré-registrada, o braço novo é reportado com a etiqueta
+**"hardware não controlado"**.
+
+**Braço ch lr 0.5 (H100), 3 seeds:** 0.4289 / 0.4412 / 0.4349 (134/134/135
+episódios; 1611/1601/1611 chamadas; grad_norm mediano 0.014/0.023/0.020;
+1.97 créditos/episódio). Comparadores 4090: outcome dose-matched
+0.4402/0.4402/0.4430; C_H lr 0.1 0.4046/0.4046/0.3984.
+- r1 (≥ outcome em ≥ 2/3): **falha** (1/3: só seed 2, 0.4412 ≥ 0.4402).
+- r2 (> C_H lr 0.1 em ≥ 2/3): 3/3 pela letra — **mas** o único comparador
+  na MESMA máquina (lr 0.1 seed 1 H100 = 0.4289) é IDÊNTICO ao lr 0.5
+  seed 1 (0.4289, as mesmas 6 tasks task a task) com θ ≈ 2× maior
+  ([-2.35, 0.69, 1.26, 1.26, 1.24] vs [-1.27, 0.31, 0.66, 0.65, 0.66]):
+  o passo ×5 moveu θ e NÃO moveu o comportamento held-out. Seeds 2/3 não
+  têm baseline H100.
+- r4: sem colapso.
+**Desfecho declarado: r0/inconclusivo — hardware não controlado.** A
+comparação entre máquinas é inválida: o mesmo procedimento produz θ e
+held-out diferentes na H100 e na 4090 apesar do gate nulo exato (6/6 aqui,
+20/20 no 42): o gate — 2 ações forçadas + sufixo curto — não detecta a
+divergência de geração greedy que se acumula em episódios completos ao
+vivo (bf16/kernels distintos). A hipótese "passo reescalado fecha o gap"
+perde o único apoio limpo que poderia ter tido (intra-H100, seed 1: sem
+efeito); a hipótese "ruído explora" segue aberta. O teste decisivo exige
+os quatro braços (outcome, C_H lr 0.1, C_H lr 0.5, C_H com advantage
+normalizado) na MESMA máquina, ~4 GPU-h H100 — registrável como 46.
+
+**Implicação para o pré-reg 42 (declarar no paper):** C_Ha (H100) foi
+comparado a R/C_H/C_M/C_HM (4090). Divergência de hardware só pode
+produzir DESIGUALDADE espúria (R_Ha ≠ R), nunca igualdade exata espúria;
+logo os 48/49 e 51/57 (igualdades exatas) são conservadores em relação à
+mediação, e os 17/17 não-screened com C_Ha ≠ 0 vêm acompanhados da
+identidade exata I_fact = 0 em 15/17 (C_HM = C_Ha, medidos em máquinas
+diferentes) — o que hardware não fabrica. Mesmo assim, a nota de
+premissas de serving deve dizer: "greedy live generation does NOT
+transport across GPUs; only forced-prefix replays were gate-checked".
+Paper: §6 (uma frase: rodou, inconclusivo por hardware, intra-H100 sem
+efeito no seed 1), App. F serving premises, ledger #44, claims.
