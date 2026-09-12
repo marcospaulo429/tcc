@@ -3160,3 +3160,29 @@ premissas de serving deve dizer: "greedy live generation does NOT
 transport across GPUs; only forced-prefix replays were gate-checked".
 Paper: §6 (uma frase: rodou, inconclusivo por hardware, intra-H100 sem
 efeito no seed 1), App. F serving premises, ledger #44, claims.
+
+### DESFECHO 45 (2026-09-11): t1 pela letra (26/26), mas o estrato informativo é VAZIO — a célula só confirma o esperado
+
+Job **32342** (h100n2, GPU 0, Qwen3-1.7B, vLLM 0.8.5.post1, APC off, série,
+porta 8323), 19:50–19:53 (~3 GPU-min). Saída runs/preg45/{gate_rows,rows}.jsonl,
+report.json. **Gate nulo 8/8 exato.** 67 rollouts, 0 timeouts, 0 erros.
+Pivotais screened: **26/26 com R(h′,a) = R exato** (q17_g600 4/4, q17_mt6
+4/4, mbpp17_g600 9/9, mbpp17_mt6 9/9) → **t1 pela letra**. Não-pivotais
+39/41: as 2 quebras são o mesmo ponto (inventory_restock cp0, g600 e mt6):
+C_H = 0 e C_Ha = −0.143 (a ação original forçada sob o sumário PONTUA
+MAIS que o original) — com C_HM = C_M = 0, I_fact = +0.143; compatível
+com divergência de hardware (viés unilateral, DESFECHO 44) ou com um
+efeito real de formatação; declarado, não interpretado. I_fact = 0 em
+65/67. n efetivo: 35 pares únicos / 34 tasks (67 pontos; pivotais 26 =
+13 pares únicos, cada um em g600 e mt6).
+**Estratificação por H_w (43a recomputado com q17):** os 26 pivotais têm
+TODOS H_w = 0 — o estrato informativo (H_w ≥ 1) é vazio. Conforme o aviso
+pré-declarado pelo AC (r19) e a regra do 43, a célula NÃO move o headline
+por decisão (14/16): ela confirma o estrato esperado em mais um modelo
+(26/26) e nada diz sobre mediação proximal onde ela é mensurável. Entra
+na Tab. 1 como linha própria ("expected stratum only"), no App. F (a
+1.7B deixa de ser "sem quarta célula"), ledger #45, claims. A 1.7B satura
+em falha na pressão e resolve MBPP+ em 1 escrita: o pool não oferece
+escritas posteriores — a mesma limitação de potência que o paper já
+declara ("a pool with H_w ≥ 1 dominant is the power experiment this paper
+lacks").

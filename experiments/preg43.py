@@ -180,7 +180,10 @@ def main():
     v2_all = load_rows(p_v2)
     v2 = [r for r in v2_all if r.get("C_Ha") is not None and not r.get("error")]
     r42 = load_rows(p_42)
-    meta_rows = {str(p_v1): len(v1), str(p_v2): len(v2_all), str(p_42): len(r42)}
+    p_45 = Path("runs/preg45/rows.jsonl")
+    r45 = load_rows(p_45) if p_45.exists() else []
+    meta_rows = {str(p_v1): len(v1), str(p_v2): len(v2_all), str(p_42): len(r42),
+                 str(p_45): len(r45)}
 
     sem_traj = []
     trajs_v1_cache: dict[str, dict] = {}
@@ -222,6 +225,8 @@ def main():
              and r["pivotal"] and r["screened"]]),
         "q8": _pontos_v1like(
             [r for r in r42 if r["cfg"] in CELLS_Q8 and r["pivotal"]]),
+        # pré-reg 45 (1.7B): descritivo, fora do pool headline e da família MW
+        "q17": _pontos_v1like([r for r in r45 if r["pivotal"]]),
         "v2_context": _pontos_v2(
             [r for r in v2 if r["tipo"] == "context_policy" and r["C_H"] != 0]),
         "v2_observation": _pontos_v2(
